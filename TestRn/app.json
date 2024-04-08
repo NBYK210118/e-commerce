@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "TestRn",
+    "slug": "TestRn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/Original_Logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/Original_Logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}

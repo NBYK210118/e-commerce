@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderType {
+  Buy
+  Sell
+}
+
+enum UserRole{
+  ADMIN
+  USER
+}
+
+enum StoreRoles {
+  Admin
+  inventory
+  support
+  Common
+}
+
+model Image {
+  id           Int            @id @default(autoincrement())
+  imgUrl       String
+  size         Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Profile      Profile[]
+  products     Product[]
+  ProductImage ProductImage[]
+}
+
+model Question {
+  id Int @id @default(autoincrement())
+  imgUrl String[]
+  content String
+  user User @relation(fields: [userId],references: [id])
+  userId Int
+  answer Answer?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  isAnswered Boolean? @default(false)
+}
+
+model Answer {
+  id Int @id @default(autoincrement())
+  content String
+  imgUrl String[]
+  user User @relation(fields: [userId],references: [id])
+  userId Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  question Question @relation(fields: [questionId], references: [id])
+  questionId Int @unique
+}
+
+model Profile {
+  id            Int      @id @default(autoincrement())
+  nickname      String   @default("Username")
+  address       String   @default("")
+  phoneNumber   String   @default("")
+  paymentMethod String   @default("")
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int      @unique
+  imageUrl      String?
+  profile_image Image?   @relation(fields: [imageId], references: [id])
+  imageId       Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id           Int            @id @default(autoincrement())
+  user         User?          @relation(fields: [userId], references: [id])
+  userId       Int?
+  products     Product[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  store        Store?         @relation(fields: [storeId], references: [id])
+  storeId      Int?           @unique
+  type         OrderType
+  OrderProduct OrderProduct[]
+}
+
+model Store {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  users         User[]
+  orders        Order[]
+  selling_list  SellingList?
+  sellingListId Int?
+}
+
+model User {
+  id             Int             @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  email          String          @unique
+  password       String
+  role UserRole @default(USER)
+  questions Question[]
+  answers Answer[]
+  orders         Order[]
+  profile        Profile?
+  wishlist       WishList?
+  wishlistId     Int?            @unique
+  sellinglist    SellingList?
+  sellinglistId  Int?            @unique
+  likedProducts  UserProduct[]
+  reviews        Review[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  store Store? @relation(fields: [storeId], references: [id])
+  storeId Int? @unique
+  viewedProducts ViewedProduct[]
+  shoppingBasket ShoppingBasket[]
+  basketSummary BasketSummary?
+  basketSummaryId Int?
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  imgUrl String @default("")
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id              Int             @id @default(autoincrement())
+  name            String
+  price           Int
+  description     String
+  manufacturer    String
+  category_name   String
+  isDiscounting Boolean? @default(false)
+  discountPrice Int? @default(0)
+  discountRatio Int? @default(0)
+  category        Category        @relation(fields: [categoryId], references: [id])
+  categoryId      Int
+  status          String?
+  seller String
+  viewed_count    Int             @default(0)
+  orders          Order[]
+  images          Image[]
+  reviews         Review[]
+  inventory       Int
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  OrderProduct    OrderProduct[]
+  likedBy         UserProduct[]
+  ProductImage    ProductImage[]
+  reviewProduct   ReviewProduct[]
+  ShoppingBasket ShoppingBasket[]
+  WishList        WishList?       @relation(fields: [wishListId], references: [id])
+  wishListId      Int?
+  SellingList     SellingList?    @relation(fields: [sellingListId], references: [id])
+  sellingListId   Int?
+  viewedProduct   ViewedProduct?  @relation(fields: [viewedProductId], references: [id])
+  viewedProductId Int?
+}
+
+model WishList {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int       @unique
+  products Product[]
+}
+
+model SellingList {
+  id       Int       @id @default(autoincrement())
+  user     User?     @relation(fields: [userId], references: [id])
+  userId   Int?      @unique
+  store    Store?    @relation(fields: [storeId], references: [id])
+  storeId  Int?      @unique
+  products Product[]
+}
+
+model ShoppingBasket{
+  product Product @relation(fields: [productId],references: [id])
+  productId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  quantity Int @default(0)
+  @@id([userId,productId])
+}
+
+model BasketSummary {
+  user          User? @relation(fields: [userId], references: [id])
+  userId        Int @id
+  totalPrice    Int @default(0)
+  totalDiscount Int @default(0)
+  finalPay      Int @default(0)
+  @@map("cart_summary")
+}
+
+model Review {
+  id            Int             @id @default(autoincrement())
+  stars         Int             @default(5)
+  txt           String
+  user          User            @relation(fields: [userId], references: [id])
+  userId        Int
+  product       Product?        @relation(fields: [productId], references: [id])
+  productId     Int?
+  reviewProduct ReviewProduct[]
+}
+
+model ReviewProduct {
+  id        Int     @id @default(autoincrement())
+  review    Review  @relation(fields: [reviewId], references: [id])
+  reviewId  Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@unique([reviewId, productId])
+}
+
+model ViewedProduct {
+  id       Int       @id @default(autoincrement())
+  viewedAt DateTime  @default(now())
+  user     User      @relation(fields: [userId], references: [id])
+  products Product[]
+  userId   Int       @unique
+}
+
+model ProductImage {
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  image     Image   @relation(fields: [imageId], references: [id])
+  imageId   Int
+
+  @@id([productId, imageId])
+}
+
+model OrderProduct {
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@id([orderId, productId])
+}
+
+model UserProduct {
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@id([userId, productId])
+}
