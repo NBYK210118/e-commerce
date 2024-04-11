@@ -9,20 +9,36 @@ import {
   View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { signIn, verifyToken } from '../../features/auth/auth_thunk';
+import { signIn } from '../../features/auth/auth_thunk';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const token = useSelector((val) => val.userAuth.token);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    const data = { email, password };
-    dispatch(signIn(data));
+    try {
+      const data = { email, password };
+      dispatch(signIn(data));
+      setTimeout(() => {
+        navigation.navigate('Home');
+      }, 2000);
+    } catch (error) {
+      setEmail('');
+      setPassword('');
+    }
+  };
+
+  const handleGoBefore = () => {
+    navigation.navigate('Home');
+  };
+  const goSignup = () => {
+    navigation.navigate('SignUp');
   };
 
   return (
@@ -35,7 +51,7 @@ export const Login = () => {
           borderRadius: 20,
           marginVertical: 10,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
+          shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
         }}
@@ -56,7 +72,7 @@ export const Login = () => {
               paddingLeft: 5,
               backgroundColor: 'white',
               shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
+              shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.25,
               shadowRadius: 2.5,
             }}
@@ -87,17 +103,62 @@ export const Login = () => {
           />
         </TouchableWithoutFeedback>
       </View>
+      <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 10 }}>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          style={{
+            marginTop: 10,
+            backgroundColor: '#507cf7',
+            paddingHorizontal: 30,
+            paddingVertical: 15,
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ fontWeight: 'bold', fontSize: 17, color: 'white' }}>로그인</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={goSignup}
+          style={{
+            marginVertical: 20,
+            borderRadius: 10,
+            paddingHorizontal: 30,
+            paddingVertical: 15,
+            backgroundColor: 'rgba(10,140,0,1)',
+            borderRadius: 10,
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: 'bold',
+              fontSize: 17,
+              color: 'white',
+            }}
+          >
+            회원가입
+          </Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
-        onPress={handleSubmit}
+        onPress={handleGoBefore}
         style={{
-          marginTop: 10,
-          backgroundColor: '#507cf7',
-          paddingHorizontal: 20,
-          paddingVertical: 15,
-          borderRadius: 10,
+          position: 'absolute',
+          bottom: 0,
+          marginHorizontal: 20,
+          paddingVertical: 18,
+          width: '100%',
+          backgroundColor: 'black',
         }}
       >
-        <Text style={{ fontWeight: 'bold', fontSize: 17, color: 'white' }}>Sign In</Text>
+        <Text
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            color: 'white',
+            textAlign: 'center',
+          }}
+        >
+          이전으로
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -105,6 +166,7 @@ export const Login = () => {
 
 const style = StyleSheet.create({
   container: {
+    position: 'relative',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',

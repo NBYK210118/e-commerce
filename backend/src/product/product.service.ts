@@ -186,4 +186,26 @@ export class ProductService {
 
     return results;
   }
+
+  async getRecommend(): Promise<Product[]> {
+    const products = await this.prisma.product.findMany({});
+    const max_length = products.length;
+    const min_length = 1;
+    const numbers = [];
+    if (max_length > 0) {
+      for (let i = 0; i < max_length; i++) {
+        const random_id =
+          Math.floor(Math.random() * (max_length - min_length + 1)) +
+          min_length;
+        numbers.push(random_id);
+      }
+    }
+
+    const result = await this.prisma.product.findMany({
+      where: { id: { in: numbers } },
+      include: { images: true },
+    });
+    console.log('result: ', result);
+    return result;
+  }
 }

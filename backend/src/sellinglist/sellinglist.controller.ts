@@ -11,6 +11,7 @@ export class SellinglistController {
   @UseGuards(AuthGuard())
   @Get('/')
   async getSellinglist(@GetUser() user: User, @Query('limit') limit: string) {
+    console.log('sellinglist 요청 들어옴');
     return this.sellinglist.getSellinglist(user, +limit);
   }
 }

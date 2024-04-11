@@ -89,4 +89,9 @@ export class ProductController {
   ): Promise<ViewedProduct[]> {
     return this.productService.userWatchedProduct(user, productId);
   }
+
+  @Get('/all/random-recommend')
+  async getRecommend(): Promise<Product[]> {
+    return this.productService.getRecommend();
+  }
 }

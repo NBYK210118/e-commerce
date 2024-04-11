@@ -82,6 +82,9 @@ const verifyToken = async (token, navigation) => {
   } catch (error) {
     if (error.response && error.response.status) {
       switch (error.response.status) {
+        case 401:
+          alert('Unauthorized!');
+          navigation.navigate('Login');
         case 500:
           alert('서버 에러');
           AsyncStorage.clear(); // 데이터 클리어
@@ -181,21 +184,29 @@ const updateProduct = async (token, form, id, navigate) => {
   }
 };
 
-const getSellinglist = async (token, limit, navigate) => {
+const getSellinglist = async (token, limit, navigation) => {
   try {
     const data = await http.get(`/sellinglist/?limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      alert('Unauthorized!');
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-    } else if (error.response.status === 500) {
-      alert('서버 에러');
-      window.location.reload();
+    if (error.response && error.response.status) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음: 로그인 페이지로 이동합니다');
+          navigation.navigate('Login');
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };

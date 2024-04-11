@@ -1,9 +1,10 @@
-import { Animated, Dimensions, Image, ScrollView, Text, View } from 'react-native';
-import { categories_style } from '../../styles/home_styles/categories_style';
-import { useEffect, useState } from 'react';
+import { Animated, Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { getCategory } from '../../features/categories/categoryThunk';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
+const { width } = Dimensions.get('window');
 
 export const Categories = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -12,7 +13,6 @@ export const Categories = () => {
   const [pages, setPages] = useState([]);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { width } = Dimensions.get('window');
 
   const handleScroll = (event) => {
     // 현재 x 좌표 얻기
@@ -22,9 +22,11 @@ export const Categories = () => {
     setCurrentPage(currentPageIndex);
   };
 
-  useEffect(() => {
-    dispatch(getCategory({ navigate: navigation }));
-  }, [dispatch, navigation]); // navigation과 dispatch를 의존성 배열에 추가
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCategory({ navigate: navigation }));
+    }, [dispatch, navigation])
+  );
 
   useEffect(() => {
     if (category_datas.length > 0) {
@@ -42,8 +44,8 @@ export const Categories = () => {
 
     useEffect(() => {
       Animated.timing(fadeAnim, {
-        toValue: 1, // 최종값 1
-        duration: 100, // 200ms 동안
+        toValue: 1,
+        duration: 100,
         useNativeDriver: true,
       }).start();
     }, [fadeAnim]);
@@ -51,39 +53,46 @@ export const Categories = () => {
     return (
       <View style={categories_style.page}>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
         <View style={[categories_style.categoryBox, { borderWidth: 0 }]}>
-          <Animated.View
+          <Animated.Image
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={[categories_style.image, { opacity: fadeAnim, backgroundColor: 'gray' }]}
-          ></Animated.View>
+          ></Animated.Image>
         </View>
       </View>
     );
@@ -129,3 +138,50 @@ export const Categories = () => {
     </View>
   );
 };
+
+const categories_style = StyleSheet.create({
+  container: {
+    display: 'flex',
+  },
+  page: {
+    width: width,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  categoryBox: {
+    width: width / 4.2, // 3열 그리드로 표시
+    marginTop: 5,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: '#cfcfcf',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  image: {
+    width: 75,
+    height: 55,
+  },
+  categoryText: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginTop: 5,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  paginationDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    backgroundColor: 'blue',
+  },
+  inactiveDot: {
+    backgroundColor: 'gray',
+  },
+});

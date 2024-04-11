@@ -1,25 +1,22 @@
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDiscountingProducts } from '../../../features/products/product_thunk';
-import { discount_style } from '../../../styles/home_styles/discount_style';
 
 export const DiscountProducts = () => {
   const loading = useSelector((val) => val.products.loading);
-  const discounting_products = useSelector((val) => val.products.discounting) || [];
+  const discounting_products = useSelector((val) => val.products.discounting);
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    if (discounting_products.length < 1) {
-      dispatch(getDiscountingProducts(navigation));
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    setTimeout(() => {}, 2000);
-  }, [discounting_products]);
+  useFocusEffect(
+    useCallback(() => {
+      if (discounting_products.length < 1) {
+        dispatch(getDiscountingProducts(navigation));
+      }
+    }, [dispatch, navigation])
+  );
 
   return (
     <View style={discount_style.container}>
@@ -37,7 +34,7 @@ export const DiscountProducts = () => {
           </View>
         ) : (
           discounting_products.map((val, idx) => (
-            <View key={idx} style={discount_style.box}>
+            <TouchableOpacity key={idx} style={discount_style.box}>
               <Image source={{ uri: val.images[0].imgUrl }} style={discount_style.img} />
               <Text numberOfLines={2} style={discount_style.name}>
                 {val.name}
@@ -51,10 +48,30 @@ export const DiscountProducts = () => {
                   {val.isDiscounting ? val.discountPrice.toLocaleString('ko-kr') : val.price.toLocaleString('ko-kr')}원
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>
     </View>
   );
 };
+
+const discount_style = StyleSheet.create({
+  container: {
+    marginTop: 20,
+    marginHorizontal: 10,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  box: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginRight: 5,
+  },
+  img: { width: 120, height: 100 },
+  name: { fontWeight: 'bold', textAlign: 'center' },
+  price_zone: { display: 'flex', flexDirection: 'row' },
+  original_price: { textDecorationLine: 'line-through', color: 'red', fontSize: 10 },
+  discount_price: { textAlign: 'center', fontSize: 12, marginLeft: 2 },
+});

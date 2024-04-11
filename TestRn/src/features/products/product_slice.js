@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getDiscountingProducts, getMostViewedProducts } from './product_thunk';
+import {
+  getDiscountingProducts,
+  getMostViewedProducts,
+  getRecommendProduct,
+  getWatchedProducts,
+} from './product_thunk';
 
 export const Products = createSlice({
   name: 'products',
@@ -7,6 +12,8 @@ export const Products = createSlice({
     mostViewed: [],
     discounting: [],
     recommended: [],
+    watchedProducts: [],
+    sellingList: [],
     loading: false,
     error: '',
   },
@@ -32,6 +39,28 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getDiscountingProducts.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(getRecommendProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getRecommendProduct.fulfilled, (state, action) => {
+        state.recommended = action.payload;
+        state.loading = false;
+      })
+      .addCase(getRecommendProduct.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(getWatchedProducts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getWatchedProducts.fulfilled, (state, action) => {
+        state.watchedProducts = action.payload;
+        state.loading = false;
+      })
+      .addCase(getWatchedProducts.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       });

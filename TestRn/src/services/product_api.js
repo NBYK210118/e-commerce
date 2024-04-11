@@ -290,7 +290,7 @@ const userRecentWatched = async (token, navigation) => {
         case 401:
           alert('Unauthorized');
           AsyncStorage.clear();
-          navigation.navigate('Signin');
+          navigation.navigate('Login');
           break;
         case 500:
           alert('서버 에러');
@@ -481,6 +481,20 @@ const removeProductBasket = async (token, productId, navigate) => {
   }
 };
 
+const getRecommendProduct = async () => {
+  try {
+    const data = await http.get('/product/all/random-recommend');
+    return data;
+  } catch (error) {
+    switch (error.response.status) {
+      case 500:
+        console.log('서버 에러: 추천 상품 데이터를 로드해오지 못했습니다');
+      case 400:
+        console.log('잘못된 요청입니다');
+    }
+  }
+};
+
 const ProductApi = {
   findProduct,
   categoriesItem,
@@ -502,6 +516,7 @@ const ProductApi = {
   getMyBasket,
   addProductMyBasket,
   removeProductBasket,
+  getRecommendProduct,
 };
 
 export default ProductApi;

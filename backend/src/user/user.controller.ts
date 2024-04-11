@@ -61,9 +61,7 @@ export class UserController {
   }
 
   @Post('/signin')
-  async signIn(
-    @Body() signInDto: signInDto,
-  ): Promise<{ access_token: string }> {
+  async signIn(@Body() signInDto: signInDto): Promise<String> {
     console.log('로그인 요청 들어옴', signInDto);
     return this.userService.signIn(signInDto);
   }

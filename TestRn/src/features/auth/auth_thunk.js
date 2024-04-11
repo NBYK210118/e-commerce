@@ -5,26 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const signIn = createAsyncThunk('shopping/login', async (data, { rejectWithValue }) => {
   try {
-    const response = await DataService.signIn(data);
-    if (response.data) {
-      return response.data;
-    }
-  } catch (error) {
-    console.log('Error:', error);
-    return rejectWithValue(error.response?.data || 'An error occurred');
-  }
-});
+    const { navigation } = data;
+    const found1 = await AsyncStorage.getItem('token');
+    const found2 = await AsyncStorage.getItem('user');
 
-export const verifyToken = createAsyncThunk('shopping/verify', async (data, { rejectWithValue }) => {
-  try {
-    const found = AsyncStorage.getItem('user');
-    if (!found) {
-      const { token, navigation } = data;
-      const response = await DataService.verifyToken(token, navigation);
-      AsyncStorage.setItem('user', JSON.stringify(response.data));
-      return response.data;
+    if (!found1 || !found2) {
+      const response1 = await DataService.signIn(data);
+      if (response1.data) {
+        const token = response1.data;
+        const response2 = await DataService.verifyToken(token, navigation);
+        const data = { access_token: response1.data, user: response2.data };
+        return data;
+      }
+    } else {
+      throw new Error('로그인 실패');
     }
-    return found;
   } catch (error) {
     console.log('Error:', error);
     return rejectWithValue(error.response?.data || 'An error occurred');
@@ -57,3 +52,19 @@ export const getUserLocation = createAsyncThunk('shopping/getUserLocation', asyn
     return rejectWithValue(error.message);
   }
 });
+
+export const verifyToken = createAsyncThunk(
+  'shopping/verifyToken',
+  async ({ token, navigation }, { rejectWithValue }) => {
+    try {
+      const response = await DataService.verifyToken(token, navigation);
+      if (response.data) {
+        return response.data;
+      } else {
+        return 'Fail';
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  }
+);

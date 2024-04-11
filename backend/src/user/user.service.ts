@@ -130,7 +130,7 @@ export class UserService {
   }
 
   // 로그인
-  async signIn(signInDto: signInDto): Promise<{ access_token: string }> {
+  async signIn(signInDto: signInDto): Promise<String> {
     const { email, password } = signInDto;
     console.log('email', email);
     console.log('password', password);
@@ -140,12 +140,11 @@ export class UserService {
     if (user && isMatch) {
       const payload = { email };
       const access_token = this.jwtService.sign(payload);
-      return { access_token };
+      return access_token;
     } else {
       if (user.email !== email || !isMatch) {
-        console.log('잘못된 계정이나 비밀번호');
+        throw new Error('Login failed');
       }
-      throw new UnauthorizedException('login failed');
     }
   }
 
