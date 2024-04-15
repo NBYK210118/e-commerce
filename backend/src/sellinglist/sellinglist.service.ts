@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { SellingList, User } from '@prisma/client';
+import { Product, SellingList, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { UpdateDto } from './dto/update.dto';
 
 @Injectable()
 export class SellinglistService {
@@ -19,6 +20,7 @@ export class SellinglistService {
       sellinglist,
       totalPages,
     };
+
     return data;
   }
 }

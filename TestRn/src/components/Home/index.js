@@ -1,23 +1,28 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Categories } from '../categories/category';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Categories } from './category';
 import { RecommendProducts } from './recommend';
 import { MostViewedProducts } from './mostViewed';
 import { DiscountProducts } from './discount';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeScreen = () => {
   const currentLocation = useSelector((val) => val.userAuth.address);
+  const loading = useSelector((val) => val.products.loading);
+  const userInfo_loading = useSelector((val) => val.userAuth.loading);
   const token = useSelector((val) => val.userAuth.token);
   const navigation = useNavigation();
 
   const handleLogin = () => {
     if (!token) {
       navigation.navigate('Login');
+    } else {
+      navigation.navigate('Profile');
     }
   };
-
   return (
     <ScrollView style={home_style.wrapper}>
       <TouchableOpacity
@@ -37,7 +42,9 @@ export const HomeScreen = () => {
         {token ? (
           <>
             <Text style={{ fontWeight: '500' }}>현재 배송지:</Text>
-            <Text style={{ fontWeight: '200', color: 'black' }}>{currentLocation}</Text>
+            <Text style={{ fontWeight: '200', color: 'black' }}>
+              {userInfo_loading ? '불러오는 중...' : currentLocation}
+            </Text>
           </>
         ) : (
           <Text>상품을 구매하시려면 로그인이 필요합니다</Text>

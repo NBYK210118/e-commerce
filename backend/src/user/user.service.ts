@@ -132,8 +132,6 @@ export class UserService {
   // 로그인
   async signIn(signInDto: signInDto): Promise<String> {
     const { email, password } = signInDto;
-    console.log('email', email);
-    console.log('password', password);
     const user = await this.emailUser(email);
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -183,63 +181,91 @@ export class UserService {
 
   // 프로필 정보 수정
   async updateProfile(user: User, data: UserProfileDto) {
-    const { firstName, lastName, email, address, store, phoneNumber } = data;
+    const {
+      email,
+      address,
+      store,
+      phoneNumber,
+      imgUrl,
+      isPersonal,
+      seller,
+      currentAddr,
+      userCurrentLocation,
+    } = data;
 
-    const alreadyExistStore = await this.prisma.store.findUnique({
-      where: { name: store },
-    });
+    const filteredAddresses = address.filter((addr) => addr !== currentAddr);
+    const updatedAddresses = [currentAddr, ...filteredAddresses];
+    const uniqueAddresses = Array.from(new Set(updatedAddresses));
+    console.log('uniqueAddresses: ', uniqueAddresses);
 
-    if (user.storeId === null) {
-      if (alreadyExistStore) {
+    if (isPersonal) {
+      if (user.storeId !== null) {
         await this.prisma.store.update({
-          where: { id: alreadyExistStore.id },
-          data: { users: { connect: { id: user.id } } },
-        });
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { store: { connect: { id: alreadyExistStore.id } } },
-        });
-      } else {
-        const create_new_store = await this.prisma.store.create({
-          data: { name: store, users: { connect: { id: user.id } } },
-        });
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { store: { connect: { id: create_new_store.id } } },
+          where: { id: user.storeId },
+          data: { users: { disconnect: { id: user.id } } },
         });
       }
     } else {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { store: { disconnect: { id: user.storeId } } },
+      const store_found = await this.prisma.store.findUnique({
+        where: { name: store },
       });
-      if (alreadyExistStore) {
-        const new_store = await this.prisma.store.update({
-          where: { id: alreadyExistStore.id },
-          data: { users: { connect: { id: user.id } } },
+      const users_store = await this.prisma.user.findFirst({
+        where: { store: { name: store } },
+      });
+
+      if (!store_found) {
+        const created = await this.prisma.store.create({
+          data: { name: store },
         });
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { store: { connect: { id: new_store.id } } },
-        });
+        if (!users_store) {
+          await this.prisma.store.update({
+            where: { id: created.id },
+            data: { users: { connect: { id: user.id } } },
+          });
+        } else {
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+              store: {
+                disconnect: { id: user.storeId },
+                connect: { id: created.id },
+              },
+            },
+          });
+        }
       } else {
-        const create_new_store = await this.prisma.store.create({
-          data: { users: { connect: { id: user.id } }, name: store },
-        });
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { store: { connect: { id: create_new_store.id } } },
-        });
+        if (user.storeId === null) {
+          await this.prisma.store.update({
+            where: { id: store_found.id },
+            data: { users: { connect: { id: user.id } } },
+          });
+        } else {
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+              store: {
+                disconnect: { id: user.storeId },
+                connect: { id: store_found.id },
+              },
+            },
+          });
+        }
       }
     }
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { firstName, lastName, email },
+      data: { email, seller },
     });
     await this.prisma.profile.update({
       where: { userId: user.id },
-      data: { address, phoneNumber },
+      data: {
+        address: { set: uniqueAddresses },
+        phoneNumber,
+        currentAddress: currentAddr, // 유저가 설정한 주소
+        imageUrl: imgUrl,
+        userCurrentLocation, // 유저 실제 위치
+      },
     });
 
     const result = await this.emailUser(user.email);

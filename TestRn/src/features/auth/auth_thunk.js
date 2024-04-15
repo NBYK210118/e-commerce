@@ -26,6 +26,15 @@ export const signIn = createAsyncThunk('shopping/login', async (data, { rejectWi
   }
 });
 
+export const logout = createAsyncThunk('shopping/logout', async (_, rejectWithValue) => {
+  try {
+    await AsyncStorage.clear();
+    return {};
+  } catch (error) {
+    return rejectWithValue('로컬 스토리지 비우기 실패!');
+  }
+});
+
 export const getUserLocation = createAsyncThunk('shopping/getUserLocation', async (_, { rejectWithValue }) => {
   try {
     // 현재 위치정보 접근권한 설정 요청
@@ -63,6 +72,18 @@ export const verifyToken = createAsyncThunk(
       } else {
         return 'Fail';
       }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  'shopping/updateProfile',
+  async ({ token, data, navigation }, { rejectWithValue }) => {
+    try {
+      const response = await DataService.updateProfile(token, data, navigation);
+      return response.data;
     } catch (error) {
       console.log('Error: ', error);
     }

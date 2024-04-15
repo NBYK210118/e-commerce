@@ -46,7 +46,7 @@ export default function Root() {
   return (
     <Provider store={store}>
       <StatusBar />
-      <NavigationContainer>
+      <NavigationContainer theme={{ colors: { background: '#ffffff' } }}>
         <GestureHandlerRootView style={root_styles.safeArea}>
           <App />
         </GestureHandlerRootView>

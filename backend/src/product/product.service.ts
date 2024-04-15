@@ -205,7 +205,6 @@ export class ProductService {
       where: { id: { in: numbers } },
       include: { images: true },
     });
-    console.log('result: ', result);
     return result;
   }
 }

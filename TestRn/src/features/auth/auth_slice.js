@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getUserLocation, signIn, verifyToken } from './auth_thunk';
-import { getCategory } from '../categories/categoryThunk';
+import { getUserLocation, logout, signIn, updateProfile, verifyToken } from './auth_thunk';
 
 export const UserAuth = createSlice({
   name: 'userAuth',
@@ -8,7 +7,6 @@ export const UserAuth = createSlice({
     address: '',
     loading: false,
     error: '',
-    categories: [],
     user: null,
     token: null,
     accessToGallery: false,
@@ -31,27 +29,40 @@ export const UserAuth = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-      .addCase(getCategory.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getCategory.fulfilled, (state, action) => {
-        state.categories = action.payload;
-        state.loading = false;
-      })
-      .addCase(getCategory.rejected, (state, action) => {
-        state.error = action.payload;
-        state.loading = false;
-      })
       .addCase(signIn.pending, (state) => {
         state.loading = true;
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.token = action.payload.access_token;
         state.user = action.payload.user.user;
+        state.accessToGallery = action.payload.user.user.allowCurrentLocation;
+        state.loading = false;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.error = action.payload.access_token;
         state.loading = false;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logout.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = false;
+        state.accessToGallery = false;
+        state.address = '';
+        state.error = '';
+        state.user = '';
       });
   },
 });

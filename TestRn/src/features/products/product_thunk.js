@@ -24,12 +24,20 @@ export const getMostViewedProducts = createAsyncThunk(
 
 export const getSellinglist = createAsyncThunk(
   '/products/getSellingList',
-  async ({ limit, navigation }, { rejectWithValue }) => {
+  async ({ token, limit }, { rejectWithValue }) => {
     try {
-      const response = await DataService.getSellinglist(token, limit, navigation);
-      return response.data;
+      console.log('token: ', token);
+      const response = await DataService.getSellinglist(token, limit);
+      if (response.data) {
+        return response.data.sellinglist.products;
+      }
+      return rejectWithValue('No products data available');
     } catch (error) {
-      console.log('Error: ', error);
+      console.error('Error: ', error);
+      if (error.response && error.response.data) {
+        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      }
+      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -72,6 +80,20 @@ export const getWatchedProducts = createAsyncThunk(
       const response = await ProductApi.userRecentWatched(token, navigation);
       if (response.data) {
         return response.data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const updateProductStatus = createAsyncThunk(
+  'products/updateProductStatus',
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const response = await ProductApi.updateProductStatus(token, data);
+      if (response.data) {
+        return response.data.products;
       }
     } catch (error) {
       return rejectWithValue(error);

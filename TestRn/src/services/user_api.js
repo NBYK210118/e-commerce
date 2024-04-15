@@ -3,7 +3,6 @@ import { http } from './axios.configure';
 
 const signIn = async (form) => {
   try {
-    console.log('form: ', form);
     const data = await http.post('/user/signin', form);
     if (data === undefined) {
       console.log('response 가 비어있음');
@@ -184,7 +183,7 @@ const updateProduct = async (token, form, id, navigate) => {
   }
 };
 
-const getSellinglist = async (token, limit, navigation) => {
+const getSellinglist = async (token, limit) => {
   try {
     const data = await http.get(`/sellinglist/?limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -195,7 +194,6 @@ const getSellinglist = async (token, limit, navigation) => {
       switch (error.response.status) {
         case 401:
           alert('권한 없음: 로그인 페이지로 이동합니다');
-          navigation.navigate('Login');
         case 500:
           alert('서버 에러');
           break;

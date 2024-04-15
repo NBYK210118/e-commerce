@@ -2,16 +2,31 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { primary_gray } from '../../../styles/common/colors';
-import { getWatchedProducts } from '../../../features/products/product_thunk';
-import Animated from 'react-native-reanimated';
+import { primary_gray } from '../../styles/common/colors';
+import { getWatchedProducts } from '../../features/products/product_thunk';
+import Animated, { useAnimatedStyle, withRepeat, withTiming, useSharedValue } from 'react-native-reanimated';
 
-export const WatchedProducts = () => {
+export const WatchedProducts = ({ loadingStyle }) => {
   const token = useSelector((val) => val.userAuth.token);
   const products = useSelector((val) => val.products.watchedProducts);
   const loading = useSelector((val) => val.products.loading);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const opacity = useSharedValue(0.5);
+
+  useEffect(() => {
+    if (!loading) {
+      opacity.value = withTiming(0, { duration: 1000 });
+    } else {
+      opacity.value = withRepeat(withTiming(0.6, { duration: 1000 }), -1, true);
+    }
+  }, [loading, opacity, navigation]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -23,38 +38,20 @@ export const WatchedProducts = () => {
 
   const SkeletonComp = () => {
     return (
-      <Animated.View style={wp_style.boxes}>
-        <TouchableOpacity style={[wp_style.box]}>
-          <View>
-            <Image style={[wp_style.img, { borderRadius: 5, backgroundColor: 'gray' }]} />
-            <Text style={{ borderRadius: 5, backgroundColor: 'gray' }}></Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={[wp_style.box]}>
-          <View>
-            <Image style={[wp_style.img, { borderRadius: 5, backgroundColor: 'gray' }]} />
-            <Text style={{ borderRadius: 5, backgroundColor: 'gray' }}></Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={[wp_style.box]}>
-          <View>
-            <Image style={[wp_style.img, { borderRadius: 5, backgroundColor: 'gray' }]} />
-            <Text style={{ borderRadius: 5, backgroundColor: 'gray' }}></Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={[wp_style.box]}>
-          <View>
-            <Image style={[wp_style.img, { borderRadius: 5, backgroundColor: 'gray' }]} />
-            <Text style={{ borderRadius: 5, backgroundColor: 'gray' }}></Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={[wp_style.box]}>
-          <View>
-            <Image style={[wp_style.img, { borderRadius: 5, backgroundColor: 'gray' }]} />
-            <Text style={{ borderRadius: 5, backgroundColor: 'gray' }}></Text>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
+      <View style={wp_style.boxes}>
+        {[...Array(5)].map((_, idx) => (
+          <TouchableOpacity key={idx} style={[wp_style.box]}>
+            <View>
+              <Animated.Image
+                style={[wp_style.img, { borderRadius: 5, backgroundColor: primary_gray }, animatedStyle]}
+              />
+              <Animated.Text
+                style={[wp_style.name, { borderRadius: 5, backgroundColor: primary_gray }, animatedStyle]}
+              />
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
     );
   };
 
@@ -70,7 +67,9 @@ export const WatchedProducts = () => {
               <View key={idx} style={wp_style.box}>
                 <View>
                   <Image style={wp_style.img} source={{ uri: val.images[0].imgUrl }} />
-                  <Text style={wp_style.name}>{val.name}</Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={wp_style.name}>
+                    {val.name}
+                  </Text>
                 </View>
               </View>
             ))}

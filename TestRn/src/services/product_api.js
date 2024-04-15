@@ -495,6 +495,22 @@ const getRecommendProduct = async () => {
   }
 };
 
+const updateProductStatus = async (token, form) => {
+  try {
+    const data = await http.put('/sellinglist/update/status', form, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    switch (error.response.status) {
+      case 500:
+        console.log('서버 에러!');
+      case 400:
+        console.log('잘못된 요청');
+    }
+  }
+};
+
 const ProductApi = {
   findProduct,
   categoriesItem,
@@ -517,6 +533,7 @@ const ProductApi = {
   addProductMyBasket,
   removeProductBasket,
   getRecommendProduct,
+  updateProductStatus,
 };
 
 export default ProductApi;

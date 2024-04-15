@@ -3,21 +3,36 @@ import { HomeScreen } from '../Home';
 import { AntDesign } from '@expo/vector-icons';
 import { ShoppingCart } from '../ShoppingCart';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { Likes } from '../Likes';
 import { MyPage } from '../MyPage';
-import { MyProfile } from '../MyPage/MyProfile';
+import { MyProfile } from '../MyPage/myProfile';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MyProducts } from '../MyPage/MyProducts';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, updateProfile } from '../../features/auth/auth_thunk';
+import { MyProducts } from '../MyPage/myProducts';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const MyPageStackScreen = () => {
-  const handleProfileChange = (props) => {
-    const { selectedImg, company, phoneNumber, currentWilling, personalOrCompany } = props;
+  const token = useSelector((val) => val.userAuth.token);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const handleProfileChange = (data) => {
+    if (token) {
+      try {
+        dispatch(updateProfile({ token, data, navigation }));
+        navigation.navigate('My Page');
+      } catch (error) {
+        console.log('프로필 업데이트 오류');
+        navigation.goBack();
+      }
+    }
   };
 
   const pickImageAsync = async ({ setSelectedImg }) => {
@@ -36,13 +51,18 @@ const MyPageStackScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="My Page" component={MyPage} options={{ headerShown: false }} />
-      <Stack.Screen name="Profile">{(props) => <MyProfile {...props} onChange={pickImageAsync} />}</Stack.Screen>
+      <Stack.Screen name="Profile">
+        {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
+      </Stack.Screen>
       <Stack.Screen name="My Products" component={MyProducts} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
 
 export const MyTabs = () => {
+  const token = useSelector((val) => val.userAuth.token);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const TabIcon = ({ route, size }) => {
     let iconName;
 
@@ -66,6 +86,15 @@ export const MyTabs = () => {
         <AntDesign name="menu-fold" size={24} color="white" style={{ marginLeft: 15 }} />
       </TouchableOpacity>
     );
+  };
+
+  const handleLogOut = async () => {
+    try {
+      dispatch(logout());
+      Alert.alert('로그아웃 성공', '성공적으로 로그아웃되었습니다!');
+    } catch (error) {
+      Alert.alert('로그아웃 에러', '로그아웃 실패! 다시 시도해주세요');
+    }
   };
 
   return (
@@ -92,6 +121,12 @@ export const MyTabs = () => {
           />
         ),
         headerLeft: () => <MenuIcon />,
+        headerRight: () =>
+          token && (
+            <TouchableOpacity onPress={handleLogOut}>
+              <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 15 }} />
+            </TouchableOpacity>
+          ),
         headerTintColor: 'white',
         headerTitleStyle: {
           fontWeight: 'bold',

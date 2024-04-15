@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet } from 'react-native';
 import { WatchedProducts } from './watchedProducts';
-import { ManageButtons } from './ManageButtons';
-import { HeadProfile } from './HeadProfile';
+import { ManageButtons } from './buttons';
+import { HeadProfile } from './headProfile';
 import { useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect } from 'react';
@@ -13,6 +13,7 @@ export const MyPage = () => {
   useFocusEffect(
     useCallback(() => {
       if (!token) {
+        alert('로그인이 필요합니다');
         navigation.navigate('Login');
       }
     }, [token, navigation])

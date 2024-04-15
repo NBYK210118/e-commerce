@@ -1,8 +1,11 @@
 export class UserProfileDto {
-  firstName: string;
-  lastName: string;
+  imgUrl: string;
+  isPersonal: boolean;
+  seller: boolean;
   email: string;
   store: string;
-  address: string;
+  address: string[];
   phoneNumber: string;
+  currentAddr: string;
+  userCurrentLocation: string;
 }
