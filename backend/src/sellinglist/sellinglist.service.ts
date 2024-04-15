@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Product, SellingList, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { UpdateDto } from './dto/update.dto';
+import { ProductStatus } from './product.interface';
 
 @Injectable()
 export class SellinglistService {
@@ -22,5 +23,30 @@ export class SellinglistService {
     };
 
     return data;
+  }
+
+  async updateProductStatus(
+    user: User,
+    data: ProductStatus,
+  ): Promise<SellingList> {
+    const updatePromise = Object.entries(data).map(([key, value]) => {
+      const productId = Number(key);
+      const status = value ? '판매중' : '보류중';
+      return this.prisma.product.update({
+        where: { id: productId },
+        data: { status },
+      });
+    });
+    await Promise.all(updatePromise);
+    const sellingList = await this.prisma.sellingList.findUnique({
+      where: { userId: user.id },
+      include: {
+        products: {
+          include: { images: true, likedBy: true },
+          orderBy: { id: 'asc' },
+        },
+      },
+    });
+    return sellingList;
   }
 }

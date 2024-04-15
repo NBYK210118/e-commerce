@@ -21,7 +21,11 @@ export const Products = createSlice({
     loading: false,
     error: '',
   },
-  reducers: {},
+  reducers: {
+    setSellinglist: (state, action) => {
+      state.sellingList = action.payload;
+    },
+  },
   extraReducers: (bulider) => {
     bulider
       .addCase(getCategory.pending, (state) => {
@@ -103,5 +107,5 @@ export const Products = createSlice({
       });
   },
 });
-export const {} = Products.actions;
+export const { setSellinglist } = Products.actions;
 export default Products.reducer;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Product, User, ViewedProduct } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { ProductStatus } from '../sellinglist/product.interface';
 
 @Injectable()
 export class ProductService {

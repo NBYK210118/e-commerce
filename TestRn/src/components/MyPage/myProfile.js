@@ -16,7 +16,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { primary_gray } from '../../styles/common/colors';
 import AddressItem from './AddressItem';
 import TextInputs from './TextInputs';
-import IconButton from './IconButton';
+import IconButton from './buttons/IconButton';
 
 export const MyProfile = ({ onSubmit, onChange }) => {
   const user = useSelector((val) => val.userAuth.user);

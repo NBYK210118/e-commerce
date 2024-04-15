@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, Extrapolation, interpolate } from 'react-native-reanimated';
-import CheckBox from './CheckBox';
+import CheckBox from './checkbox/CheckBox';
 
 const ITEM_HEIGHT = 100;
 

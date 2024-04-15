@@ -1,7 +1,7 @@
 import { AntDesign, Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { primary_gray } from '../../styles/common/colors';
+import { primary_gray } from '../../../styles/common/colors';
 
 export const MoveButton = ({ label, navigate, name }) => {
   const navigation = useNavigation();

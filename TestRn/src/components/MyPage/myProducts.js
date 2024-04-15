@@ -12,10 +12,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { primary_gray } from '../../styles/common/colors';
 import { getSellinglist, updateProductStatus } from '../../features/products/product_thunk';
-import ProductButton from './product_button';
+import ProductButton from './buttons/product_button';
 import ProductItem from './ProductItem';
 import SearchBar from './SearchBar';
 import ProductApi from '../../services/product_api';
+import { setSellinglist } from '../../features/products/product_slice';
 
 export const MyProducts = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -32,6 +33,31 @@ export const MyProducts = () => {
       opacity: opacity.value,
     };
   });
+
+  useEffect(() => {
+    try {
+      dispatch(getSellinglist({ token, limit: currentLimit }));
+    } catch (error) {
+      switch (error.response.status) {
+        case 400:
+          console.log('요청 에러', error);
+        case 401:
+          alert('권한 없음');
+          navigation.navigate('Login');
+        case 500:
+          alert('서버 에러');
+          navigation.navigate('My Page');
+      }
+    }
+    if (token && products.length > 0) {
+      setManageStatus(
+        products.reduce((acc, val) => {
+          acc[val.id] = val.status === '판매중' ? true : false;
+          return acc;
+        }, {})
+      );
+    }
+  }, [dispatch, navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -51,58 +77,25 @@ export const MyProducts = () => {
   }, [loading, opacity, navigation]);
 
   useEffect(() => {
-    if (token) {
+    if (Object.keys(manageStatus).length > 0) {
       try {
-        dispatch(getSellinglist({ token, limit: currentLimit }));
+        ProductApi.updateProductStatus(token, (data = JSON.stringify(manageStatus))).then((response) => {
+          if (response.data) {
+            dispatch(setSellinglist(response.data.products));
+          }
+        });
       } catch (error) {
         switch (error.response.status) {
           case 400:
-            console.log('요청 에러', error);
+            alert('잘못된 요청입니다');
           case 401:
-            alert('권한 없음');
-            navigation.navigate('Login');
+            alert('로그인이 필요합니다');
           case 500:
-            alert('서버 에러');
-            navigation.navigate('My Page');
+            alert('서버 에러!');
         }
       }
     }
-  }, [token, currentLimit, dispatch, navigation]);
-
-  useEffect(() => {
-    if (token && products.length > 0) {
-      setManageStatus(
-        products.reduce((acc, val) => {
-          acc[val.id] = val.status === '판매중' ? true : false;
-          return acc;
-        }, {})
-      );
-    }
-  }, [products]);
-
-  // useEffect(() => {
-  //   if (Object.keys(manageStatus).length > 0) {
-  //     const hasFalse = Object.values(manageStatus).some((value) => value === false);
-  //     if (hasFalse) {
-  //       try {
-  //         ProductApi.updateProductStatus(token, (data = JSON.stringify(manageStatus))).then((response) => {
-  //           if (response.data) {
-  //             console.log('response.data: ', response.data);
-  //           }
-  //         });
-  //       } catch (error) {
-  //         switch (error.response.status) {
-  //           case 400:
-  //             alert('잘못된 요청입니다');
-  //           case 401:
-  //             alert('로그인이 필요합니다');
-  //           case 500:
-  //             alert('서버 에러!');
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [manageStatus]);
+  }, [manageStatus]);
 
   const handleProductStatus = (product_id) => {
     setManageStatus({
@@ -182,7 +175,7 @@ export const MyProducts = () => {
           ListEmptyComponent={<NoProducts />}
         />
       )}
-      <ProductButton />
+      <ProductButton navigation={navigation} />
     </View>
   );
 };

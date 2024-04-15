@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -14,6 +15,7 @@ import { ProductService } from './product.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Product, User, ViewedProduct } from '@prisma/client';
 import { GetUser } from 'src/user/get-user.decorator';
+import { ProductStatus } from '../sellinglist/product.interface';
 
 @Controller('product')
 export class ProductController {

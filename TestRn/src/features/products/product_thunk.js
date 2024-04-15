@@ -26,7 +26,6 @@ export const getSellinglist = createAsyncThunk(
   '/products/getSellingList',
   async ({ token, limit }, { rejectWithValue }) => {
     try {
-      console.log('token: ', token);
       const response = await DataService.getSellinglist(token, limit);
       if (response.data) {
         return response.data.sellinglist.products;

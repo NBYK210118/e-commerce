@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout, updateProfile } from '../../features/auth/auth_thunk';
 import { MyProducts } from '../MyPage/myProducts';
 import { MaterialIcons } from '@expo/vector-icons';
+import { AddProduct } from '../MyPage/add/AddProduct';
 
 export const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -55,6 +56,7 @@ const MyPageStackScreen = () => {
         {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
       </Stack.Screen>
       <Stack.Screen name="My Products" component={MyProducts} options={{ headerShown: false }} />
+      <Stack.Screen name="Add Product" component={AddProduct} />
     </Stack.Navigator>
   );
 };

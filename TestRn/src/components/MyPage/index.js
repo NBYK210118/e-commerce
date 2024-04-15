@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet } from 'react-native';
 import { WatchedProducts } from './watchedProducts';
-import { ManageButtons } from './buttons';
+import { ManageButtons } from './buttons/buttons';
 import { HeadProfile } from './headProfile';
 import { useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
