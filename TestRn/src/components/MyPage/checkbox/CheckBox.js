@@ -1,30 +1,7 @@
 import Checkbox from 'expo-checkbox';
 import React, { useCallback, useEffect, useState } from 'react';
 
-export const CheckBox = ({ products = [], item }) => {
-  const [checkStatus, setCheckStatus] = useState({});
-
-  useEffect(() => {
-    if (products.length > 0) {
-      setCheckStatus(
-        products.reduce((acc, val) => {
-          acc[val.id] = false;
-          return acc;
-        }, {})
-      );
-    }
-  }, [products]);
-
-  const handleChecked = useCallback(
-    (product_id) => {
-      setCheckStatus((prevState) => ({
-        ...prevState,
-        [product_id]: !prevState[product_id],
-      }));
-    },
-    [setCheckStatus]
-  );
-
+export const CheckBox = ({ item, handleChecked, checkStatus }) => {
   return (
     <Checkbox
       value={checkStatus[item.id]}
@@ -35,4 +12,4 @@ export const CheckBox = ({ products = [], item }) => {
   );
 };
 
-export default React.memo(CheckBox);
+export default CheckBox;

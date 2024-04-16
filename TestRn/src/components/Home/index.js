@@ -62,6 +62,6 @@ const home_style = StyleSheet.create({
   wrapper: {
     flex: 1,
     flexDirection: 'column',
-    marginBottom: 10,
+    paddingBottom: 10,
   },
 });

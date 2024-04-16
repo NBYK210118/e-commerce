@@ -141,7 +141,8 @@ model Product {
   id              Int             @id @default(autoincrement())
   name            String
   price           Int
-  description     String
+  description     String[]
+  detailImgs      String[]
   manufacturer    String
   category_name   String
   isDiscounting Boolean? @default(false)
@@ -235,9 +236,9 @@ model ViewedProduct {
 }
 
 model ProductImage {
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id],onDelete: Cascade)
   productId Int
-  image     Image   @relation(fields: [imageId], references: [id])
+  image     Image   @relation(fields: [imageId], references: [id], onDelete: Cascade)
   imageId   Int
 
   @@id([productId, imageId])

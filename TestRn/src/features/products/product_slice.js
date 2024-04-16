@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  deleteSellingProducts,
   getDiscountingProducts,
   getMostViewedProducts,
   getRecommendProduct,
@@ -104,6 +105,17 @@ export const Products = createSlice({
       .addCase(updateProductStatus.rejected, (state, action) => {
         state.error = action.error.message;
         state.loading = false;
+      })
+      .addCase(deleteSellingProducts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteSellingProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.sellingList = action.payload;
+      })
+      .addCase(deleteSellingProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });

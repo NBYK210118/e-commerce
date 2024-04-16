@@ -18,6 +18,7 @@ import { Request, Response } from 'express';
 import { GetUser } from './get-user.decorator';
 import { UserProfileDto } from './dto/user.dto';
 import ProductDetailDto from './dto/addProduct.dto';
+import { ProductStatus } from 'src/sellinglist/product.interface';
 
 @Controller('user')
 export class UserController {
@@ -153,7 +154,7 @@ export class UserController {
 
   @UseGuards(AuthGuard())
   @Post('/my-store/delete-product')
-  async deleteProduct(@GetUser() user: User, @Body('checklist') checklist) {
-    return this.userService.deleteProduct(user, checklist);
+  async deleteProduct(@GetUser() user: User, @Body() data: ProductStatus) {
+    return this.userService.deleteProduct(user, data);
   }
 }

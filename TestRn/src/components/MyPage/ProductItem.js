@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, Extrapolation, interpolate } from 'react-native-reanimated';
 import CheckBox from './checkbox/CheckBox';
 
 const ITEM_HEIGHT = 100;
 
-export const ProductItem = ({ products, item, index, scrollY, handleProductStatus }) => {
+export const ProductItem = ({ item, index, scrollY, handleProductStatus, handleChecked, checkStatus }) => {
   // 항목의 높이와 검색바에 의해 가려지는 시점을 계산
   const inputRange = [-1, 0, ITEM_HEIGHT * index, ITEM_HEIGHT * (index + 0.5)]; // index 번째 항목 기준 0.5만큼 내려왔을 때
   const outputRange = [1, 1, 1.3, 0.71];
@@ -18,7 +18,7 @@ export const ProductItem = ({ products, item, index, scrollY, handleProductStatu
   return (
     <Animated.View style={[styles.productItem, animatedStyle]}>
       <View style={styles.productItem}>
-        <CheckBox products={products} item={item} />
+        <CheckBox item={item} checkStatus={checkStatus} handleChecked={handleChecked} />
         <Image source={{ uri: item.images[0].imgUrl }} style={styles.productImage} />
         <View style={{ overflow: 'hidden', marginRight: 50 }}>
           <Text style={{ color: 'blue', fontSize: 11, marginBottom: 3 }}>{item.category_name}</Text>

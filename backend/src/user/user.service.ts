@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { signInDto, signUpDto } from './dto/sign.dto';
 import { UserProfileDto } from './dto/user.dto';
 import ProductDetailDto from './dto/addProduct.dto';
+import { ProductStatus } from 'src/sellinglist/product.interface';
 
 @Injectable()
 export class UserService {
@@ -346,7 +347,7 @@ export class UserService {
     const product = await this.prisma.product.create({
       data: {
         name,
-        description: detail2,
+        description: [detail2],
         price: Number(parsedIntPrice),
         manufacturer,
         status,
@@ -439,7 +440,7 @@ export class UserService {
         name,
         price: parsedIntPrice,
         status,
-        description: detail,
+        description: [detail],
         category_name: category,
         inventory: Number(inventory),
         manufacturer,
@@ -470,43 +471,30 @@ export class UserService {
   }
 
   // 선택된 상품 제거하기(판매 취소 버튼)
-  async deleteProduct(user: User, checklist: string) {
-    const parsedChecklist = checklist.split(',').map((val) => parseInt(val));
-
-    if (parsedChecklist.length === 1) {
-      const img = await this.prisma.image.findFirst({
-        where: { products: { some: { id: parsedChecklist[0] } } },
-      });
-      await this.prisma.productImage.delete({
-        where: {
-          productId_imageId: { productId: parsedChecklist[0], imageId: img.id },
-        },
-      });
-      await this.prisma.image.delete({ where: { id: img.id } });
-      await this.prisma.product.delete({
-        where: { id: parsedChecklist[0] },
-      });
-    } else if (parsedChecklist.length > 1) {
-      for (const id of parsedChecklist) {
-        let img = await this.prisma.image.findFirst({
-          where: { products: { some: { id } } },
-        });
-        await this.prisma.productImage.delete({
-          where: {
-            productId_imageId: {
-              productId: id,
-              imageId: img.id,
-            },
-          },
-        });
-        await this.prisma.image.delete({ where: { id: img.id } });
-        await this.prisma.product.delete({
-          where: { id },
-        });
+  async deleteProduct(user: User, data: ProductStatus) {
+    const product_ids = [];
+    console.log('data: ', data);
+    for (const key in data) {
+      if (data[key]) {
+        product_ids.push(Number(key));
       }
     }
+    await this.prisma.userProduct.deleteMany({
+      where: { productId: { in: product_ids } },
+    });
+    await this.prisma.productImage.deleteMany({
+      where: { productId: { in: product_ids } },
+    });
 
-    const onUser = await this.emailUser(user.email);
-    return onUser;
+    await this.prisma.product.deleteMany({
+      where: { id: { in: product_ids } },
+    });
+
+    const result = await this.prisma.sellingList.findUnique({
+      where: { userId: user.id },
+      include: { products: { include: { images: true, likedBy: true } } },
+    });
+
+    return result;
   }
 }

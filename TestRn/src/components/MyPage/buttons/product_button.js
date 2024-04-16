@@ -2,14 +2,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState } from 'react';
 
-export const ProductButton = ({ navigation }) => {
+export const ProductButton = ({ navigation, deleteProducts }) => {
   const [optionsVisible, setOptionsVisible] = useState(false);
 
   return (
     <>
       {optionsVisible ? (
         <View>
-          <TouchableOpacity style={[styles.bottom_Button, styles.cancel]}>
+          <TouchableOpacity style={[styles.bottom_Button, styles.cancel]} onPress={deleteProducts}>
             <Text style={styles.addButtonText}>상품 판매취소</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.bottom_Button]} onPress={() => navigation.navigate('Add Product')}>

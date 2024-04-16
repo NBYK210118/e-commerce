@@ -3,7 +3,8 @@ import { $Enums, Prisma } from '@prisma/client';
 export class Product implements Prisma.ProductCreateInput {
   name: string;
   price: number;
-  description: string;
+  description?: string[] | Prisma.ProductCreatedescriptionInput;
+  detailImgs?: string[] | Prisma.ProductCreatedetailImgsInput;
   manufacturer: string;
   category: Prisma.CategoryCreateNestedOneWithoutProductsInput;
   category_name: string;
