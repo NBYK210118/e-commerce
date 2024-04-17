@@ -22,6 +22,7 @@ export const Stepper = ({
       <View style={{ flexDirection: 'row', justifyContent: content.length > 1 ? 'space-around' : 'center' }}>
         {content.map((_, idx) => (
           <View
+            key={idx}
             style={{
               width: 30,
               height: 30,
@@ -34,7 +35,7 @@ export const Stepper = ({
         ))}
       </View>
 
-      <View key={active}>{content[active]}</View>
+      <View key={`content-${active}`}>{content[active]}</View>
 
       <View style={buttonContainer}>
         {active > 0 && (

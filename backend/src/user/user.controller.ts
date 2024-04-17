@@ -125,25 +125,6 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Post('/my-store/add/product')
-  async addProduct(
-    @GetUser() user: User,
-    @Body() addProductDto: ProductDetailDto,
-  ) {
-    return this.userService.addProduct(user, addProductDto);
-  }
-
-  @UseGuards(AuthGuard())
-  @Post('/my-store/update-product/:id')
-  async updateProduct(
-    @GetUser() user: User,
-    @Param('id') id: number,
-    @Body() updateProduct: ProductDetailDto,
-  ): Promise<User> {
-    return this.userService.updateProduct(user, id, updateProduct);
-  }
-
-  @UseGuards(AuthGuard())
   @Post('/my-store')
   async getProductsWhileUpdate(@Body('checklist') checklist: string) {
     const converted_checklist = checklist

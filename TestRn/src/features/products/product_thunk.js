@@ -12,7 +12,11 @@ export const getMostViewedProducts = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      console.error('Error: ', error);
+      if (error.response && error.response.data) {
+        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      }
+      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -43,7 +47,11 @@ export const getDiscountingProducts = createAsyncThunk(
       const response = await ProductApi.getDiscountingProducts(navigation);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error);
+      console.error('Error: ', error);
+      if (error.response && error.response.data) {
+        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      }
+      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -55,7 +63,11 @@ export const getRecommendProduct = createAsyncThunk('products/getRecommendProduc
       return response.data;
     }
   } catch (error) {
-    return rejectWithValue(error);
+    console.error('Error: ', error);
+    if (error.response && error.response.data) {
+      return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+    }
+    return rejectWithValue({ message: 'An unexpected error occured' });
   }
 });
 
@@ -68,7 +80,11 @@ export const getWatchedProducts = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      console.error('Error: ', error);
+      if (error.response && error.response.data) {
+        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      }
+      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -82,7 +98,11 @@ export const updateProductStatus = createAsyncThunk(
         return response.data.products;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      console.error('Error: ', error);
+      if (error.response && error.response.data) {
+        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      }
+      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -93,7 +113,6 @@ export const deleteSellingProducts = createAsyncThunk(
     try {
       const response = await DataService.deleteProduct(token, data);
       if (response.data) {
-        console.log(response.data.products);
         return response.data.products;
       }
     } catch (error) {
@@ -101,3 +120,14 @@ export const deleteSellingProducts = createAsyncThunk(
     }
   }
 );
+
+export const addProduct = createAsyncThunk('products/addProduct', async ({ token, data }, { rejectWithValue }) => {
+  try {
+    const response = await ProductApi.addProduct(token, data);
+    if (response.data) {
+      return response.data.products;
+    }
+  } catch (error) {
+    return rejectWithValue(error);
+  }
+});

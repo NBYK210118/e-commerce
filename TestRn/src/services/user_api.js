@@ -145,44 +145,6 @@ const updateProfile = async (token, form, navigate) => {
   }
 };
 
-// 상품 추가버튼 API
-const addProduct = async (token, form, navigate) => {
-  try {
-    const data = await http.post('/user/my-store/add/product', form, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return data;
-  } catch (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
-    }
-  }
-};
-
-// 상품 정보 업데이트 하기
-const updateProduct = async (token, form, id, navigate) => {
-  try {
-    const data = await http.post(`/user/my-store/update-product/${id}`, form, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return data;
-  } catch (error) {
-    if (error.response.status === 401) {
-      alert('Unauthorized!');
-      navigate('/signin');
-    }
-  }
-};
-
 const getSellinglist = async (token, limit) => {
   try {
     const data = await http.get(`/sellinglist/?limit=${limit}`, {
@@ -253,8 +215,6 @@ const DataService = {
   updateNickname,
   uploadProfileImg,
   updateProfile,
-  addProduct,
-  updateProduct,
   deleteProduct,
   getProductsWhileUpdate,
   getSellinglist,

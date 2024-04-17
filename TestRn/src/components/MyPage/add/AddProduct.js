@@ -1,23 +1,31 @@
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import ImageUploadStep from './image_upload_step';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PriceDiscountStep from './price_step';
 import { InventoryStep } from './InventoryStep';
 import { Stepper } from './Stepper';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { addProduct } from '../../../features/products/product_thunk';
 
 export const AddProduct = () => {
+  const token = useSelector((state) => state.userAuth.token);
+  const user = useSelector((state) => state.userAuth.user);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [image, setImage] = useState(null);
   const [name, setName] = useState(null);
   const [category, setCategory] = useState(null);
   const [isDiscount, setIsDiscount] = useState(false);
-  const [productPrice, setProductPrice] = useState(0);
-  const [discountPrice, setDiscountPrice] = useState(0);
-  const [discountRatio, setDiscountRatio] = useState(0);
+  const [productPrice, setProductPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
+  const [discountRatio, setDiscountRatio] = useState('');
   const [detailImgs, setDetailImgs] = useState([]);
-  const [count, setCount] = useState(1);
-  const [detail, setDetail] = useState([]);
+  const [count, setCount] = useState('');
+  const [detail, setDetail] = useState('');
   const [company, setCompany] = useState('');
+  const [selectedItem, setSelectedItem] = useState('판매중');
 
   const content = [
     <ImageUploadStep
@@ -47,6 +55,8 @@ export const AddProduct = () => {
       setDetail={setDetail}
       detailImgs={detailImgs}
       setDetailImgs={setDetailImgs}
+      selectedItem={selectedItem}
+      setSelectedItem={setSelectedItem}
     />,
   ];
 
@@ -65,13 +75,35 @@ export const AddProduct = () => {
   const handleFinishBtn = (props) => {
     const data = {
       image,
+      image_size: null,
       name,
       category,
       price: productPrice,
-      inventoryinventory,
+      manufacturer: company,
+      detail,
+      detail_files: detailImgs,
+      inventory: count,
+      isDiscounting: isDiscount,
       discountPrice,
       discountRatio,
+      status: selectedItem,
+      seller: user.profile.nickname,
     };
+    try {
+      dispatch(addProduct({ token, data }));
+      navigation.navigate('My Page');
+    } catch (error) {
+      if (error.response !== undefined) {
+        switch (error.response.status) {
+          case 400:
+            alert('잘못된 요청');
+          case 401:
+            alert('권한 없음');
+          case 500:
+            alert('서버 에러');
+        }
+      }
+    }
   };
 
   return (
@@ -101,7 +133,13 @@ const styles = StyleSheet.create({
   stepStyle: {
     backgroundColor: 'lightblue',
   },
-  buttonContainer: { width: '100%', flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10 },
+  buttonContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    marginBottom: 10,
+  },
   buttonStyle: { backgroundColor: '#38aeea', width: 100, paddingVertical: 10 },
   buttonTextStyle: {
     color: 'white',

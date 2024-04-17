@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Product, User, ViewedProduct } from '@prisma/client';
+import { Product, SellingList, User, ViewedProduct } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
-import { ProductStatus } from '../sellinglist/product.interface';
+import ProductDetailDto from 'src/user/dto/addProduct.dto';
 
 @Injectable()
 export class ProductService {
@@ -9,15 +9,6 @@ export class ProductService {
 
   async createProduct(data: Product): Promise<Product> {
     const result = await this.prisma.product.create({ data });
-
-    return result;
-  }
-
-  async updateProduct(id: number, data: Product): Promise<Product> {
-    const result = await this.prisma.product.update({
-      where: { id },
-      data,
-    });
 
     return result;
   }
@@ -205,6 +196,169 @@ export class ProductService {
     const result = await this.prisma.product.findMany({
       where: { id: { in: numbers } },
       include: { images: true },
+    });
+    return result;
+  }
+
+  // 판매 상품 등록하기
+  async addProduct(
+    user: User,
+    productDetailDto: ProductDetailDto,
+  ): Promise<SellingList> {
+    const {
+      image,
+      image_size,
+      name,
+      detail,
+      price,
+      manufacturer,
+      category,
+      inventory,
+      status,
+      seller,
+      discountPrice,
+      discountRatio,
+      isDiscounting,
+    } = productDetailDto;
+    const detail2 = detail.trim();
+    const priceWithoutComma = price.replace(/,/g, '');
+    const parsedIntPrice = parseInt(priceWithoutComma, 10);
+    const parsedDiscountPrice = parseInt(discountPrice.replace(/,/g, ''));
+    let product_category = null;
+    let onsales = null;
+
+    const finding_category = await this.prisma.category.findFirst({
+      where: { name: category },
+    });
+
+    if (!finding_category) {
+      product_category = await this.prisma.category.create({
+        data: { name: category },
+      });
+    } else {
+      product_category = finding_category;
+    }
+
+    const product_image = await this.prisma.image.create({
+      data: { imgUrl: image, size: Number(image_size) },
+    });
+
+    const product = await this.prisma.product.create({
+      data: {
+        name,
+        description: [detail2],
+        price: Number(parsedIntPrice),
+        manufacturer,
+        status,
+        seller,
+        discountPrice: parsedDiscountPrice,
+        isDiscounting: Boolean(isDiscounting),
+        discountRatio: Number(discountRatio),
+        category_name: category,
+        inventory: Number(inventory),
+        category: { connect: { id: product_category.id } },
+        images: { connect: { id: product_image.id } },
+      },
+    });
+
+    await this.prisma.productImage.create({
+      data: { imageId: product_image.id, productId: product.id },
+    });
+
+    try {
+      if (!user.sellinglistId) {
+        if (!user.storeId) {
+          onsales = await this.prisma.sellingList.create({
+            data: {
+              products: { connect: { id: product.id } },
+              user: { connect: { id: user.id } },
+            },
+          });
+        } else {
+          onsales = await this.prisma.sellingList.create({
+            data: {
+              products: { connect: { id: product.id } },
+              user: { connect: { id: user.id } },
+              store: { connect: { id: user.storeId } },
+            },
+          });
+        }
+      } else {
+        onsales = await this.prisma.sellingList.update({
+          where: { userId: user.id },
+          data: {
+            storeId: user.storeId,
+            userId: user.id,
+            products: { connect: { id: product.id } },
+          },
+        });
+      }
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { sellinglistId: onsales.id },
+      });
+    } catch (error) {
+      console.log('sellingList 레코드 생성 실패', error);
+    }
+
+    const result = await this.prisma.sellingList.findUnique({
+      where: { userId: user.id },
+    });
+    return result;
+  }
+
+  // 판매 중인 물품 정보 수정하기
+  async updateProduct(
+    user: User,
+    id: number,
+    updateProductDto: ProductDetailDto,
+  ): Promise<SellingList> {
+    const {
+      name,
+      price,
+      detail,
+      category,
+      image,
+      image_size,
+      inventory,
+      manufacturer,
+      status,
+      isDiscounting,
+      discountPrice,
+      discountRatio,
+    } = updateProductDto;
+    const priceWithoutComma = price.replace(/,/g, '');
+    const parsedDiscountPrice = parseInt(discountPrice.replace(/,/g, ''));
+    const parsedIntPrice = parseInt(priceWithoutComma, 10);
+    const product_image = await this.prisma.productImage.findFirst({
+      where: { productId: Number(id) },
+    });
+
+    await this.prisma.product.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        price: parsedIntPrice,
+        status,
+        description: [detail],
+        category_name: category,
+        inventory: Number(inventory),
+        manufacturer,
+        discountPrice: parsedDiscountPrice,
+        discountRatio: Number(discountRatio),
+        isDiscounting: Boolean(isDiscounting),
+        images: {
+          update: {
+            where: { id: product_image.imageId },
+            data: { imgUrl: image, size: Number(image_size) },
+          },
+        },
+      },
+    });
+
+    const result = await this.prisma.sellingList.findUnique({
+      where: { userId: user.id },
     });
     return result;
   }

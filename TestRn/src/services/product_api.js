@@ -25,6 +25,65 @@ const findProduct = async (id, navigate) => {
   }
 };
 
+// 상품 추가버튼 API
+const addProduct = async (token, form) => {
+  try {
+    const data = await http.post('/product/my-store/add/product', form, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          await AsyncStorage.clear();
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+        default:
+          await AsyncStorage.clear();
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+// 상품 정보 업데이트 하기
+const updateProduct = async (token, form, id) => {
+  try {
+    const data = await http.post(`/product/my-store/update-product/${id}`, form, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          await AsyncStorage.clear();
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
 // 홈페이지에서 카테고리 클릭했을 때 해당 카테고리의 상품 리스트 불러오기
 const getAllProducts = async (category, navigate) => {
   try {
@@ -51,24 +110,22 @@ const getAllCategories = async (token, navigation) => {
     });
     return data;
   } catch (error) {
-    if (error.response && error.response.status) {
+    if (error.response !== undefined) {
       switch (error.response.status) {
         case 401:
           alert('Unauthorized');
-          AsyncStorage.clear(); // AsyncStorage 또는 SecureStore.clear() 사용
-          navigation.navigate('Signin'); // 'navigate' 함수로 화면 이동
+          navigation.navigate('Signin');
           break;
         case 500:
           alert('서버 에러');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
+          navigation.navigate('Home');
           break;
         case 400:
           alert('잘못된 요청!');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
+          navigation.navigate('Home');
           break;
         default:
+          await AsyncStorage.clear();
           console.log('Unknown error', error);
       }
     } else {
@@ -285,24 +342,22 @@ const userRecentWatched = async (token, navigation) => {
     });
     return data;
   } catch (error) {
-    if (error.response && error.response.status) {
+    if (error.response !== undefined) {
       switch (error.response.status) {
         case 401:
           alert('Unauthorized');
-          AsyncStorage.clear();
           navigation.navigate('Login');
           break;
         case 500:
           alert('서버 에러');
-          AsyncStorage.clear();
           navigation.navigate('Home');
           break;
         case 400:
           alert('잘못된 요청!');
-          AsyncStorage.clear();
           navigation.navigate('Home');
           break;
         default:
+          await AsyncStorage.clear();
           console.log('Unknown error', error);
       }
     } else {
@@ -317,7 +372,33 @@ const getMostInterested = async (navigation) => {
     const data = await http.get('viewedproduct/recent-watched/every-products');
     return data;
   } catch (error) {
-    if (error.response && error.response.status) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 500:
+          alert('서버 에러'); // 데이터 클리어
+          navigation.navigate('Home'); // 홈으로 이동
+          break;
+        case 400:
+          alert('잘못된 요청!'); // 데이터 클리어
+          navigation.navigate('Home'); // 홈으로 이동
+          break;
+        default:
+          await AsyncStorage.clear();
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+// 할인 중인 상품들 불러오기
+const getDiscountingProducts = async (navigation) => {
+  try {
+    const data = await http.get('/product/all/discounting');
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
       switch (error.response.status) {
         case 500:
           alert('서버 에러');
@@ -338,29 +419,19 @@ const getMostInterested = async (navigation) => {
   }
 };
 
-// 할인 중인 상품들 불러오기
-const getDiscountingProducts = async (navigation) => {
+// 추천 상품 로드
+const getRecommendProduct = async () => {
   try {
-    const data = await http.get('/product/all/discounting');
+    const data = await http.get('/product/all/random-recommend');
     return data;
   } catch (error) {
-    if (error.response && error.response.status) {
+    if (error.response !== undefined) {
       switch (error.response.status) {
         case 500:
-          alert('서버 에러');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
-          break;
+          console.log('서버 에러: 추천 상품 데이터를 로드해오지 못했습니다');
         case 400:
-          alert('잘못된 요청!');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
-          break;
-        default:
-          console.log('Unknown error', error);
+          console.log('잘못된 요청입니다');
       }
-    } else {
-      console.error('API call error: ', error);
     }
   }
 };
@@ -481,20 +552,6 @@ const removeProductBasket = async (token, productId, navigate) => {
   }
 };
 
-const getRecommendProduct = async () => {
-  try {
-    const data = await http.get('/product/all/random-recommend');
-    return data;
-  } catch (error) {
-    switch (error.response.status) {
-      case 500:
-        console.log('서버 에러: 추천 상품 데이터를 로드해오지 못했습니다');
-      case 400:
-        console.log('잘못된 요청입니다');
-    }
-  }
-};
-
 const updateProductStatus = async (token, form) => {
   try {
     const data = await http.put('/sellinglist/update/status', form, {
@@ -513,6 +570,8 @@ const updateProductStatus = async (token, form) => {
 
 const ProductApi = {
   findProduct,
+  addProduct,
+  updateProduct,
   categoriesItem,
   getAllProducts,
   getAllCategories,

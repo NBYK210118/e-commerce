@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
+import DropdownMenu from './Dropdown';
 
 export const InventoryStep = ({
   count,
@@ -12,6 +13,8 @@ export const InventoryStep = ({
   setDetail,
   detailImgs = [],
   setDetailImgs,
+  selectedItem,
+  setSelectedItem,
 }) => {
   const [lastTap, setLastTap] = useState(null);
 
@@ -52,9 +55,9 @@ export const InventoryStep = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>판매사: </Text>
+      <Text style={[styles.label, { fontWeight: 'bold' }]}>판매사: </Text>
       <TextInput style={styles.input} value={company} onChangeText={setCompany} placeholder="판매사 입력" />
-      <Text style={styles.label}>재고: </Text>
+      <Text style={[styles.label, { fontWeight: 'bold' }]}>재고: </Text>
       <TextInput
         style={styles.input}
         value={count}
@@ -62,8 +65,12 @@ export const InventoryStep = ({
         placeholder="재고 수량 입력"
         keyboardType="numeric"
       />
+      <View style={{ marginBottom: 15 }}>
+        <Text style={[styles.label, { fontWeight: 'bold' }]}>즉시 판매: </Text>
+        <DropdownMenu selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+      </View>
       <View>
-        <Text style={styles.label}>상세정보: </Text>
+        <Text style={[styles.label, { fontWeight: 'bold' }]}>상세정보: </Text>
         <TouchableOpacity
           style={{
             position: 'absolute',
@@ -78,17 +85,28 @@ export const InventoryStep = ({
           <Text style={{ color: 'rgba(235,240,240,1)' }}>파일 첨부</Text>
         </TouchableOpacity>
         {detailImgs.length > 0 && <Text style={{ color: 'gray' }}>*이미지를 두 번 탭하시면 제거됩니다</Text>}
-        <TextInput style={styles.input} value={detail[0]} onChangeText={setDetail} placeholder="상세정보 입력" />
+        <TextInput
+          multiline
+          style={[styles.input, { paddingVertical: 10, textAlignVertical: 'center' }]}
+          value={detail}
+          onChangeText={setDetail}
+          placeholder="상세정보 입력"
+        />
         {detailImgs.length > 0 && (
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} scrollEventThrottle={17}>
-            {detailImgs.map((val, idx) => {
-              return (
-                <TouchableOpacity onPress={() => handleDoubleTab(idx)}>
-                  <Image source={{ uri: val }} style={{ width: 100, height: 100 }} />
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          <>
+            <Text style={{ color: 'black', marginBottom: 5 }}>
+              첨부된 파일: <Text style={{ color: 'blue' }}>{detailImgs.length}</Text>개
+            </Text>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} scrollEventThrottle={17}>
+              {detailImgs.map((val, idx) => {
+                return (
+                  <TouchableOpacity key={idx} onPress={() => handleDoubleTab(idx)}>
+                    <Image source={{ uri: val }} style={{ width: 100, height: 100 }} />
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </>
         )}
       </View>
     </View>

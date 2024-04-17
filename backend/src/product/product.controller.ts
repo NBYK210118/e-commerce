@@ -13,9 +13,10 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Product, User, ViewedProduct } from '@prisma/client';
+import { Product, SellingList, User, ViewedProduct } from '@prisma/client';
 import { GetUser } from 'src/user/get-user.decorator';
 import { ProductStatus } from '../sellinglist/product.interface';
+import ProductDetailDto from 'src/user/dto/addProduct.dto';
 
 @Controller('product')
 export class ProductController {
@@ -95,5 +96,24 @@ export class ProductController {
   @Get('/all/random-recommend')
   async getRecommend(): Promise<Product[]> {
     return this.productService.getRecommend();
+  }
+
+  @UseGuards(AuthGuard())
+  @Post('/my-store/add/product')
+  async addProduct(
+    @GetUser() user: User,
+    @Body() addProductDto: ProductDetailDto,
+  ): Promise<SellingList> {
+    return this.productService.addProduct(user, addProductDto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Post('/my-store/update-product/:id')
+  async updateProduct(
+    @GetUser() user: User,
+    @Param('id') id: number,
+    @Body() updateProduct: ProductDetailDto,
+  ): Promise<SellingList> {
+    return this.productService.updateProduct(user, id, updateProduct);
   }
 }
