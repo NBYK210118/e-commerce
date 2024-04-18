@@ -1,14 +1,15 @@
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import ImageUploadStep from './image_upload_step';
+import ImageUploadStep from './first_step';
 import { useCallback, useEffect, useState } from 'react';
-import PriceDiscountStep from './price_step';
-import { InventoryStep } from './InventoryStep';
+import PriceDiscountStep from './mid_step';
+import { InventoryStep } from './final_step';
 import { Stepper } from './Stepper';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { addProduct } from '../../../features/products/product_thunk';
+import { addProduct, updateProduct } from '../../../features/products/product_thunk';
+import ProductApi from '../../../services/product_api';
 
-export const AddProduct = () => {
+export const AddProduct = ({ route }) => {
   const token = useSelector((state) => state.userAuth.token);
   const user = useSelector((state) => state.userAuth.user);
   const navigation = useNavigation();
@@ -22,10 +23,32 @@ export const AddProduct = () => {
   const [discountPrice, setDiscountPrice] = useState('');
   const [discountRatio, setDiscountRatio] = useState('');
   const [detailImgs, setDetailImgs] = useState([]);
-  const [count, setCount] = useState('');
+  const [count, setCount] = useState(0);
   const [detail, setDetail] = useState('');
   const [company, setCompany] = useState('');
   const [selectedItem, setSelectedItem] = useState('판매중');
+  const product_id = route.params?.product_id;
+
+  useEffect(() => {
+    if (product_id) {
+      ProductApi.findProduct(product_id).then((response) => {
+        if (response.data) {
+          const data = response.data;
+          setCategory(data.category_name);
+          setImage(data.images[0].imgUrl);
+          setIsDiscount(data.isDiscounting);
+          setName(data.name);
+          setCount(data.inventory);
+          setDiscountPrice(data.discountPrice.toLocaleString('ko-kr'));
+          setDiscountRatio(data.discountRatio.toLocaleString('ko-kr'));
+          setCompany(data.manufacturer);
+          setProductPrice(data.price.toLocaleString('ko-kr'));
+          setDetailImgs(data.detailImgs);
+          console.log(data);
+        }
+      });
+    }
+  }, []);
 
   const content = [
     <ImageUploadStep
@@ -45,6 +68,7 @@ export const AddProduct = () => {
       setDiscountRatio={setDiscountRatio}
       isDiscount={isDiscount}
       setIsDiscount={setIsDiscount}
+      product_id={product_id}
     />,
     <InventoryStep
       count={count}
@@ -72,7 +96,7 @@ export const AddProduct = () => {
     }
   };
 
-  const handleFinishBtn = (props) => {
+  const handleFinishBtn = () => {
     const data = {
       image,
       image_size: null,
@@ -81,7 +105,7 @@ export const AddProduct = () => {
       price: productPrice,
       manufacturer: company,
       detail,
-      detail_files: detailImgs,
+      detailImgs,
       inventory: count,
       isDiscounting: isDiscount,
       discountPrice,
@@ -90,8 +114,13 @@ export const AddProduct = () => {
       seller: user.profile.nickname,
     };
     try {
-      dispatch(addProduct({ token, data }));
-      navigation.navigate('My Page');
+      if (!product_id) {
+        dispatch(addProduct({ token, data }));
+        navigation.navigate('My Page');
+      } else {
+        dispatch(updateProduct({ token, data, id: product_id }));
+        navigation.navigate('My Page');
+      }
     } catch (error) {
       if (error.response !== undefined) {
         switch (error.response.status) {

@@ -60,7 +60,7 @@ export const InventoryStep = ({
       <Text style={[styles.label, { fontWeight: 'bold' }]}>재고: </Text>
       <TextInput
         style={styles.input}
-        value={count}
+        value={String(count)}
         onChangeText={setCount}
         placeholder="재고 수량 입력"
         keyboardType="numeric"

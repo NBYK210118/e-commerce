@@ -3,63 +3,19 @@ import { HomeScreen } from '../Home';
 import { AntDesign } from '@expo/vector-icons';
 import { ShoppingCart } from '../ShoppingCart';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { Likes } from '../Likes';
-import { MyPage } from '../MyPage';
-import { MyProfile } from '../MyPage/myProfile';
+import { Alert, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, updateProfile } from '../../features/auth/auth_thunk';
-import { MyProducts } from '../MyPage/myProducts';
+import { logout } from '../../features/auth/auth_thunk';
+
 import { MaterialIcons } from '@expo/vector-icons';
-import { AddProduct } from '../MyPage/add/AddProduct';
+
+import { SalesStack } from './SalesStack';
+import { MyPageStackScreen } from './MyPageStackScreen';
 
 export const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-const MyPageStackScreen = () => {
-  const token = useSelector((val) => val.userAuth.token);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
-
-  const handleProfileChange = (data) => {
-    if (token) {
-      try {
-        dispatch(updateProfile({ token, data, navigation }));
-        navigation.navigate('My Page');
-      } catch (error) {
-        console.log('프로필 업데이트 오류');
-        navigation.goBack();
-      }
-    }
-  };
-
-  const pickImageAsync = async ({ setSelectedImg }) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setSelectedImg(result.assets[0].uri);
-    } else {
-      alert('선택된 사진이 없습니다');
-    }
-  };
-
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="My Page" component={MyPage} options={{ headerShown: false }} />
-      <Stack.Screen name="Profile">
-        {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
-      </Stack.Screen>
-      <Stack.Screen name="My Products" component={MyProducts} options={{ headerShown: false }} />
-      <Stack.Screen name="Add Product" component={AddProduct} />
-    </Stack.Navigator>
-  );
-};
+export const Stack = createNativeStackNavigator();
 
 export const MyTabs = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -70,14 +26,12 @@ export const MyTabs = () => {
 
     if (route.name === 'Home') {
       iconName = 'home';
-    } else if (route.name === 'Settings') {
-      iconName = 'setting';
     } else if (route.name === 'Shopping Cart') {
       iconName = 'shoppingcart';
-    } else if (route.name === 'Likes') {
-      iconName = 'hearto';
     } else if (route.name === 'MyPage') {
       iconName = 'user';
+    } else if (route.name === 'Sales') {
+      return <MaterialIcons name="attach-money" size={size} color="white" />;
     }
     return <AntDesign name={iconName} size={size} color="white" />;
   };
@@ -136,7 +90,7 @@ export const MyTabs = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Likes" component={Likes} />
+      <Tab.Screen name="Sales" component={SalesStack} />
       <Tab.Screen name="Shopping Cart" component={ShoppingCart} />
       <Tab.Screen name="MyPage" component={MyPageStackScreen} />
     </Tab.Navigator>

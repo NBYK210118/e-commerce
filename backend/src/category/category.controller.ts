@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { Category, Product, User } from '@prisma/client';
+import { Category, Product, SellingList, User } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/user/get-user.decorator';
 
@@ -14,9 +22,20 @@ export class CategoryController {
     return this.categoryService.registerCategory(user, data);
   }
 
-  @Get('/:name')
-  async getAllProducts(@Param('name') category: string): Promise<Product[]> {
-    const result = await this.categoryService.getAllProducts(category);
+  @UseGuards(AuthGuard())
+  @Get('/product')
+  async getAllProducts(
+    @GetUser() user: User,
+    @Query('category') category: string,
+  ): Promise<Product | Product[]> {
+    const result = await this.categoryService.getAllProducts(user, category);
+    return result;
+  }
+
+  async getAllSellingProducts(
+    @Query('category') category: string,
+  ): Promise<Product | Product[]> {
+    const result = await this.categoryService.getAllSellingProducts(category);
     return result;
   }
 

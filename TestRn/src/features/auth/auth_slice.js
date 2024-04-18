@@ -10,10 +10,14 @@ export const UserAuth = createSlice({
     user: null,
     token: null,
     accessToGallery: false,
+    optionsVisible: false,
   },
   reducers: {
     setAccessToGallery: (state, action) => {
       state.accessToGallery = action.payload;
+    },
+    setOptionsVisible: (state, action) => {
+      state.optionsVisible = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -67,6 +71,6 @@ export const UserAuth = createSlice({
   },
 });
 
-export const { setAccessToGallery } = UserAuth.actions;
+export const { setAccessToGallery, setOptionsVisible } = UserAuth.actions;
 
 export default UserAuth.reducer;

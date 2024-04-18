@@ -1,27 +1,28 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { http } from './axios.configure';
 
-// PersonalStore 에서 선택된 상품의 정보 불러오기 -> PersonalStore 에선 getProductsWhileUpdate 와 같이 사용됨
-const findProduct = async (id, navigate) => {
+// SellingList 에서 선택된 상품의 정보 불러오기 -> PersonalStore 에선 getProductsWhileUpdate 와 같이 사용됨
+const findProduct = async (id) => {
   try {
     const data = await http.get(`/product/?product_id=${id}`);
-
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      alert('Unauthorized');
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 500) {
-      alert('서버 에러');
-      localStorage.clear();
-      navigate('/home');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청!');
-      localStorage.clear();
-      navigate('/home');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          await AsyncStorage.clear();
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
     }
-    console.log('상품 불러오기 실패', error);
   }
 };
 
@@ -45,9 +46,6 @@ const addProduct = async (token, form) => {
         case 400:
           alert('잘못된 요청');
           break;
-        default:
-          await AsyncStorage.clear();
-          console.log('Unknown error', error);
       }
     } else {
       console.error('API call error: ', error);
@@ -67,6 +65,35 @@ const updateProduct = async (token, form, id) => {
       switch (error.response.status) {
         case 401:
           alert('Unauthorized');
+          await AsyncStorage.clear();
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+// 내 SellingList 의 검색바 기능
+const findByProductByKeyword = async (token, keyword) => {
+  try {
+    console.log('keyword: ', keyword);
+    const data = await http.get(`/sellinglist/find-product/?keyword=${keyword}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          await AsyncStorage.clear();
           break;
         case 500:
           alert('서버 에러');
@@ -75,7 +102,6 @@ const updateProduct = async (token, form, id) => {
           alert('잘못된 요청!');
           break;
         default:
-          await AsyncStorage.clear();
           console.log('Unknown error', error);
       }
     } else {
@@ -103,29 +129,20 @@ const getAllProducts = async (category, navigate) => {
   }
 };
 
-const getAllCategories = async (token, navigation) => {
+const getAllCategories = async () => {
   try {
-    const data = await http.get('/category', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const data = await http.get('/category');
     return data;
   } catch (error) {
     if (error.response !== undefined) {
       switch (error.response.status) {
-        case 401:
-          alert('Unauthorized');
-          navigation.navigate('Signin');
-          break;
         case 500:
           alert('서버 에러');
-          navigation.navigate('Home');
           break;
         case 400:
           alert('잘못된 요청!');
-          navigation.navigate('Home');
           break;
         default:
-          await AsyncStorage.clear();
           console.log('Unknown error', error);
       }
     } else {
@@ -134,26 +151,31 @@ const getAllCategories = async (token, navigation) => {
   }
 };
 
-// PersonalStore 에서 선택한 카테고리의 상품들만 불러오기
-const categoriesItem = async (token, category, selection, navigate) => {
+// SellingList 에서 선택한 카테고리의 상품들만 불러오기
+const categoriesItem = async (token, category) => {
   try {
-    const data = await http.get(`/product/my-store/${category}?limit=${selection}`, {
+    const data = await http.get(`/category/product/?category=${category}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      alert('Unauthorized');
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          await AsyncStorage.clear();
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
@@ -593,6 +615,7 @@ const ProductApi = {
   removeProductBasket,
   getRecommendProduct,
   updateProductStatus,
+  findByProductByKeyword,
 };
 
 export default ProductApi;

@@ -2,11 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addProduct,
   deleteSellingProducts,
+  findProductByCategory,
+  findProductByKeyword,
   getDiscountingProducts,
   getMostViewedProducts,
   getRecommendProduct,
   getSellinglist,
   getWatchedProducts,
+  updateProduct,
   updateProductStatus,
 } from './product_thunk';
 import { getCategory } from '../categories/categoryThunk';
@@ -128,6 +131,39 @@ export const Products = createSlice({
       .addCase(addProduct.rejected, (state, action) => {
         state.error = action.error.message;
         state.loading = false;
+      })
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.sellingList = action.payload;
+        state.loading = false;
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(findProductByKeyword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(findProductByKeyword.fulfilled, (state, action) => {
+        state.sellingList = action.payload;
+        state.loading = false;
+      })
+      .addCase(findProductByKeyword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(findProductByCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(findProductByCategory.fulfilled, (state, action) => {
+        state.sellingList = action.payload;
+        state.loading = false;
+      })
+      .addCase(findProductByCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });

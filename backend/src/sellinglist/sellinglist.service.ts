@@ -49,4 +49,19 @@ export class SellinglistService {
     });
     return sellingList;
   }
+
+  async getProductByKeyword(
+    user: User,
+    data: string,
+  ): Promise<Product | Product[]> {
+    if (user.sellinglistId) {
+      const products = await this.prisma.product.findMany({
+        where: { sellingListId: user.sellinglistId, name: { contains: data } },
+        include: { images: true, likedBy: true },
+      });
+      return products;
+    } else {
+      return;
+    }
+  }
 }

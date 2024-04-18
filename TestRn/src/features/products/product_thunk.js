@@ -131,3 +131,45 @@ export const addProduct = createAsyncThunk('products/addProduct', async ({ token
     return rejectWithValue(error);
   }
 });
+
+export const updateProduct = createAsyncThunk(
+  'products/updateProduct',
+  async ({ token, data, id }, { rejectWithValue }) => {
+    try {
+      const response = await ProductApi.updateProduct(token, data, id);
+      if (response.data) {
+        return response.data.products;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const findProductByKeyword = createAsyncThunk(
+  'products/findProductByKeyWord',
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const response = await ProductApi.findByProductByKeyword(token, data);
+      if (response.data) {
+        return response.data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const findProductByCategory = createAsyncThunk(
+  'products/findProductByCategory',
+  async ({ token, data }, { rejectWithValue }) => {
+    try {
+      const response = await ProductApi.categoriesItem(token, data);
+      if (response.data) {
+        return response.data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);

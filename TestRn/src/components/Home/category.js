@@ -1,4 +1,4 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { getCategory } from '../../features/categories/categoryThunk';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +15,10 @@ export const Categories = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const opacity = useSharedValue(0.5);
-  const [load, setLoad] = useState(false);
+
+  useEffect(() => {
+    dispatch(getCategory({ navigate: navigation }));
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -37,12 +40,6 @@ export const Categories = () => {
     const currentPageIndex = Math.round(contentOffsetX / width);
     setCurrentPage(currentPageIndex);
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getCategory({ navigate: navigation }));
-    }, [dispatch, navigation])
-  );
 
   useEffect(() => {
     if (category_datas.length > 0) {
@@ -86,10 +83,14 @@ export const Categories = () => {
           : pages.map((val, idx) => (
               <View key={idx} style={categories_style.page}>
                 {val.map((category, idx) => (
-                  <View key={idx} style={categories_style.categoryBox}>
+                  <TouchableOpacity
+                    key={idx}
+                    style={categories_style.categoryBox}
+                    onPress={() => navigation.navigate('Sales', { screen: 'SalesList' })}
+                  >
                     <Image source={{ uri: category.imgUrl }} style={categories_style.image} />
                     <Text style={categories_style.categoryText}>{category.name}</Text>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             ))}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MyTabs } from './components/BottomTabs';
+import { MyTabs } from './components/Tabs';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { getUserLocation, verifyToken } from './features/auth/auth_thunk';
 import { Login } from './components/SignIn-Up/Login';
@@ -13,7 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { setAccessToGallery } from './features/auth/auth_slice';
 import { SignUp } from './components/SignIn-Up/SignUp';
 
-const RootStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,11 +34,11 @@ const App = () => {
   }, []);
 
   return (
-    <RootStack.Navigator mode="modal" screenOptions={{ headerShown: false }}>
-      <RootStack.Screen name="Main" component={MyTabs} />
-      <RootStack.Screen name="Login" component={Login} />
-      <RootStack.Screen name="SignUp" component={SignUp} />
-    </RootStack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Main" component={MyTabs} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="SignUp" component={SignUp} />
+    </Stack.Navigator>
   );
 };
 

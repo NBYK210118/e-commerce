@@ -24,4 +24,13 @@ export class SellinglistController {
     const result = await this.sellinglist.updateProductStatus(user, data);
     return result;
   }
+
+  @Get('/find-product')
+  async getProductByKeyword(
+    @GetUser() user: User,
+    @Query('keyword') data: string,
+  ) {
+    console.log('keyword: ', data);
+    return this.sellinglist.getProductByKeyword(user, data);
+  }
 }

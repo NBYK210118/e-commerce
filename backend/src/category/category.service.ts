@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Category, Product, User } from '@prisma/client';
+import { Category, Product, SellingList, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { ProductService } from 'src/product/product.service';
 
@@ -27,9 +27,25 @@ export class CategoryService {
     return result;
   }
 
-  async getAllProducts(category: string): Promise<Product[]> {
-    const result = await this.productService.getAllProducts(category);
+  async getAllProducts(
+    user: User,
+    category: string,
+  ): Promise<Product | Product[]> {
+    const result = await this.prismaService.product.findMany({
+      where: { sellingListId: user.sellinglistId, category_name: category },
+      include: { images: true, likedBy: true },
+    });
 
     return result;
+  }
+
+  async getAllSellingProducts(category: string): Promise<Product | Product[]> {
+    if (category) {
+      const result = await this.prismaService.product.findMany({
+        where: { category_name: category },
+      });
+
+      return result;
+    }
   }
 }

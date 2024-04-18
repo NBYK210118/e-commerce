@@ -6,12 +6,9 @@ import { DiscountProducts } from './discount';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeScreen = () => {
   const currentLocation = useSelector((val) => val.userAuth.address);
-  const loading = useSelector((val) => val.products.loading);
   const userInfo_loading = useSelector((val) => val.userAuth.loading);
   const token = useSelector((val) => val.userAuth.token);
   const navigation = useNavigation();
@@ -24,20 +21,8 @@ export const HomeScreen = () => {
     }
   };
   return (
-    <ScrollView style={home_style.wrapper}>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: 10,
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-          paddingLeft: 8,
-          paddingVertical: 5,
-          backgroundColor: 'rgba(47, 218, 233, 0.32)',
-        }}
-        onPress={handleLogin}
-      >
+    <ScrollView style={styles.wrapper}>
+      <TouchableOpacity style={styles.header} onPress={handleLogin}>
         <FontAwesome name={token ? 'location-arrow' : 'sign-in'} size={20} color="black" style={{ marginRight: 7 }} />
         {token ? (
           <>
@@ -58,10 +43,20 @@ export const HomeScreen = () => {
   );
 };
 
-const home_style = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     flexDirection: 'column',
     paddingBottom: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingLeft: 8,
+    paddingVertical: 5,
+    backgroundColor: 'rgba(47, 218, 233, 0.32)',
   },
 });

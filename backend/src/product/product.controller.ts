@@ -114,6 +114,7 @@ export class ProductController {
     @Param('id') id: number,
     @Body() updateProduct: ProductDetailDto,
   ): Promise<SellingList> {
+    console.log('update 요청 들어옴');
     return this.productService.updateProduct(user, id, updateProduct);
   }
 }

@@ -1,5 +1,6 @@
 export default class ProductDetailDto {
   image: string;
+  detailImgs: string[];
   image_size: number;
   name: string;
   detail: string;

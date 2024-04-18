@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 export const PriceDiscountStep = ({
@@ -10,6 +10,7 @@ export const PriceDiscountStep = ({
   setDiscountRatio,
   isDiscount,
   setIsDiscount,
+  product_id,
 }) => {
   const priceInputRef = useRef();
   const discountPriceRef = useRef();

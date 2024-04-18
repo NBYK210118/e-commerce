@@ -5,10 +5,11 @@ import { primary_gray } from '../../styles/common/colors';
 
 export const SearchBar = ({ onPress }) => {
   const [keyword, setKeyword] = useState('');
+
   return (
     <View>
       <TextInput style={styles.searchInput} placeholder="상품 검색..." onChangeText={setKeyword} value={keyword} />
-      <TouchableOpacity style={styles.searchIcon}>
+      <TouchableOpacity style={styles.searchIcon} onPress={() => onPress(keyword, setKeyword)}>
         <AntDesign name="search1" size={24} color="black" />
       </TouchableOpacity>
     </View>

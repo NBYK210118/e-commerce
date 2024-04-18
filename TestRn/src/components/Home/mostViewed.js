@@ -10,10 +10,8 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat } fr
 export const MostViewedProducts = () => {
   const mostviewed_products = useSelector((val) => val.products.mostViewed);
   const loading = useSelector((val) => val.products.loading);
-  // const loading = true;
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const opacity = useSharedValue(0.5);
 
   useEffect(() => {

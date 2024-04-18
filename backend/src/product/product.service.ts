@@ -216,6 +216,7 @@ export class ProductService {
       inventory,
       status,
       seller,
+      detailImgs,
       discountPrice,
       discountRatio,
       isDiscounting,
@@ -252,6 +253,7 @@ export class ProductService {
         status,
         seller,
         discountPrice: parsedDiscountPrice,
+        detailImgs,
         isDiscounting: Boolean(isDiscounting),
         discountRatio: Number(discountRatio),
         category_name: category,
@@ -324,10 +326,13 @@ export class ProductService {
       inventory,
       manufacturer,
       status,
+      detailImgs,
+      seller,
       isDiscounting,
       discountPrice,
       discountRatio,
     } = updateProductDto;
+    console.log('detailImgs: ', detailImgs);
     const priceWithoutComma = price.replace(/,/g, '');
     const parsedDiscountPrice = parseInt(discountPrice.replace(/,/g, ''));
     const parsedIntPrice = parseInt(priceWithoutComma, 10);
@@ -343,6 +348,7 @@ export class ProductService {
         status,
         description: [detail],
         category_name: category,
+        detailImgs,
         inventory: Number(inventory),
         manufacturer,
         discountPrice: parsedDiscountPrice,
