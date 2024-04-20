@@ -4,6 +4,7 @@ import {
   deleteSellingProducts,
   findProductByCategory,
   findProductByKeyword,
+  getCategory,
   getDiscountingProducts,
   getMostViewedProducts,
   getRecommendProduct,
@@ -12,7 +13,6 @@ import {
   updateProduct,
   updateProductStatus,
 } from './product_thunk';
-import { getCategory } from '../categories/categoryThunk';
 
 export const Products = createSlice({
   name: 'products',
@@ -24,11 +24,15 @@ export const Products = createSlice({
     watchedProducts: [],
     sellingList: [],
     loading: false,
+    selectedProductId: null,
     error: '',
   },
   reducers: {
     setSellinglist: (state, action) => {
       state.sellingList = action.payload;
+    },
+    setSelectedProduct: (state, action) => {
+      state.selectedProductId = action.payload;
     },
   },
   extraReducers: (bulider) => {
@@ -167,5 +171,5 @@ export const Products = createSlice({
       });
   },
 });
-export const { setSellinglist } = Products.actions;
+export const { setSellinglist, setSelectedProduct } = Products.actions;
 export default Products.reducer;

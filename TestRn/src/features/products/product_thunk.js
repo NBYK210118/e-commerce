@@ -3,6 +3,17 @@ import ProductApi from '../../services/product_api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DataService from '../../services/user_api';
 
+export const getCategory = createAsyncThunk('/products/getCategory', async ({ navigate }, { rejectWithValue }) => {
+  try {
+    const response = await ProductApi.getAllCategories(navigate);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    return rejectWithValue(error.message);
+  }
+});
+
 export const getMostViewedProducts = createAsyncThunk(
   '/products/getMostViewedProducts',
   async ({ navigation }, { rejectWithValue }) => {

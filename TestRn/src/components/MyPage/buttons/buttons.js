@@ -54,7 +54,7 @@ export const ManageButtons = () => {
         </View>
       </TouchableOpacity>
       <MoveButton name="edit" label="내 프로필 수정하기" navigate="Profile" />
-      <MoveButton name="th-list" label="내 판매상품 관리하기" navigate="My Products" />
+      <MoveButton name="th-list" label="내 판매상품 관리하기" navigate="My Sellings" />
       <MoveButton name="question-answer" label="내 문의사항(0)" navigate="Questions" />
     </>
   );

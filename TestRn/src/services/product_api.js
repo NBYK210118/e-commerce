@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { http } from './axios.configure';
 
-// SellingList 에서 선택된 상품의 정보 불러오기 -> PersonalStore 에선 getProductsWhileUpdate 와 같이 사용됨
+// 상품 정보 불러오기
 const findProduct = async (id) => {
   try {
+    console.log('id: ', id);
     const data = await http.get(`/product/?product_id=${id}`);
     return data;
   } catch (error) {

@@ -2,10 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { MyPage } from '../MyPage';
 import { MyProducts } from '../MyPage/myProducts';
-import { Likes } from '../Likes';
 import { AddProduct } from '../MyPage/manage/AddProduct';
-import { Stack } from '.';
 import * as ImagePicker from 'expo-image-picker';
+import { Stack } from '../common';
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -43,9 +42,8 @@ export const MyPageStackScreen = () => {
       <Stack.Screen name="Profile">
         {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
       </Stack.Screen>
-      <Stack.Screen name="My Products" component={MyProducts} options={{ headerShown: false }} />
-      <Stack.Screen name="Likes" component={Likes} />
-      <Stack.Screen name="Product" component={AddProduct} />
+      <Stack.Screen name="My Sellings" component={MyProducts} options={{ headerShown: false }} />
+      <Stack.Screen name="Manage" component={AddProduct} />
     </Stack.Navigator>
   );
 };

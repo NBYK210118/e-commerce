@@ -5,16 +5,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getRecommendProduct } from '../../features/products/product_thunk';
 import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle } from 'react-native-reanimated';
+import { setSelectedProduct } from '../../features/products/product_slice';
 
 export const RecommendProducts = () => {
   const loading = useSelector((val) => val.products.loading);
-  // const loading = true;
   const user = useSelector((val) => val.userAuth.user);
   const recommended_products = useSelector((val) => val.products.recommended);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const opacity = useSharedValue(0.5);
+
+  const handleMoveToProductDetail = (idx) => {
+    dispatch(setSelectedProduct(idx));
+    navigation.navigate('Product');
+  };
 
   useEffect(() => {
     if (!loading) {
@@ -52,7 +57,7 @@ export const RecommendProducts = () => {
                 </TouchableOpacity>
               ))
             : recommended_products.map((val, idx) => (
-                <TouchableOpacity key={idx} style={rc_style.box}>
+                <TouchableOpacity key={idx} style={rc_style.box} onPress={() => handleMoveToProductDetail(val.id)}>
                   <Image source={{ uri: val.images[0].imgUrl }} style={rc_style.img} />
                 </TouchableOpacity>
               ))}
