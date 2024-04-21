@@ -19,6 +19,7 @@ import { Likes } from './components/Likes';
 import { ShoppingCart } from './components/ShoppingCart';
 import { MyPageStackScreen } from './components/Tabs/MyPageStackScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import { blue1, blue2, skyblue } from './styles/common/colors';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
@@ -38,11 +39,11 @@ const ProductDetailStack = () => {
         component={ProductDetail}
         options={{
           headerShown: true,
-          headerLeft: () => <Button title="Back" onPress={() => navigation.goBack()} />,
+          headerTitle: '',
+          headerLeft: () => <AntIcon name={'left'} color={skyblue} size={24} onPress={() => navigation.goBack()} />,
           headerRight: () => (
             <>
-              <Button title="Home" onPress={() => navigation.navigate('Home')} />
-              <Button title="Cart" onPress={() => navigation.navigate('Shopping Cart')} />
+              <AntIcon name={'home'} color={skyblue} size={24} onPress={() => navigation.navigate('Home')} />
             </>
           ),
         }}

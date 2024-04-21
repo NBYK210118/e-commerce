@@ -101,12 +101,22 @@ model Store {
   sellingListId Int?
 }
 
+model Star{
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  score Int @default(0)
+}
+
 model User {
   id             Int             @id @default(autoincrement())
   firstName      String
   lastName       String
   email          String          @unique
   password       String
+  stars Star[]
   role UserRole @default(USER)
   seller Boolean @default(false)
   allowCurrentLocation Boolean @default(false)
@@ -144,6 +154,7 @@ model Product {
   description     String[]
   detailImgs      String[]
   manufacturer    String
+  stars Star[]
   category_name   String
   isDiscounting Boolean? @default(false)
   discountPrice Int? @default(0)
@@ -203,7 +214,6 @@ model BasketSummary {
   totalPrice    Int @default(0)
   totalDiscount Int @default(0)
   finalPay      Int @default(0)
-  @@map("cart_summary")
 }
 
 model Review {
