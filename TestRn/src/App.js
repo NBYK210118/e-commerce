@@ -19,7 +19,7 @@ import { Likes } from './components/Likes';
 import { ShoppingCart } from './components/ShoppingCart';
 import { MyPageStackScreen } from './components/Tabs/MyPageStackScreen';
 import { LinearGradient } from 'expo-linear-gradient';
-import { blue1, blue2, skyblue } from './styles/common/colors';
+import { skyblue } from './styles/common/colors';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
