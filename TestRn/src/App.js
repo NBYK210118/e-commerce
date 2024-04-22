@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Alert, Button, Pressable, StatusBar, StyleSheet } from 'react-native';
+import { Alert, Button, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useFocusEffect, useNavigation, useNavigationState } from '@react-navigation/native';
 import { MyTabs } from './components/Tabs';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -12,14 +12,14 @@ import { setAccessToGallery } from './features/auth/auth_slice';
 import { SignUp } from './components/SignIn-Up/SignUp';
 import { Stack, Tab } from './components/common';
 import { AntIcon, Material } from './components/icons/icons';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { HomeScreen } from './components/Home';
 import { ProductDetail } from './components/Home/ProductDetail';
 import { Likes } from './components/Likes';
 import { ShoppingCart } from './components/ShoppingCart';
 import { MyPageStackScreen } from './components/Tabs/MyPageStackScreen';
 import { LinearGradient } from 'expo-linear-gradient';
-import { skyblue } from './styles/common/colors';
+import { blue1, skyblue } from './styles/common/colors';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
@@ -39,7 +39,7 @@ const ProductDetailStack = () => {
         component={ProductDetail}
         options={{
           headerShown: true,
-          headerTitle: '',
+          headerTitle: 'CAVE',
           headerLeft: () => <AntIcon name={'left'} color={skyblue} size={24} onPress={() => navigation.goBack()} />,
           headerRight: () => (
             <>
@@ -96,7 +96,7 @@ const AppNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ size }) => <TabIcon route={route} size={size} />,
-        tabBarStyle: { overflow: 'hidden' },
+        tabBarStyle: { display: route.name === 'Product' ? 'none' : 'flex' },
         tabBarBackground: () => (
           <LinearGradient
             colors={['#0ea5e9', '#6366f1']}
@@ -145,5 +145,17 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1, // 전체 화면을 사용
     backgroundColor: 'black',
+  },
+  container: {
+    flexDirection: 'row',
+    height: 60,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  button: {
+    alignItems: 'center',
   },
 });

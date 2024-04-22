@@ -3,20 +3,7 @@ import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { light_green } from '../../styles/common/colors';
 import { useEffect } from 'react';
 
-export const MenuBar = ({ active = 0, setActive, setHeadStatus, menus = [], menuStyle }) => {
-  useEffect(() => {
-    if (menus.length > 0) {
-      setActive(active);
-      menus[active].value = withTiming(3, { duration: 300 });
-      setHeadStatus(
-        [...Array(menus.length)].reduce((acc, _, idx) => {
-          acc[idx] = false;
-          return acc;
-        }, {})
-      );
-    } else throw new Error('menus 비어있음');
-  }, []);
-
+export const MenuBar = ({ active = 0, setActive, setHeadStatus, menus = [] }) => {
   const handlePressHeaderMenu = (index) => {
     setHeadStatus((prevState) => {
       let newState = { ...prevState };

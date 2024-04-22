@@ -278,7 +278,7 @@ export const MyProducts = () => {
   };
 
   const handleUpdateBtn = (product_id) => {
-    navigation.navigate('Product', { product_id });
+    navigation.navigate('Manage', { product_id });
   };
 
   return (

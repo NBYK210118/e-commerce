@@ -44,7 +44,7 @@ export const AddProduct = ({ route }) => {
           setCompany(data.manufacturer);
           setProductPrice(data.price.toLocaleString('ko-kr'));
           setDetailImgs(data.detailImgs);
-          console.log(data);
+          setDetail(data.description[0]);
         }
       });
     }

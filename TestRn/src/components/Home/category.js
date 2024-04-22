@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { primary_gray } from '../../styles/common/colors';
 import Animated, { withRepeat, withTiming, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { getCategory } from '../../features/products/product_thunk';
+import { Pagination } from '../pagination';
 const { width } = Dimensions.get('window');
 
 export const Categories = () => {
@@ -80,13 +81,13 @@ export const Categories = () => {
                 ))}
               </View>
             ))
-          : pages.map((val, idx) => (
+          : pages.map((page, idx) => (
               <View key={idx} style={categories_style.page}>
-                {val.map((category, idx) => (
+                {page.map((category, idx) => (
                   <TouchableOpacity
                     key={idx}
                     style={categories_style.categoryBox}
-                    onPress={() => navigation.navigate('Sales', { screen: 'SalesList' })}
+                    onPress={() => navigation.navigate('ProductList', { category_name: category.name })}
                   >
                     <Image source={{ uri: category.imgUrl }} style={categories_style.image} />
                     <Text style={categories_style.categoryText}>{category.name}</Text>
@@ -95,19 +96,7 @@ export const Categories = () => {
               </View>
             ))}
       </ScrollView>
-      {pages.length > 0 && (
-        <View style={categories_style.paginationContainer}>
-          {pages.map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                categories_style.paginationDot,
-                currentPage === idx ? categories_style.activeDot : categories_style.inactiveDot,
-              ]}
-            />
-          ))}
-        </View>
-      )}
+      <Pagination contents={pages} current={currentPage} />
     </View>
   );
 };

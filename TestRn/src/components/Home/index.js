@@ -27,7 +27,20 @@ export const HomeScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
   const navigation = useNavigation();
   const scrollY = useSharedValue(0);
-  const HEADER_HEIGHT = 50;
+
+  useEffect(() => {
+    if (headStatus.length > 0) {
+      setActive(active);
+      headStatus[active].value = withTiming(3, { duration: 300 });
+      setHeadStatus(
+        [...Array(headStatus.length)].reduce((acc, _, idx) => {
+          acc[idx] = false;
+          return acc;
+        }, {})
+      );
+    }
+  }, []);
+
   // 스크롤 핸들러 정의
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {

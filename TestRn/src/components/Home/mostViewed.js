@@ -6,6 +6,7 @@ import { useCallback, useEffect } from 'react';
 import { gray1, primary_gray } from '../../styles/common/colors';
 import { FontAwesome } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
+import { setSelectedProduct } from '../../features/products/product_slice';
 
 export const MostViewedProducts = () => {
   const mostviewed_products = useSelector((val) => val.products.mostViewed);
@@ -13,6 +14,11 @@ export const MostViewedProducts = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const opacity = useSharedValue(0.5);
+
+  const handleMoveToProductDetail = (idx) => {
+    dispatch(setSelectedProduct(idx));
+    navigation.navigate('Product');
+  };
 
   useEffect(() => {
     if (!loading) {
@@ -45,7 +51,7 @@ export const MostViewedProducts = () => {
               </TouchableOpacity>
             ))
           : mostviewed_products.map((val, idx) => (
-              <TouchableOpacity key={idx} style={mv_style.box}>
+              <TouchableOpacity key={idx} style={mv_style.box} onPress={() => handleMoveToProductDetail(val.id)}>
                 <Image source={{ uri: val.images[0]?.imgUrl }} style={mv_style.img} />
                 <View
                   style={{ overflow: 'hidden', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
