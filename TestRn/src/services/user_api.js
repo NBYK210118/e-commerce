@@ -26,7 +26,7 @@ const signIn = async (form) => {
   }
 };
 
-const signUp = async (form, navigation) => {
+const signUp = async (form) => {
   try {
     const data = await http.post('/user/signup', form);
     return data;
@@ -35,13 +35,11 @@ const signUp = async (form, navigation) => {
       switch (error.response.status) {
         case 500:
           alert('서버 에러');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
+          await AsyncStorage.clear(); // 데이터 클리어
           break;
         case 400:
           alert('잘못된 요청!');
-          AsyncStorage.clear(); // 데이터 클리어
-          navigation.navigate('Home'); // 홈으로 이동
+          await AsyncStorage.clear(); // 데이터 클리어
           break;
         default:
           console.log('Unknown error', error);

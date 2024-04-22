@@ -3,7 +3,7 @@ import { Alert, Button, Pressable, StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer, useFocusEffect, useNavigation, useNavigationState } from '@react-navigation/native';
 import { MyTabs } from './components/Tabs';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { getUserLocation } from './features/auth/auth_thunk';
+import { getUserLocation, logout } from './features/auth/auth_thunk';
 import { Login } from './components/SignIn-Up/Login';
 import { store } from './app/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -62,9 +62,9 @@ const AppNavigator = () => {
   const handleLogOut = async () => {
     try {
       dispatch(logout());
-      Alert.alert('로그아웃 성공', '성공적으로 로그아웃되었습니다!');
+      Alert.alert('로그아웃', '성공적으로 로그아웃되었습니다!');
     } catch (error) {
-      Alert.alert('로그아웃 에러', '로그아웃 실패! 다시 시도해주세요');
+      Alert.alert('로그아웃', '죄송합니다. 다시 시도해주세요');
     }
   };
 

@@ -18,11 +18,20 @@ export const signIn = createAsyncThunk('shopping/login', async (data, { rejectWi
         return data;
       }
     } else {
-      throw new Error('로그인 실패');
+      alert('존재하지 않는 계정이거나 잘못된 비밀번호입니다');
     }
   } catch (error) {
-    console.log('Error:', error);
-    return rejectWithValue(error.response?.data || 'An error occurred');
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
   }
 });
 
@@ -31,7 +40,17 @@ export const logout = createAsyncThunk('shopping/logout', async (_, rejectWithVa
     await AsyncStorage.clear();
     return {};
   } catch (error) {
-    return rejectWithValue('로컬 스토리지 비우기 실패!');
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
   }
 });
 
@@ -58,7 +77,17 @@ export const getUserLocation = createAsyncThunk('shopping/getUserLocation', asyn
       return addr;
     }
   } catch (error) {
-    return rejectWithValue(error.message);
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
   }
 });
 
@@ -73,7 +102,17 @@ export const verifyToken = createAsyncThunk(
         return 'Fail';
       }
     } catch (error) {
-      console.log('Error: ', error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );
@@ -85,7 +124,48 @@ export const updateProfile = createAsyncThunk(
       const response = await DataService.updateProfile(token, data, navigation);
       return response.data;
     } catch (error) {
-      console.log('Error: ', error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );
+
+export const signUp = createAsyncThunk('shopping/signUp', async ({ data, navigation }, { rejectWithValue }) => {
+  try {
+    const response = await DataService.signUp(data);
+    switch (response.status) {
+      case 200:
+        alert(`회원가입을 환영합니다!`);
+        return response.data;
+      case 500:
+        alert('서버 에러');
+      case 400:
+        alert('잘못된 요청입니다');
+      case 409:
+        console.log('signup status: ', response.status);
+      default:
+        console.log('signup status: ', response.status);
+    }
+  } catch (error) {
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
+  }
+});

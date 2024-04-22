@@ -10,7 +10,17 @@ export const getCategory = createAsyncThunk('/products/getCategory', async ({ na
       return response.data;
     }
   } catch (error) {
-    return rejectWithValue(error.message);
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
   }
 });
 
@@ -23,11 +33,17 @@ export const getMostViewedProducts = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      console.error('Error: ', error);
-      if (error.response && error.response.data) {
-        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
       }
-      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -42,11 +58,17 @@ export const getSellinglist = createAsyncThunk(
       }
       return rejectWithValue('No products data available');
     } catch (error) {
-      console.error('Error: ', error);
-      if (error.response && error.response.data) {
-        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
       }
-      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -58,11 +80,17 @@ export const getDiscountingProducts = createAsyncThunk(
       const response = await ProductApi.getDiscountingProducts(navigation);
       return response.data;
     } catch (error) {
-      console.error('Error: ', error);
-      if (error.response && error.response.data) {
-        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
       }
-      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -74,11 +102,17 @@ export const getRecommendProduct = createAsyncThunk('products/getRecommendProduc
       return response.data;
     }
   } catch (error) {
-    console.error('Error: ', error);
-    if (error.response && error.response.data) {
-      return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
     }
-    return rejectWithValue({ message: 'An unexpected error occured' });
   }
 });
 
@@ -91,11 +125,17 @@ export const getWatchedProducts = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      console.error('Error: ', error);
-      if (error.response && error.response.data) {
-        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
       }
-      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -109,11 +149,17 @@ export const updateProductStatus = createAsyncThunk(
         return response.data.products;
       }
     } catch (error) {
-      console.error('Error: ', error);
-      if (error.response && error.response.data) {
-        return rejectWithValue({ message: error.response.data.message || 'An unexpected error occured' });
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
       }
-      return rejectWithValue({ message: 'An unexpected error occured' });
     }
   }
 );
@@ -127,7 +173,17 @@ export const deleteSellingProducts = createAsyncThunk(
         return response.data.products;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );
@@ -139,7 +195,17 @@ export const addProduct = createAsyncThunk('products/addProduct', async ({ token
       return response.data.products;
     }
   } catch (error) {
-    return rejectWithValue(error);
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occurred',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
   }
 });
 
@@ -152,7 +218,17 @@ export const updateProduct = createAsyncThunk(
         return response.data.products;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );
@@ -166,7 +242,17 @@ export const findProductByKeyword = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );
@@ -180,7 +266,17 @@ export const findProductByCategory = createAsyncThunk(
         return response.data;
       }
     } catch (error) {
-      return rejectWithValue(error);
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
     }
   }
 );

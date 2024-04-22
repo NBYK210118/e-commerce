@@ -57,8 +57,14 @@ export class UserController {
   }
 
   @Post('/signup')
-  async signUp(@Body() data: signUpDto): Promise<User> {
-    return this.userService.signUp(data);
+  async signUp(
+    @Body() data: signUpDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const result = await this.userService.signUp(data);
+
+    if (result) return res.status(200).json(result);
+    else return res.status(500);
   }
 
   @Post('/signin')

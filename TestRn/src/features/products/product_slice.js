@@ -45,7 +45,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getCategory.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(getMostViewedProducts.pending, (state) => {
@@ -56,7 +56,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getMostViewedProducts.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(getDiscountingProducts.pending, (state) => {
@@ -67,7 +67,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getDiscountingProducts.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(getRecommendProduct.pending, (state) => {
@@ -78,7 +78,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getRecommendProduct.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(getWatchedProducts.pending, (state) => {
@@ -89,7 +89,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(getWatchedProducts.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(getSellinglist.pending, (state) => {
@@ -101,7 +101,7 @@ export const Products = createSlice({
       })
       .addCase(getSellinglist.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       .addCase(updateProductStatus.pending, (state) => {
         state.loading = true;
@@ -111,7 +111,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(updateProductStatus.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(deleteSellingProducts.pending, (state) => {
@@ -123,7 +123,7 @@ export const Products = createSlice({
       })
       .addCase(deleteSellingProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       .addCase(addProduct.pending, (state) => {
         state.loading = true;
@@ -133,7 +133,7 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(addProduct.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(updateProduct.pending, (state) => {
@@ -145,7 +145,7 @@ export const Products = createSlice({
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       .addCase(findProductByKeyword.pending, (state) => {
         state.loading = true;
@@ -156,7 +156,7 @@ export const Products = createSlice({
       })
       .addCase(findProductByKeyword.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       .addCase(findProductByCategory.pending, (state) => {
         state.loading = true;
@@ -167,7 +167,7 @@ export const Products = createSlice({
       })
       .addCase(findProductByCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });

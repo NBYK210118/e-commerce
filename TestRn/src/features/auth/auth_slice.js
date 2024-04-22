@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getUserLocation, logout, signIn, updateProfile, verifyToken } from './auth_thunk';
+import { getUserLocation, logout, signIn, signUp, updateProfile, verifyToken } from './auth_thunk';
 
 export const UserAuth = createSlice({
   name: 'userAuth',
@@ -43,7 +43,7 @@ export const UserAuth = createSlice({
         state.loading = false;
       })
       .addCase(signIn.rejected, (state, action) => {
-        state.error = action.payload.access_token;
+        state.error = action.payload;
         state.loading = false;
       })
       .addCase(updateProfile.pending, (state) => {
@@ -67,6 +67,17 @@ export const UserAuth = createSlice({
         state.address = '';
         state.error = '';
         state.user = '';
+      })
+      .addCase(signUp.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signUp.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(signUp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

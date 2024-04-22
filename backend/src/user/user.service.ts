@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Product, Profile, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -106,9 +110,18 @@ export class UserService {
   }
 
   // 회원가입
-  async signUp(data: signUpDto): Promise<User> {
+  async signUp(data: signUpDto): Promise<User | String> {
     const { email, password, firstName, lastName } = data;
     const hash = await bcrypt.hash(password, 10);
+
+    const alreadyExist = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (alreadyExist) {
+      throw new ConflictException('이미 존재하는 계정');
+    }
+
     const signup_result = await this.prisma.user.create({
       data: {
         email,

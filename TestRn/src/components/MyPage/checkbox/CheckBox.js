@@ -1,5 +1,4 @@
 import Checkbox from 'expo-checkbox';
-import React, { useCallback, useEffect, useState } from 'react';
 
 export const CheckBox = ({ item, handleChecked, checkStatus }) => {
   return (

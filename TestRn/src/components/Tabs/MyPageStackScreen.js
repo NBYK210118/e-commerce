@@ -5,6 +5,7 @@ import { MyProducts } from '../MyPage/myProducts';
 import { AddProduct } from '../MyPage/manage/AddProduct';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack } from '../common';
+import { MyProfile } from '../MyPage/myProfile';
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
