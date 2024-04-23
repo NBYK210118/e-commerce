@@ -9,6 +9,7 @@ import { LikeService } from './like.service';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/user/get-user.decorator';
 import { User } from '@prisma/client';
+import { LikeState } from './like.interface';
 
 @Controller('like')
 export class LikeController {
@@ -16,9 +17,8 @@ export class LikeController {
 
   @UseGuards(AuthGuard())
   @Post('/islikeit')
-  async updatelikeProduct(@GetUser() user: User, @Body('likes') data: string) {
-    const parsedData = JSON.parse(data);
-    const result = await this.likeService.updatelikeProduct(user, parsedData);
+  async updatelikeProduct(@GetUser() user: User, @Body() data: LikeState) {
+    const result = await this.likeService.updatelikeProduct(user, data);
     return result;
   }
 

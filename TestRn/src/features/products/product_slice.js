@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addProduct,
   deleteSellingProducts,
+  findProduct,
   findProductByCategory,
   findProductByKeyword,
   getCategory,
@@ -11,12 +12,14 @@ import {
   getSellinglist,
   getWatchedProducts,
   updateProduct,
+  updateProductLike,
   updateProductStatus,
 } from './product_thunk';
 
 export const Products = createSlice({
   name: 'products',
   initialState: {
+    currentProduct: null,
     categories: [],
     mostViewed: [],
     discounting: [],
@@ -147,6 +150,17 @@ export const Products = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(findProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(findProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProduct = action.payload;
+      })
+      .addCase(findProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(findProductByKeyword.pending, (state) => {
         state.loading = true;
       })
@@ -166,6 +180,17 @@ export const Products = createSlice({
         state.loading = false;
       })
       .addCase(findProductByCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateProductLike.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateProductLike.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentProduct = action.payload;
+      })
+      .addCase(updateProductLike.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

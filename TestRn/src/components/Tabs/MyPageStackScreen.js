@@ -6,6 +6,7 @@ import { AddProduct } from '../MyPage/manage/AddProduct';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack } from '../common';
 import { MyProfile } from '../MyPage/myProfile';
+import { updateProfile } from '../../features/auth/auth_thunk';
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -19,7 +20,7 @@ export const MyPageStackScreen = () => {
         navigation.navigate('My Page');
       } catch (error) {
         console.log('프로필 업데이트 오류');
-        navigation.goBack();
+        navigation.navigate('My Page');
       }
     }
   };

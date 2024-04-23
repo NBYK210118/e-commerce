@@ -199,6 +199,7 @@ export class UserService {
       email,
       address,
       store,
+      nickname,
       phoneNumber,
       imgUrl,
       isPersonal,
@@ -206,11 +207,11 @@ export class UserService {
       currentAddr,
       userCurrentLocation,
     } = data;
+    console.log(data);
 
     const filteredAddresses = address.filter((addr) => addr !== currentAddr);
     const updatedAddresses = [currentAddr, ...filteredAddresses];
     const uniqueAddresses = Array.from(new Set(updatedAddresses));
-    console.log('uniqueAddresses: ', uniqueAddresses);
 
     if (isPersonal) {
       if (user.storeId !== null) {
@@ -274,6 +275,7 @@ export class UserService {
     await this.prisma.profile.update({
       where: { userId: user.id },
       data: {
+        nickname,
         address: { set: uniqueAddresses },
         phoneNumber,
         currentAddress: currentAddr, // 유저가 설정한 주소

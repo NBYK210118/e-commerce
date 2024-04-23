@@ -1,17 +1,19 @@
 import { StyleSheet, View } from 'react-native';
 
 export const Pagination = ({ contents = [], current }) => {
-  return (
-    <>
-      {contents.length > 0 && (
-        <View style={styles.paginationContainer}>
-          {contents.map((_, idx) => (
-            <View key={idx} style={[styles.paginationDot, current === idx ? styles.activeDot : styles.inactiveDot]} />
-          ))}
-        </View>
-      )}
-    </>
-  );
+  if (contents !== null && contents.length > 0) {
+    return (
+      <>
+        {contents.length > 0 && (
+          <View style={styles.paginationContainer}>
+            {contents.map((_, idx) => (
+              <View key={idx} style={[styles.paginationDot, current === idx ? styles.activeDot : styles.inactiveDot]} />
+            ))}
+          </View>
+        )}
+      </>
+    );
+  }
 };
 
 const styles = StyleSheet.create({

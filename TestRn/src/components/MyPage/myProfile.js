@@ -27,7 +27,6 @@ export const MyProfile = ({ onSubmit, onChange }) => {
   const [nickname, setNickName] = useState('');
   const [registeredAddress, setRegisteredAddress] = useState([]);
   const [address, setAddress] = useState([]);
-  const [addressIdx, setAddressIdx] = useState(0);
   const [phoneNumber, setPhone] = useState('');
   const [currentWilling, setCurrentWilling] = useState(false);
   const [personalOrCompany, setPersonalOrCompany] = useState(true);

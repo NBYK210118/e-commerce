@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { LikeState } from './like.interface';
 
 @Injectable()
 export class LikeService {
   constructor(private prisma: PrismaService) {}
 
-  async updatelikeProduct(user: User, data: Object) {
+  async updatelikeProduct(user: User, data: LikeState) {
+    console.log(data);
     const products_states = { ...data };
     const checking = Object.keys(products_states).filter(
       (val) => products_states[val] === true,
@@ -60,6 +62,14 @@ export class LikeService {
           data: { products: { disconnect: { id } } },
         });
       }
+    }
+
+    if (Object.keys(products_states).length === 1) {
+      const product = await this.prisma.product.findUnique({
+        where: { id: Number(Object.keys(products_states)[0]) },
+        include: { likedBy: true, images: true },
+      });
+      return product;
     }
 
     const result = await this.prisma.wishList.findUnique({

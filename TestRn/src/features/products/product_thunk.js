@@ -280,3 +280,48 @@ export const findProductByCategory = createAsyncThunk(
     }
   }
 );
+
+export const findProduct = createAsyncThunk('products/findProduct', async ({ product_id }, { rejectWithValue }) => {
+  try {
+    const response = await ProductApi.findProduct(product_id);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error.response) {
+      return rejectWithValue({
+        message: error.response.data.message || 'Unknown error occured',
+        status: error.response.status,
+      });
+    } else {
+      return rejectWithValue({
+        message: error.message || 'Network error',
+        status: 500,
+      });
+    }
+  }
+});
+
+export const updateProductLike = createAsyncThunk(
+  'products/updateProductLike',
+  async ({ token, likes }, { rejectWithValue }) => {
+    try {
+      const response = await ProductApi.updatelikeProduct(token, likes);
+      if (response.data) {
+        return response.data;
+      }
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue({
+          message: error.response.data.message || 'Unknown error occurred',
+          status: error.response.status,
+        });
+      } else {
+        return rejectWithValue({
+          message: error.message || 'Network error',
+          status: 500,
+        });
+      }
+    }
+  }
+);

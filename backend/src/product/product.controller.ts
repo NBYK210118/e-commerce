@@ -24,7 +24,6 @@ export class ProductController {
 
   @Get('')
   async getProduct(@Query('product_id') product_id: string): Promise<Product> {
-    console.log(product_id);
     if (!product_id) {
       return;
     }

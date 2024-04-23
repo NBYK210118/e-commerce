@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import { Alert, Button, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { NavigationContainer, useFocusEffect, useNavigation, useNavigationState } from '@react-navigation/native';
-import { MyTabs } from './components/Tabs';
+import { Alert, StatusBar, StyleSheet } from 'react-native';
+import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { getUserLocation, logout } from './features/auth/auth_thunk';
 import { Login } from './components/SignIn-Up/Login';
@@ -12,14 +11,14 @@ import { setAccessToGallery } from './features/auth/auth_slice';
 import { SignUp } from './components/SignIn-Up/SignUp';
 import { Stack, Tab } from './components/common';
 import { AntIcon, Material } from './components/icons/icons';
-import { AntDesign, FontAwesome } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { HomeScreen } from './components/Home';
-import { ProductDetail } from './components/Home/ProductDetail';
 import { Likes } from './components/Likes';
 import { ShoppingCart } from './components/ShoppingCart';
 import { MyPageStackScreen } from './components/Tabs/MyPageStackScreen';
 import { LinearGradient } from 'expo-linear-gradient';
-import { blue1, skyblue } from './styles/common/colors';
+import { skyblue } from './styles/common/colors';
+import { ProductDetail } from './components/ProductDetail';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();

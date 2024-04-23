@@ -46,7 +46,7 @@ export const RecommendProducts = () => {
   return (
     <View style={rc_style.container}>
       <Text style={rc_style.header}>
-        <Text style={rc_style.header_username}>{user ? user.profile.nickname : '게스트님'}</Text>님 추천 상품
+        <Text style={rc_style.header_username}>{user ? user.profile.nickname : '게스트'}</Text>님 추천 상품
       </Text>
       {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEventThrottle={16}>

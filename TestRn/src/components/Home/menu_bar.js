@@ -1,7 +1,6 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { light_green } from '../../styles/common/colors';
-import { useEffect } from 'react';
 
 export const MenuBar = ({ active = 0, setActive, setHeadStatus, menus = [] }) => {
   const handlePressHeaderMenu = (index) => {
@@ -18,6 +17,7 @@ export const MenuBar = ({ active = 0, setActive, setHeadStatus, menus = [] }) =>
       return newState;
     });
   };
+
   return (
     <ScrollView
       horizontal={true}

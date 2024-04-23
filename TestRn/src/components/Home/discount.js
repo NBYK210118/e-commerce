@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getDiscountingProducts } from '../../features/products/product_thunk';
 import { primary_gray } from '../../styles/common/colors';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
+import { setSelectedProduct } from '../../features/products/product_slice';
 
 export const DiscountProducts = () => {
   const loading = useSelector((val) => val.products.loading);
@@ -37,6 +38,11 @@ export const DiscountProducts = () => {
     }, [dispatch, navigation])
   );
 
+  const handleMoveToDetail = (product_id) => {
+    navigation.navigate('Product');
+    dispatch(setSelectedProduct(product_id));
+  };
+
   return (
     <View style={discount_style.container}>
       <Text style={discount_style.header}>지금 특별 할인!</Text>
@@ -65,7 +71,7 @@ export const DiscountProducts = () => {
               </TouchableOpacity>
             ))
           : discounting_products.map((val, idx) => (
-              <TouchableOpacity key={idx} style={discount_style.box}>
+              <TouchableOpacity key={idx} style={discount_style.box} onPress={() => handleMoveToDetail(val.id)}>
                 <Image source={{ uri: val.images[0].imgUrl }} style={discount_style.img} />
                 <Text numberOfLines={1} ellipsizeMode="tail" style={discount_style.name}>
                   {val.name}
@@ -93,6 +99,7 @@ const discount_style = StyleSheet.create({
   container: {
     marginTop: 20,
     marginHorizontal: 10,
+    paddingBottom: 40,
     display: 'flex',
     flexDirection: 'column',
   },

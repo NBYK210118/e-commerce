@@ -4,16 +4,11 @@ import { http } from './axios.configure';
 // 상품 정보 불러오기
 const findProduct = async (id) => {
   try {
-    console.log('id: ', id);
     const data = await http.get(`/product/?product_id=${id}`);
     return data;
   } catch (error) {
     if (error.response !== undefined) {
       switch (error.response.status) {
-        case 401:
-          alert('Unauthorized');
-          await AsyncStorage.clear();
-          break;
         case 500:
           alert('서버 에러');
           break;
@@ -182,25 +177,30 @@ const categoriesItem = async (token, category) => {
 };
 
 // 상품 페이지에서의 좋아요 상호작용 업데이트
-const updatelikeProduct = async (token, likes, navigate) => {
+const updatelikeProduct = async (token, likes) => {
   try {
     const data = await http.post('/like/islikeit', likes, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      alert('Unauthorized');
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          await AsyncStorage.clear();
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
