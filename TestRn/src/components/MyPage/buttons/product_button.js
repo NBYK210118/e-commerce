@@ -29,7 +29,7 @@ export const ProductButton = ({ navigation, deleteProducts }) => {
           <TouchableOpacity style={[styles.bottom_Button, styles.delete]} onPress={deleteProducts}>
             <Text style={styles.addButtonText}>상품 판매취소</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.bottom_Button]} onPress={() => navigation.navigate('Product')}>
+          <TouchableOpacity style={[styles.bottom_Button]} onPress={() => navigation.navigate('Manage')}>
             <Text style={styles.addButtonText}>상품 추가</Text>
           </TouchableOpacity>
           <TouchableOpacity

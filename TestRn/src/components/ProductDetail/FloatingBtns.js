@@ -1,5 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { primary_blue } from '../../styles/common/colors';
 
 export const FloatingBtns = ({ currentProduct, heart, onPress }) => {
   return (
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgb(59 130 246)',
+    backgroundColor: primary_blue,
     borderRadius: 5,
   },
 });

@@ -1,4 +1,4 @@
-import { Animated, Dimensions, PanResponder, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +22,6 @@ import SearchBar from './SearchBar';
 import ProductApi from '../../services/product_api';
 import { setSellinglist } from '../../features/products/product_slice';
 import { HorizontalCategory } from './HorizontalCategory';
-import { setOptionsVisible } from '../../features/auth/auth_slice';
 
 export const MyProducts = () => {
   const token = useSelector((state) => state.userAuth.token);

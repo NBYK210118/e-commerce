@@ -2,30 +2,30 @@ import { useCallback, useEffect } from 'react';
 import { Alert, StatusBar, StyleSheet } from 'react-native';
 import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { getUserLocation, logout } from './features/auth/auth_thunk';
-import { Login } from './components/SignIn-Up/Login';
-import { store } from './app/store';
+import { getUserLocation, logout } from './src/features/auth/auth_thunk';
+import { Login } from './src/components/SignIn-Up/Login';
+import { store } from './src/app/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
-import { setAccessToGallery } from './features/auth/auth_slice';
-import { SignUp } from './components/SignIn-Up/SignUp';
-import { Stack, Tab } from './components/common';
-import { AntIcon, Material } from './components/icons/icons';
+import { setAccessToGallery } from './src/features/auth/auth_slice';
+import { SignUp } from './src/components/SignIn-Up/SignUp';
+import { Stack, Tab } from './src/components/common';
+import { AntIcon, Material } from './src/components/icons/icons';
 import { AntDesign } from '@expo/vector-icons';
-import { HomeScreen } from './components/Home';
-import { Likes } from './components/Likes';
-import { ShoppingCart } from './components/ShoppingCart';
-import { MyPageStackScreen } from './components/Tabs/MyPageStackScreen';
+import { HomeScreen } from './src/components/Home';
+import { Likes } from './src/components/Likes';
+import { ShoppingCart } from './src/components/ShoppingCart';
+import { MyPageStackScreen } from './src/components/Tabs/MyPageStackScreen';
 import { LinearGradient } from 'expo-linear-gradient';
-import { skyblue } from './styles/common/colors';
-import { ProductDetail } from './components/ProductDetail';
+import { skyblue } from './src/styles/common/colors';
+import { ProductDetail } from './src/components/ProductDetail';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
-      const showHeader = navigation.setOptions({ headerShown: false }); // ProductDetail에 포커스 시 헤더 숨김
+      const showHeader = navigation.setOptions({ headerShown: false });
 
       return () => showHeader;
     }, [])

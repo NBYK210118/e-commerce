@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-
+export const primary_blue = 'rgb(59 130 246)';
 export const blue1 = '#0067a3';
 export const blue2 = 'rgba(0,50,150,1)';
 export const skyblue = 'rgba(10,150,240,1)';

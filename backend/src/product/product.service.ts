@@ -187,8 +187,7 @@ export class ProductService {
     if (max_length > 0) {
       for (let i = 0; i < max_length; i++) {
         const random_id =
-          Math.floor(Math.random() * (max_length - min_length + 1)) +
-          min_length;
+          Math.floor(Math.random() * (max_length - 3 + 1)) + min_length;
         numbers.push(random_id);
       }
     }

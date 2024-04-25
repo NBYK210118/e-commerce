@@ -3,15 +3,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { findProduct } from '../../features/products/product_thunk';
+import ProductApi from '../../services/product_api';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 
 export const useProductFetch = () => {
   const [heart, setHeart] = useState({});
   const { selectedProductId, currentProduct } = useSelector((state) => state.products);
-  const { user, token } = useSelector((state) => state.userAuth);
+  const [isUsers, setIsUsers] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const { user, token } = useSelector((state) => state.userAuth);
   const [currentPage, setCurrentPage] = useState(0);
-  const [activeMenu, setActiveMenu] = useState({});
+  const [activeMenu, setActiveMenu] = useState(0);
+  const borderWidths = [...Array(3)].map(() => useSharedValue(0));
   const { width } = Dimensions.get('window');
   const handleHorizontalScroll = (event) => {
     // 현재 x 좌표 얻기
@@ -23,9 +27,13 @@ export const useProductFetch = () => {
 
   const fetchDetail = useCallback(() => {
     if (selectedProductId) {
-      console.log(selectedProductId);
       try {
         dispatch(findProduct({ product_id: selectedProductId }));
+        if (token) {
+          ProductApi.isUsersProduct(token, selectedProductId).then((response) => {
+            setIsUsers(response.data);
+          });
+        }
       } catch (error) {
         if (error.response) {
           switch (error.response.status) {
@@ -37,6 +45,15 @@ export const useProductFetch = () => {
       }
     }
   }, [selectedProductId]);
+
+  useEffect(() => {
+    borderWidths[activeMenu].value = withTiming(3, { duration: 500 });
+  }, []);
+
+  const handlePress = (index) => {
+    setActiveMenu(index);
+    borderWidths[index].value = withTiming(3, { duration: 500 });
+  };
 
   useEffect(() => {
     fetchDetail();
@@ -89,5 +106,12 @@ export const useProductFetch = () => {
     handleHeart,
     handleHorizontalScroll,
     heart,
+    isUsers,
+    handlePress,
+    borderWidths,
+    activeMenu,
+    navigation,
+    user,
+    token,
   };
 };
