@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import { ImageViewer } from './ImageViewer';
 import Animated from 'react-native-reanimated';
 import { Pagination } from '../pagination';
@@ -7,8 +7,8 @@ import { ProductInfo } from './ProductInfo';
 import { useProductFetch } from './useProductFetch';
 import { primary_gray } from '../../styles/common/colors';
 import { TouchMenu } from './touch_menu';
-import { AntDesign } from '@expo/vector-icons';
 import { CreateReview } from './CreateReview';
+import { AntDesign } from '@expo/vector-icons';
 
 export const ProductDetail = () => {
   const {

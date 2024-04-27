@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TestRn",
-    "slug": "TestRn",
+    "name": "frontend",
+    "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/Original_Logo.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/Original_Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,8 +23,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "favicon": "./assets/favicon.png"
     }
   }
 }

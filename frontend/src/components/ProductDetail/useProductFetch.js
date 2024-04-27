@@ -9,18 +9,17 @@ import { useSharedValue, withTiming } from 'react-native-reanimated';
 export const useProductFetch = () => {
   const [heart, setHeart] = useState({});
   const { selectedProductId, currentProduct } = useSelector((state) => state.products);
+  const { user, token } = useSelector((state) => state.userAuth);
   const [isUsers, setIsUsers] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { user, token } = useSelector((state) => state.userAuth);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeMenu, setActiveMenu] = useState(0);
   const borderWidths = [...Array(3)].map(() => useSharedValue(0));
   const { width } = Dimensions.get('window');
+
   const handleHorizontalScroll = (event) => {
-    // 현재 x 좌표 얻기
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    // x 좌표값을 너비로 나누고 반올림 -> 몇 번째 페이지인지에 대한 값 도출
     const currentPageIndex = Math.round(contentOffsetX / width);
     setCurrentPage(currentPageIndex);
   };
