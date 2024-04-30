@@ -1,6 +1,6 @@
 import Checkbox from 'expo-checkbox';
 
-export const CheckBox = ({ item, handleChecked, checkStatus }) => {
+const CheckBox = ({ item, handleChecked, checkStatus }) => {
   return (
     <Checkbox
       value={checkStatus[item.id]}

@@ -8,12 +8,11 @@ import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle } fr
 import { setSelectedProduct } from '../../features/products/product_slice';
 
 export const RecommendProducts = () => {
-  const loading = useSelector((val) => val.products.loading);
-  const user = useSelector((val) => val.userAuth.user);
-  const recommended_products = useSelector((val) => val.products.recommended);
+  const loading = useSelector((state) => state.products.loading);
+  const user = useSelector((state) => state.userAuth.user);
+  const recommended_products = useSelector((state) => state.products.recommended);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
   const opacity = useSharedValue(0.5);
 
   const handleMoveToProductDetail = (idx) => {

@@ -52,10 +52,22 @@ export class ReviewService {
     // 결과 리턴
     const result = await this.prisma.review.findFirst({
       where: { productId: Number(productId), userId: user.id },
+      include: { user: { include: { profile: true } } },
     });
 
-    console.log('review result: ', result);
-
     return result;
+  }
+
+  async checkUserAlreadyReview(
+    user: User,
+    productId: number,
+  ): Promise<Boolean | Review> {
+    const found = await this.prisma.review.findFirst({
+      where: { userId: user.id, productId },
+      include: { user: { include: { profile: true } } },
+    });
+
+    if (found) return found;
+    else false;
   }
 }

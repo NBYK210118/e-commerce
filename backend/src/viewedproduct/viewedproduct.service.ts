@@ -11,6 +11,7 @@ export class ViewedproductService {
       where: { userId: user.id },
       include: {
         products: {
+          where: { status: { not: '보류중' } },
           include: { images: true, likedBy: true },
         },
       },
@@ -22,6 +23,7 @@ export class ViewedproductService {
 
   async mostViewedProducts(): Promise<Product[]> {
     const result = await this.prisma.product.findMany({
+      where: { status: { not: '보류중' } },
       orderBy: {
         viewed_count: 'desc',
       },

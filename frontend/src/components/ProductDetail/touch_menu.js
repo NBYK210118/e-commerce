@@ -1,78 +1,52 @@
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { primary_gray } from '../../styles/common/colors';
 
 export const TouchMenu = ({ currentProduct, onPress, activeMenu, borderWidths }) => {
   if (currentProduct) {
+    const animatedStyle = (idx) => {
+      return useAnimatedStyle(() => ({
+        borderBottomWidth: activeMenu === idx && borderWidths[activeMenu].value,
+      }));
+    };
     return (
-      <Animated.View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          marginTop: 20,
-          marginLeft: 5,
-          borderTopWidth: 1,
-          borderBottomWidth: 1,
-          borderTopColor: primary_gray,
-          borderBottomColor: primary_gray,
-        }}
-      >
-        <Animated.View
-          style={[
-            {
-              padding: 10,
-              paddingHorizontal: 25,
-              borderRadius: 5,
-              borderBottomColor: '#3E9BF9',
-            },
-            useAnimatedStyle(() => ({
-              borderBottomWidth: activeMenu === 0 && borderWidths[activeMenu].value,
-            })),
-          ]}
-        >
+      <Animated.View style={styles.wrapper}>
+        <Animated.View style={[styles.item, animatedStyle(0)]}>
           <TouchableOpacity onPress={() => onPress(0)}>
-            <Text style={{ fontSize: 16, textAlign: 'center', color: '#32BBF7', fontWeight: '500' }}>
-              제품 상세정보
-            </Text>
+            <Text style={styles.item_txt}>제품 상세정보</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Animated.View
-          style={[
-            {
-              padding: 10,
-              paddingHorizontal: 25,
-              borderRadius: 5,
-              borderBottomColor: '#3E9BF9',
-            },
-            useAnimatedStyle(() => ({
-              borderBottomWidth: activeMenu === 1 && borderWidths[activeMenu].value,
-            })),
-          ]}
-        >
+        <Animated.View style={[styles.item, animatedStyle(1)]}>
           <TouchableOpacity onPress={() => onPress(1)}>
-            <Text style={{ fontSize: 16, textAlign: 'center', color: '#32BBF7', fontWeight: '500' }}>
-              후기({currentProduct.reviews.length})
-            </Text>
+            <Text style={styles.item_txt}>후기({currentProduct.reviews.length})</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Animated.View
-          style={[
-            {
-              padding: 10,
-              paddingHorizontal: 25,
-              borderRadius: 5,
-              borderBottomColor: '#3E9BF9',
-            },
-            useAnimatedStyle(() => ({
-              borderBottomWidth: activeMenu === 2 && borderWidths[activeMenu].value,
-            })),
-          ]}
-        >
+        <Animated.View style={[styles.item, animatedStyle(2)]}>
           <TouchableOpacity onPress={() => onPress(2)}>
-            <Text style={{ fontSize: 16, textAlign: 'center', color: '#32BBF7', fontWeight: '500' }}>제품 문의</Text>
+            <Text style={styles.item_txt}>제품 문의</Text>
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
     );
   }
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    marginLeft: 5,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderTopColor: primary_gray,
+    borderBottomColor: primary_gray,
+  },
+  item: {
+    padding: 10,
+    paddingHorizontal: 25,
+    borderRadius: 5,
+    borderBottomColor: '#3E9BF9',
+  },
+  item_txt: { fontSize: 16, textAlign: 'center', color: '#32BBF7', fontWeight: '500' },
+});

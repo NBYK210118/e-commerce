@@ -7,19 +7,20 @@ import Animated from 'react-native-reanimated';
 import { MenuBar } from './menu_bar';
 import { CurrentLocation } from './CurrentLocation';
 import { useSampleHook } from './useSampleHook';
+import { FlashSaleComponent } from './FlashSale';
 
 export const HomeScreen = () => {
   const {
     token,
     active,
-    borderWidths,
     currentLocation,
     handleLogin,
     menuBarStyle,
     scrollHandler,
     userInfo_loading,
     setActive,
-    setHeadStatus,
+    borderWidths,
+    setSelected,
   } = useSampleHook();
 
   return (
@@ -33,9 +34,10 @@ export const HomeScreen = () => {
       <Animated.View style={menuBarStyle}>
         <MenuBar
           active={active}
+          menus={[...Array(7).fill(0)]}
+          menuValues={borderWidths}
           setActive={setActive}
-          menus={borderWidths}
-          setHeadStatus={setHeadStatus}
+          setSelected={setSelected}
           menuStyle={menuBarStyle}
         />
       </Animated.View>
@@ -43,6 +45,7 @@ export const HomeScreen = () => {
       {active === 0 && (
         <>
           <Categories />
+          <FlashSaleComponent />
           <RecommendProducts />
           <MostViewedProducts />
           <DiscountProducts />

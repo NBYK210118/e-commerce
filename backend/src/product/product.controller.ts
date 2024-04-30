@@ -22,8 +22,13 @@ import ProductDetailDto from 'src/user/dto/addProduct.dto';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+  @Get('/all')
+  async getAllProducts(): Promise<Product[]> {
+    return this.productService.getAllProducts();
+  }
+
   @Get('')
-  async getProduct(@Query('product_id') product_id: string): Promise<Product> {
+  async getProduct(@Query('product_id') product_id: string) {
     if (!product_id) {
       return;
     }

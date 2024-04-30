@@ -1,44 +1,56 @@
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ImageViewer } from './ImageViewer';
 import Animated from 'react-native-reanimated';
 import { Pagination } from '../pagination';
 import { FloatingBtns } from './FloatingBtns';
 import { ProductInfo } from './ProductInfo';
 import { useProductFetch } from './useProductFetch';
-import { primary_gray } from '../../styles/common/colors';
 import { TouchMenu } from './touch_menu';
 import { CreateReview } from './CreateReview';
-import { AntDesign } from '@expo/vector-icons';
+import { Review } from './Reviews';
+import { UsersReviews } from './UsersReviews';
+import { EmptyReviewList } from './EmptyReviewList';
+import { HeartBasket } from './heart_basket';
 
 export const ProductDetail = () => {
   const {
     currentPage,
+    currentStars,
     currentProduct,
     handleHeart,
     handleHorizontalScroll,
     heart,
     isUsers,
-    token,
     user,
     borderWidths,
     handlePress,
     activeMenu,
     navigation,
+    reviews,
+    userReviewed,
+    selectedProductId,
+    handleAddToBasket,
+    handlePostReview,
   } = useProductFetch();
-
-  const handlePostReview = () => {
-    if (!token || !user) {
-      alert('로그인이 필요한 기능입니다');
-      navigation.navigate('Login');
-    }
-  };
 
   return (
     <>
       <Animated.ScrollView style={styles.wrapper} scrollEventThrottle={16} showsVerticalScrollIndicator={false}>
         <ImageViewer item={currentProduct} style={styles.image} onScroll={handleHorizontalScroll} />
         <Pagination contents={currentProduct && currentProduct.images} current={currentPage} />
-        <ProductInfo currentProduct={currentProduct} heart={heart} onPress={handleHeart} />
+        <ProductInfo
+          currentProduct={currentProduct}
+          currentStars={currentStars}
+          heart={heart}
+          onPress={handleHeart}
+          onPressBasket={handleAddToBasket}
+        />
+        <HeartBasket
+          currentProduct={currentProduct}
+          heart={heart}
+          onPress={handleHeart}
+          onPressBasket={handleAddToBasket}
+        />
         <TouchMenu
           currentProduct={currentProduct}
           borderWidths={borderWidths}
@@ -53,70 +65,18 @@ export const ProductDetail = () => {
           )}
           {activeMenu === 1 && (
             <View>
-              {!isUsers && <CreateReview user={user} handlePostReview={handlePostReview} />}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  borderColor: primary_gray,
-                  overflow: 'hidden',
-                  padding: 10,
-                  paddingVertical: 28,
-                  marginBottom: 10,
-                }}
-              >
-                <View>
-                  <Image
-                    source={{ uri: 'https://via.placeholder.com/100' }}
-                    style={{ width: 60, height: 60, borderRadius: 100 }}
-                  />
-                </View>
-                <View style={{ marginLeft: 14, marginTop: 5 }}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ marginBottom: 5, marginRight: 5, fontWeight: 'bold' }}>작성자 1</Text>
-                    <View style={{ flexDirection: 'row', marginHorizontal: 5 }}>
-                      {[...Array(5)].map((_, idx) => (
-                        <AntDesign key={idx} name="star" size={15} color="#f4cf0f" />
-                      ))}
-                    </View>
-                  </View>
-                  <Text numberOfLines={2} style={{ fontSize: 14, marginTop: 10 }}>
-                    상품의 퀄리티가 매우 좋습니다
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  borderColor: primary_gray,
-                  overflow: 'hidden',
-                  padding: 10,
-                  paddingVertical: 28,
-                }}
-              >
-                <View>
-                  <Image
-                    source={{ uri: 'https://via.placeholder.com/100' }}
-                    style={{ width: 60, height: 60, borderRadius: 100 }}
-                  />
-                </View>
-                <View style={{ marginLeft: 14, marginTop: 5 }}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ marginBottom: 5, marginRight: 5, fontWeight: 'bold' }}>작성자 1</Text>
-                    <View style={{ flexDirection: 'row', marginHorizontal: 5 }}>
-                      {[...Array(5)].map((_, idx) => (
-                        <AntDesign key={idx} name="star" size={15} color="#f4cf0f" />
-                      ))}
-                    </View>
-                  </View>
-                  <Text numberOfLines={2} style={{ fontSize: 14, marginTop: 10 }}>
-                    상품의 퀄리티가 매우 좋습니다
-                  </Text>
-                </View>
-              </View>
+              {/* 게스트 또는 로그인한 사용자가 판매 등록한 상품이 아니고, 이전에 리뷰를 등록한 적이 없는 경우 렌더링*/}
+              {!isUsers && !userReviewed ? (
+                <CreateReview
+                  user={user}
+                  handlePostReview={handlePostReview}
+                  navigation={navigation}
+                  selectedProductId={selectedProductId}
+                />
+              ) : (
+                <Review userReviewed={userReviewed} reviewList={false} />
+              )}
+              {reviews.length > 0 ? <UsersReviews reviews={reviews} reviewList={true} /> : <EmptyReviewList />}
             </View>
           )}
           {activeMenu === 2 && (

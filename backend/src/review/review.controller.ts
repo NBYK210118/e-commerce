@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Res,
@@ -10,9 +11,8 @@ import {
 import { ReviewService } from './review.service';
 import { ReviewDto } from './dto/review.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@prisma/client';
+import { Review, User } from '@prisma/client';
 import { GetUser } from 'src/user/get-user.decorator';
-import { Response } from 'express';
 
 @Controller('review')
 export class ReviewController {
@@ -28,5 +28,14 @@ export class ReviewController {
   async reviewUpdate(@GetUser() user: User, @Body() data: ReviewDto) {
     const result = await this.reviewService.reviewUpdate(user, data);
     return result;
+  }
+
+  @UseGuards(AuthGuard())
+  @Get('/checking/users/:productId')
+  async checkReview(
+    @GetUser() user: User,
+    @Param('productId') productId: string,
+  ): Promise<Boolean | Review> {
+    return this.reviewService.checkUserAlreadyReview(user, +productId);
   }
 }

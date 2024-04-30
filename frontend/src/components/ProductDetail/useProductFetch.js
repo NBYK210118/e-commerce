@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,15 +7,17 @@ import ProductApi from '../../services/product_api';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 
 export const useProductFetch = () => {
-  const [heart, setHeart] = useState({});
-  const { selectedProductId, currentProduct } = useSelector((state) => state.products);
+  const { selectedProductId, currentProduct, currentStars } = useSelector((state) => state.products);
   const { user, token } = useSelector((state) => state.userAuth);
   const [isUsers, setIsUsers] = useState(false);
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const [userReviewed, setUserReviewed] = useState(null);
+  const [heart, setHeart] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [activeMenu, setActiveMenu] = useState(0);
   const borderWidths = [...Array(3)].map(() => useSharedValue(0));
+  const [reviews, setReviews] = useState([]);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { width } = Dimensions.get('window');
 
   const handleHorizontalScroll = (event) => {
@@ -28,9 +30,15 @@ export const useProductFetch = () => {
     if (selectedProductId) {
       try {
         dispatch(findProduct({ product_id: selectedProductId }));
+        ProductApi.getAllReviewsByProduct(selectedProductId).then((response) => {
+          setReviews(response.data);
+        });
         if (token) {
           ProductApi.isUsersProduct(token, selectedProductId).then((response) => {
             setIsUsers(response.data);
+          });
+          ProductApi.checkUserAlreadyReviewed(token, selectedProductId).then((response) => {
+            setUserReviewed(response.data);
           });
         }
       } catch (error) {
@@ -43,7 +51,9 @@ export const useProductFetch = () => {
         }
       }
     }
-  }, [selectedProductId]);
+  }, [selectedProductId, navigation, dispatch]);
+
+  useFocusEffect(fetchDetail);
 
   useEffect(() => {
     borderWidths[activeMenu].value = withTiming(3, { duration: 500 });
@@ -53,10 +63,6 @@ export const useProductFetch = () => {
     setActiveMenu(index);
     borderWidths[index].value = withTiming(3, { duration: 500 });
   };
-
-  useEffect(() => {
-    fetchDetail();
-  }, [fetchDetail]);
 
   useEffect(() => {
     if (currentProduct) {
@@ -99,8 +105,33 @@ export const useProductFetch = () => {
     }
   };
 
+  const handlePostReview = (data) => {
+    if (!token || !user) {
+      alert('로그인이 필요한 기능입니다');
+      navigation.navigate('Login');
+    }
+    ProductApi.updateReview(token, data).then((response) => {
+      setReviews((prevState) => prevState.push(response.data));
+      if (!userReviewed) {
+        setUserReviewed(response.data);
+      }
+    });
+  };
+
+  const handleAddToBasket = () => {
+    ProductApi.addProductMyBasket(token, selectedProductId, navigation).then((response) => {
+      if (response.status === 401) {
+        navigation.navigate('Login');
+      } else if ((response.status === 200) | 201) {
+        alert('장바구니에 추가되었습니다!');
+        navigation.navigate('Product');
+      }
+    });
+  };
+
   return {
     currentProduct,
+    currentStars,
     currentPage,
     handleHeart,
     handleHorizontalScroll,
@@ -112,5 +143,12 @@ export const useProductFetch = () => {
     navigation,
     user,
     token,
+    reviews,
+    setReviews,
+    userReviewed,
+    setUserReviewed,
+    selectedProductId,
+    handlePostReview,
+    handleAddToBasket,
   };
 };

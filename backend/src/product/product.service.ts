@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product, SellingList, User, ViewedProduct } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import ProductDetailDto from 'src/user/dto/addProduct.dto';
@@ -13,12 +13,23 @@ export class ProductService {
     return result;
   }
 
-  async getProduct(id: number): Promise<Product> {
+  async getProduct(id: number) {
     const result = await this.prisma.product.findUnique({
       where: { id },
       include: { images: true, reviews: true, likedBy: true },
     });
-    return result;
+
+    let stars_sum = 0;
+    if (result.reviews.length > 0) {
+      const tot = result.reviews.reduce((acc, val) => acc + val.stars, 0);
+      stars_sum = tot / result.reviews.length;
+    } else if (result.reviews.length === 0) stars_sum = 0;
+    else {
+      throw new NotFoundException();
+    }
+    console.log(`상품 ${result.name}의 별점 평균: ${stars_sum}`);
+
+    return { product: result, stars: stars_sum };
   }
 
   async getProducts(): Promise<Product[]> {
@@ -45,9 +56,9 @@ export class ProductService {
     return data;
   }
 
-  async getAllProducts(category: string): Promise<Product[]> {
+  async getAllProducts(): Promise<Product[]> {
     const result = await this.prisma.product.findMany({
-      where: { category_name: category },
+      where: { status: { not: '보류중' } },
       include: { images: true, likedBy: true },
     });
 
@@ -134,7 +145,7 @@ export class ProductService {
 
   async getDiscountingProducts(): Promise<Product[]> {
     const discounting_products = await this.prisma.product.findMany({
-      where: { isDiscounting: { equals: true } },
+      where: { isDiscounting: { equals: true }, status: { not: '보류중' } },
       include: { images: true },
     });
 
@@ -193,7 +204,7 @@ export class ProductService {
     }
 
     const result = await this.prisma.product.findMany({
-      where: { id: { in: numbers } },
+      where: { id: { in: numbers }, status: { not: '보류중' } },
       include: { images: true },
     });
     return result;

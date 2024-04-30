@@ -225,6 +225,8 @@ model Review {
   product       Product?        @relation(fields: [productId], references: [id])
   productId     Int?
   reviewProduct ReviewProduct[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model ReviewProduct {

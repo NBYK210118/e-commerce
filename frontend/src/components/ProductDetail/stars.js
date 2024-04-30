@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-const StarRating = () => {
-  const [rating, setRating] = useState(0);
-
+const StarRating = ({ rating, setRating }) => {
   const onStarPress = (newRating) => {
     setRating(newRating);
   };

@@ -106,22 +106,29 @@ const findByProductByKeyword = async (token, keyword) => {
   }
 };
 
-// 홈페이지에서 카테고리 클릭했을 때 해당 카테고리의 상품 리스트 불러오기
-const getAllProducts = async (category, navigate) => {
+const getAllCategoryProducts = async (category) => {
   try {
-    const data = await http.get(`/category/${category}`);
+    const data = await http.get(`/category/product/all/?category=${category}`);
     return data;
   } catch (error) {
-    if (error.response.status === 500) {
-      alert('서버 에러');
-      localStorage.clear();
-      navigate('/home');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청!');
-      localStorage.clear();
-      navigate('/home');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          await AsyncStorage.clear();
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
-    console.log('getAllproducts error: ', error);
   }
 };
 
@@ -293,19 +300,28 @@ const updateReview = async (token, formData) => {
 };
 
 // 특정 상품에 대한 리뷰들 전부 불러오기
-const getAllReviewsByProduct = async (productId, navigate) => {
+const getAllReviewsByProduct = async (productId) => {
   try {
     const data = await http.get(`/review/all?product_id=${productId}`);
     return data;
   } catch (error) {
-    if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          await AsyncStorage.clear();
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
@@ -511,43 +527,40 @@ const getProductsBySearchKeyword = async (keyword, navigate) => {
     const data = await http.get(`/product/?search_keyword=${keyword}`);
     return data;
   } catch (error) {
-    if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 500:
+          console.log('서버 에러: 추천 상품 데이터를 로드해오지 못했습니다');
+        case 400:
+          console.log('잘못된 요청입니다');
+      }
     }
   }
 };
 
 // 내 장바구니 불러오기
-const getMyBasket = async (token, navigate) => {
+const getMyBasket = async (token) => {
   try {
     const data = await http.get('/shoppingbasket', {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 500:
+          alert('서버 에러: 장바구니를 불러오지 못했습니다');
+        case 400:
+          alert('잘못된 요청');
+        case 401:
+          alert('권한 없음');
+      }
     }
   }
 };
 
 // 장바구니 담기 버튼 클릭
-const addProductMyBasket = async (token, productId, navigate) => {
+const addProductMyBasket = async (token, productId, navigation) => {
   try {
     const data = await http.post(
       `/shoppingbasket/add/?product_id=${productId}`,
@@ -556,25 +569,30 @@ const addProductMyBasket = async (token, productId, navigate) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+          navigation.navigate('Login');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
 
 // 장바구니에서 제거하기
-const removeProductBasket = async (token, productId, navigate) => {
+const removeProductBasket = async (token, productId) => {
   try {
     const data = await http.post(
       `/shoppingbasket/remove/?product_id=${productId}`,
@@ -583,17 +601,45 @@ const removeProductBasket = async (token, productId, navigate) => {
     );
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+const removeManyProductInBasket = async (token, checkStatus) => {
+  try {
+    const data = await http.post('/shoppingbasket/remove/list', checkStatus, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
@@ -605,11 +651,80 @@ const updateProductStatus = async (token, form) => {
     });
     return data;
   } catch (error) {
-    switch (error.response.status) {
-      case 500:
-        console.log('서버 에러!');
-      case 400:
-        console.log('잘못된 요청');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+const checkUserAlreadyReviewed = async (token, product_id) => {
+  try {
+    const data = await http.get(`/review/checking/users/${product_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
+      }
+    } else {
+      console.error('API call error: ', error);
+    }
+  }
+};
+
+const getUserLikes = async (token) => {
+  try {
+    const data = await http.get('/like/all', { headers: { Authorization: `Bearer ${token}` } });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+        case 500:
+          alert('서버 에러');
+        case 400:
+          alert('잘못된 요청');
+      }
+    }
+  }
+};
+
+const getUserLikesByCategory = async (token, category) => {
+  try {
+    const data = await http.get(`/like/all/likes/?category=${category}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+        case 500:
+          alert('서버 에러');
+        case 400:
+          alert('잘못된 요청');
+      }
     }
   }
 };
@@ -619,7 +734,7 @@ const ProductApi = {
   addProduct,
   updateProduct,
   categoriesItem,
-  getAllProducts,
+  getAllCategoryProducts,
   getAllCategories,
   updatelikeProduct,
   fetchUserWishList,
@@ -640,6 +755,10 @@ const ProductApi = {
   getRecommendProduct,
   updateProductStatus,
   findByProductByKeyword,
+  checkUserAlreadyReviewed,
+  getUserLikes,
+  getUserLikesByCategory,
+  removeManyProductInBasket,
 };
 
 export default ProductApi;

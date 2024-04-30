@@ -53,6 +53,10 @@ export const Categories = () => {
     }
   }, [category_datas]);
 
+  const handlePress = (category) => {
+    navigation.navigate('ProductList', { categoryName: category });
+  };
+
   return (
     <View style={categories_style.container}>
       <ScrollView
@@ -87,7 +91,7 @@ export const Categories = () => {
                   <TouchableOpacity
                     key={idx}
                     style={categories_style.categoryBox}
-                    onPress={() => navigation.navigate('ProductList', { category_name: category.name })}
+                    onPress={() => handlePress(category.name)}
                   >
                     <Image source={{ uri: category.imgUrl }} style={categories_style.image} />
                     <Text style={categories_style.categoryText}>{category.name}</Text>

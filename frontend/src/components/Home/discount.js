@@ -9,11 +9,9 @@ import { setSelectedProduct } from '../../features/products/product_slice';
 
 export const DiscountProducts = () => {
   const loading = useSelector((val) => val.products.loading);
-  // const loading = true;
   const discounting_products = useSelector((val) => val.products.discounting);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const opacity = useSharedValue(0.5);
 
   useEffect(() => {

@@ -20,6 +20,7 @@ export const Products = createSlice({
   name: 'products',
   initialState: {
     currentProduct: null,
+    currentStars: 5,
     categories: [],
     mostViewed: [],
     discounting: [],
@@ -155,7 +156,8 @@ export const Products = createSlice({
       })
       .addCase(findProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentProduct = action.payload;
+        state.currentProduct = action.payload.product;
+        state.currentStars = action.payload.stars;
       })
       .addCase(findProduct.rejected, (state, action) => {
         state.loading = false;

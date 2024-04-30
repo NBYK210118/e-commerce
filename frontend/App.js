@@ -1,11 +1,11 @@
 import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Stack, Tab } from './src/components/common';
 import { ProductDetail } from './src/components/ProductDetail/index';
-import { AntIcon } from './src/components/icons/icons';
+import { AntIcon, Material } from './src/components/icons/icons';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { Alert, StatusBar } from 'react-native';
+import { Alert, StatusBar, StyleSheet } from 'react-native';
 import { setAccessToGallery } from './src/features/auth/auth_slice';
 import { getUserLocation } from './src/features/auth/auth_thunk';
 import { AntDesign } from '@expo/vector-icons';
@@ -13,11 +13,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HomeScreen } from './src/components/Home/index';
 import { Likes } from './src/components/Likes/index';
-import { ShoppingCart } from './src/components/ShoppingCart/index';
 import { MyPageStackScreen } from './src/components/Tabs/MyPageStackScreen';
 import { SignUp } from './src/components/SignIn-Up/SignUp';
 import { Login } from './src/components/SignIn-Up/Login';
 import { store } from './src/app/store';
+import { skyblue } from './src/styles/common/colors';
+import { ProductList } from './src/components/ProductList';
+import { ShoppingCart } from './src/components/ShoppingCart';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
@@ -114,9 +116,48 @@ const AppNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="ProductList" component={ProductList} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Product" component={ProductDetailStack} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="Likes" component={Likes} />
-      <Tab.Screen name="Shopping Cart" component={ShoppingCart} />
+      <Tab.Screen
+        name="Likes"
+        component={Likes}
+        options={{
+          headerShown: true,
+          headerTitle: 'CAVE',
+          headerLeft: () => <AntIcon name={'left'} color={skyblue} size={24} onPress={() => navigation.goBack()} />,
+          headerRight: () => (
+            <>
+              <AntIcon name={'home'} color={skyblue} size={24} onPress={() => navigation.navigate('Home')} />
+            </>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Shopping Cart"
+        component={ShoppingCart}
+        options={{
+          headerLeft: () => (
+            <AntIcon
+              name={'left'}
+              color={skyblue}
+              size={24}
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 5 }}
+            />
+          ),
+          headerRight: () => (
+            <>
+              <AntIcon
+                name={'home'}
+                color={skyblue}
+                size={24}
+                onPress={() => navigation.navigate('Home')}
+                style={{ marginRight: 15 }}
+              />
+            </>
+          ),
+        }}
+      />
       <Tab.Screen name="MyPage" component={MyPageStackScreen} />
     </Tab.Navigator>
   );
@@ -129,7 +170,7 @@ export default function Root() {
       <NavigationContainer theme={{ colors: { background: '#ffffff' } }}>
         <GestureHandlerRootView style={styles.safeArea}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Main" component={AppNavigator} />
+            <Stack.Screen name="App" component={AppNavigator} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="SignUp" component={SignUp} />
           </Stack.Navigator>

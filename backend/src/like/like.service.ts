@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Product, User, UserProduct } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { LikeState } from './like.interface';
 
@@ -7,8 +7,38 @@ import { LikeState } from './like.interface';
 export class LikeService {
   constructor(private prisma: PrismaService) {}
 
+  async getUserLikes(user: User): Promise<Product | Product[]> {
+    const result = this.prisma.userProduct.findMany({
+      where: { userId: user.id },
+    });
+    const product_idices = (await result).map((val) => val.productId);
+
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: product_idices } },
+      include: { images: true, likedBy: true },
+    });
+
+    return products;
+  }
+
+  async getUserLikesByCategory(
+    user: User,
+    category: string,
+  ): Promise<Product | Product[]> {
+    const result = this.prisma.userProduct.findMany({
+      where: { userId: user.id },
+    });
+    const product_idices = (await result).map((val) => val.productId);
+
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: product_idices }, category_name: category },
+      include: { images: true, likedBy: true },
+    });
+
+    return products;
+  }
+
   async updatelikeProduct(user: User, data: LikeState) {
-    console.log(data);
     const products_states = { ...data };
     const checking = Object.keys(products_states).filter(
       (val) => products_states[val] === true,
@@ -74,19 +104,9 @@ export class LikeService {
 
     const result = await this.prisma.wishList.findUnique({
       where: { userId: user.id },
-      include: { products: { select: { id: true, likedBy: true } } },
+      include: { products: { include: { likedBy: true, images: true } } },
     });
 
     return result;
-  }
-
-  async howManyLikes(user: User, data: Object) {
-    // await this.prisma.wishList.update({
-    //   where: { userId: user.id },
-    //   data: { products: { connect: { id: productId } } },
-    // });
-    // const user_product = await this.prisma.userProduct.findUnique({
-    //   where: { userId_productId: { productId, userId: user.id } },
-    // });
   }
 }

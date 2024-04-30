@@ -32,7 +32,11 @@ export class CategoryService {
     category: string,
   ): Promise<Product | Product[]> {
     const result = await this.prismaService.product.findMany({
-      where: { sellingListId: user.sellinglistId, category_name: category },
+      where: {
+        sellingListId: user.sellinglistId,
+        category_name: category,
+        status: { not: '보류중' },
+      },
       include: { images: true, likedBy: true },
     });
 
@@ -42,7 +46,8 @@ export class CategoryService {
   async getAllSellingProducts(category: string): Promise<Product | Product[]> {
     if (category) {
       const result = await this.prismaService.product.findMany({
-        where: { category_name: category },
+        where: { category_name: category, status: { not: '보류중' } },
+        include: { images: true, likedBy: true },
       });
 
       return result;

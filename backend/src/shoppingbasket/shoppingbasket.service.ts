@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ShoppingBasket, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { CheckStates } from './dto/basket.dto';
 
 @Injectable()
 export class ShoppingbasketService {
@@ -11,18 +12,51 @@ export class ShoppingbasketService {
       where: { userId: user.id },
     });
 
-    if (!found) {
-      return;
-    }
-
     const products = await this.prisma.shoppingBasket.findMany({
       where: { userId: user.id },
       include: { product: { include: { images: true } } },
     });
 
+    const found_summary = await this.prisma.basketSummary.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!found_summary) {
+      const prices = products.map((item) =>
+        item.product.isDiscounting
+          ? item.product.discountPrice
+          : item.product.price,
+      );
+      const finalPay = prices.reduce((acc, val) => acc + val, 0);
+
+      const origin_prices = products.map((item) => item.product.price);
+      const totalPrice = origin_prices.reduce((acc, val) => acc + val, 0);
+
+      const discount_products = products.map((item) =>
+        item.product.isDiscounting
+          ? item.product.price - item.product.discountPrice
+          : 0,
+      );
+
+      const totalDiscount = discount_products.reduce(
+        (acc, val) => acc + val,
+        0,
+      );
+
+      await this.prisma.basketSummary.create({
+        data: {
+          finalPay,
+          totalDiscount,
+          totalPrice,
+          user: { connect: { id: user.id } },
+        },
+      });
+    }
+
     const summary = await this.prisma.basketSummary.findUnique({
       where: { userId: user.id },
     });
+
     const data = {
       products,
       summary,
@@ -166,5 +200,31 @@ export class ShoppingbasketService {
     };
 
     return data;
+  }
+
+  async removeManyProduct(user: User, data: CheckStates) {
+    const product_idices = { ...data };
+    const keys = Object.keys(product_idices).filter(
+      (val) => product_idices[val] === true,
+    );
+
+    for (const key of keys) {
+      await this.removeProduct(user, Number(key));
+    }
+
+    const products = await this.prisma.shoppingBasket.findMany({
+      where: { userId: user.id },
+      include: { product: { include: { images: true } } },
+    });
+
+    const summary = await this.prisma.basketSummary.findUnique({
+      where: { userId: user.id },
+    });
+
+    const result = {
+      products,
+      summary,
+    };
+    return result;
   }
 }

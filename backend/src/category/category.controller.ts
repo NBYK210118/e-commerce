@@ -32,6 +32,7 @@ export class CategoryController {
     return result;
   }
 
+  @Get('/product/all')
   async getAllSellingProducts(
     @Query('category') category: string,
   ): Promise<Product | Product[]> {
