@@ -1,14 +1,10 @@
 import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navigation/native';
-import * as MediaLibrary from 'expo-media-library';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Stack, Tab } from './src/components/common';
 import { ProductDetail } from './src/components/ProductDetail/index';
-import { AntIcon, Material } from './src/components/icons/icons';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { Alert, StatusBar, StyleSheet } from 'react-native';
-import { setAccessToGallery } from './src/features/auth/auth_slice';
-import { getUserLocation } from './src/features/auth/auth_thunk';
-import { AntDesign } from '@expo/vector-icons';
+import { DetailOptions, HomeButton, Material, TabIcon } from './src/components/icons/icons';
+import { Provider } from 'react-redux';
+import { StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HomeScreen } from './src/components/Home/index';
@@ -17,86 +13,38 @@ import { MyPageStackScreen } from './src/components/Tabs/MyPageStackScreen';
 import { SignUp } from './src/components/SignIn-Up/SignUp';
 import { Login } from './src/components/SignIn-Up/Login';
 import { store } from './src/app/store';
-import { skyblue } from './src/styles/common/colors';
 import { ProductList } from './src/components/ProductList';
 import { ShoppingCart } from './src/components/ShoppingCart';
+import { useMainState } from './src/hooks/useMainState';
+import { ScrollModalScreen } from './test';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
 
-  useFocusEffect(
-    useCallback(() => {
-      const showHeader = navigation.setOptions({ headerShown: false });
-
-      return () => showHeader;
-    }, [])
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProductDetail" component={ProductDetail} options={DetailOptions({ navigation })} />
+    </Stack.Navigator>
   );
+};
 
+const ShoppingCartStack = () => {
+  const navigation = useNavigation();
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="ProductDetail"
-        component={ProductDetail}
-        options={{
-          headerShown: true,
-          headerTitle: 'CAVE',
-          headerLeft: () => <AntIcon name={'left'} color={skyblue} size={24} onPress={() => navigation.goBack()} />,
-          headerRight: () => (
-            <>
-              <AntIcon name={'home'} color={skyblue} size={24} onPress={() => navigation.navigate('Home')} />
-            </>
-          ),
-        }}
-      />
+      <Stack.Screen name="MyShoppingCart" component={ShoppingCart} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
 
 const AppNavigator = () => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const [status, requestPermission] = MediaLibrary.usePermissions();
-  const token = useSelector((val) => val.userAuth.token);
-  const address = useSelector((val) => val.userAuth.address);
+  const { token, address, handleLogOut, navigation } = useMainState();
 
-  const handleLogOut = async () => {
-    try {
-      dispatch(logout());
-      Alert.alert('로그아웃', '성공적으로 로그아웃되었습니다!');
-    } catch (error) {
-      Alert.alert('로그아웃', '죄송합니다. 다시 시도해주세요');
-    }
-  };
-
-  if (token && status === null) {
-    requestPermission();
-    dispatch(setAccessToGallery(status));
-  }
-
-  useEffect(() => {
-    if (address === '' || address === undefined || address === null) {
-      dispatch(getUserLocation());
-    }
-  }, []);
-  const TabIcon = ({ route, size }) => {
-    let iconName;
-
-    if (route.name === 'Home') {
-      iconName = 'home';
-    } else if (route.name === 'Shopping Cart') {
-      iconName = 'shoppingcart';
-    } else if (route.name === 'MyPage') {
-      iconName = 'user';
-    } else if (route.name === 'Likes') {
-      iconName = 'like2';
-    }
-    return <AntDesign name={iconName} size={size} color="white" />;
-  };
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ size }) => <TabIcon route={route} size={size} />,
-        tabBarStyle: { display: route.name === 'Product' ? 'none' : 'flex' },
+        tabBarStyle: { display: route.name === 'Product' || route.name === 'Shopping Cart' ? 'none' : 'flex' },
         tabBarBackground: () => (
           <LinearGradient
             colors={['#0ea5e9', '#6366f1']}
@@ -118,47 +66,18 @@ const AppNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="ProductList" component={ProductList} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Product" component={ProductDetailStack} options={{ tabBarButton: () => null }} />
-      <Tab.Screen
-        name="Likes"
-        component={Likes}
-        options={{
-          headerShown: true,
-          headerTitle: 'CAVE',
-          headerLeft: () => <AntIcon name={'left'} color={skyblue} size={24} onPress={() => navigation.goBack()} />,
-          headerRight: () => (
-            <>
-              <AntIcon name={'home'} color={skyblue} size={24} onPress={() => navigation.navigate('Home')} />
-            </>
-          ),
-        }}
-      />
+      <Tab.Screen name="Likes" component={Likes} options={DetailOptions({ navigation })} />
       <Tab.Screen
         name="Shopping Cart"
-        component={ShoppingCart}
-        options={{
-          headerLeft: () => (
-            <AntIcon
-              name={'left'}
-              color={skyblue}
-              size={24}
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 5 }}
-            />
-          ),
-          headerRight: () => (
-            <>
-              <AntIcon
-                name={'home'}
-                color={skyblue}
-                size={24}
-                onPress={() => navigation.navigate('Home')}
-                style={{ marginRight: 15 }}
-              />
-            </>
-          ),
-        }}
+        component={ShoppingCartStack}
+        options={DetailOptions({ navigation, homeStyle: { marginRight: 15 }, backStyle: { marginLeft: 15 } })}
       />
-      <Tab.Screen name="MyPage" component={MyPageStackScreen} />
+      <Tab.Screen
+        name="MyPage"
+        component={MyPageStackScreen}
+        options={DetailOptions({ navigation, homeStyle: { marginRight: 15 }, backStyle: { marginLeft: 15 } })}
+      />
+      {/* <Tab.Screen name="Test" component={ScrollModalScreen} /> */}
     </Tab.Navigator>
   );
 };

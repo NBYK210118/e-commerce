@@ -17,10 +17,19 @@ import { useSelector } from 'react-redux';
 import { primary_blue, primary_gray } from '../../styles/common/colors';
 import ProductApi from '../../services/product_api';
 import Checkbox from 'expo-checkbox';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { BasketProduct } from './BasketProduct';
 import { HeadRow } from './HeadRow';
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { InventoryModal } from './inventory_modal';
 import { PayInfo } from './PayInfo';
 import { PayInfoSkeleton } from './PayInfoSkeleton';
@@ -37,7 +46,9 @@ export const ShoppingCart = () => {
   const { token, user } = useSelector((state) => state.userAuth);
   const navigation = useNavigation();
   const opacity = useSharedValue(0.5);
+  const scrollY = useSharedValue(0);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -147,42 +158,114 @@ export const ShoppingCart = () => {
     setModalOpen(false);
   };
 
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const modalStyle = useAnimatedStyle(() => {
+    // const translateY = interpolate(scrollY.value, [10, 11], [0, -105], Extrapolation.CLAMP);
+
+    return {
+      transform: [{ translateY: withTiming(scrollY.value > 10 ? -105 : 0, { duration: 800 }) }],
+    };
+  }, [scrollY]);
+
   return (
-    <Animated.ScrollView style={styles.container}>
-      <InventoryModal
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        onSubmitChange={submitInventoryChanges}
-        touchSign={handleInventories}
-      />
-      <HeadRow
-        count={products.length}
-        value={entireCheck}
-        onValueChange={checkEntire}
-        onPress={checkEntire}
-        removeMany={removeManyProducts}
-      />
-      {products.length > 0 &&
-        products.map((item, index) => (
-          <View style={styles.items} key={index}>
-            <BasketProduct
-              item={item}
-              key={index}
-              idx={index}
-              status={selectedProducts}
-              onCheck={toggleCheckBox}
-              onClose={toggleClose}
-              handleModal={handleModal}
-            />
-          </View>
-        ))}
-      {loading ? (
-        <PayInfoSkeleton loadingStyle={animatedStyle} />
-      ) : (
-        <PayInfo productSummary={productSummary} productCount={products.length} />
-      )}
+    <Animated.ScrollView style={styles.container} onScroll={handleScroll} scrollEventThrottle={16}>
+      <View style={{ paddingBottom: 50 }}>
+        <InventoryModal
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          quantity={quantity}
+          setQuantity={setQuantity}
+          onSubmitChange={submitInventoryChanges}
+          touchSign={handleInventories}
+        />
+        <HeadRow
+          count={products.length}
+          value={entireCheck}
+          onValueChange={checkEntire}
+          onPress={checkEntire}
+          removeMany={removeManyProducts}
+        />
+        {products.length > 0 &&
+          products.map((item, index) => (
+            <View style={styles.items} key={index}>
+              <BasketProduct
+                item={item}
+                key={index}
+                idx={index}
+                status={selectedProducts}
+                onCheck={toggleCheckBox}
+                onClose={toggleClose}
+                handleModal={handleModal}
+              />
+            </View>
+          ))}
+        {loading ? (
+          <PayInfoSkeleton loadingStyle={animatedStyle} />
+        ) : (
+          <PayInfo productSummary={productSummary} productCount={products.length} />
+        )}
+      </View>
+      <View>
+        <Animated.View
+          style={[
+            {
+              width: '100%',
+              flexDirection: 'row',
+              position: 'absolute',
+              bottom: -100,
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              shadowColor: 'gray',
+              shadowRadius: 10,
+              shadowOpacity: 0.6,
+              padding: 15,
+            },
+            modalStyle,
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: primary_gray,
+              borderRadius: 10,
+              padding: 10,
+              shadowRadius: 10,
+              shadowColor: primary_gray,
+            }}
+          >
+            <FontAwesome name="hand-o-left" size={24} color="black" />
+            <Text style={{ marginLeft: 10 }}>상품 더 보기</Text>
+          </TouchableOpacity>
+          <Pressable
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              padding: 20,
+              paddingHorizontal: 35,
+              backgroundColor: primary_blue,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 19, textAlign: 'center', marginBottom: 5 }}>
+              결제하기
+            </Text>
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+              {productSummary && productSummary.finalPay.toLocaleString('ko-kr')}원
+            </Text>
+          </Pressable>
+        </Animated.View>
+      </View>
     </Animated.ScrollView>
   );
 };
@@ -191,7 +274,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    paddingBottom: 30,
+    paddingBottom: 20,
     backgroundColor: 'rgba(236, 240, 241,1)',
   },
   items: { padding: 15, backgroundColor: 'white', marginVertical: 9 },
