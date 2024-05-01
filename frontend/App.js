@@ -2,7 +2,7 @@ import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navig
 import { useCallback } from 'react';
 import { Stack, Tab } from './src/components/common';
 import { ProductDetail } from './src/components/ProductDetail/index';
-import { DetailOptions, HomeButton, Material, TabIcon } from './src/components/icons/icons';
+import { BackButton, DetailOptions, HomeButton, Material, TabIcon } from './src/components/icons/icons';
 import { Provider } from 'react-redux';
 import { StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,14 +22,13 @@ const ProductDetailStack = () => {
   const navigation = useNavigation();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator>
       <Stack.Screen name="ProductDetail" component={ProductDetail} options={DetailOptions({ navigation })} />
     </Stack.Navigator>
   );
 };
 
 const ShoppingCartStack = () => {
-  const navigation = useNavigation();
   return (
     <Stack.Navigator>
       <Stack.Screen name="MyShoppingCart" component={ShoppingCart} options={{ headerShown: false }} />
@@ -57,6 +56,8 @@ const AppNavigator = () => {
         tabBarInactiveTintColor: 'white',
         headerTitle: 'CAVE',
         headerTitleStyle: { fontSize: 20 },
+        headerLeft: () =>
+          route.name === 'Product' ? <BackButton navigation={navigation} style={{ marginLeft: 15 }} /> : null,
         headerRight: () =>
           token ? (
             <Material name="logout" size={24} color="black" onPress={handleLogOut} style={{ marginRight: 11 }} />
@@ -77,7 +78,6 @@ const AppNavigator = () => {
         component={MyPageStackScreen}
         options={DetailOptions({ navigation, homeStyle: { marginRight: 15 }, backStyle: { marginLeft: 15 } })}
       />
-      {/* <Tab.Screen name="Test" component={ScrollModalScreen} /> */}
     </Tab.Navigator>
   );
 };

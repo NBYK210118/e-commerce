@@ -33,6 +33,7 @@ import Animated, {
 import { InventoryModal } from './inventory_modal';
 import { PayInfo } from './PayInfo';
 import { PayInfoSkeleton } from './PayInfoSkeleton';
+import { AnimatedBottomPayBtn } from './AnimatedBottomPayBtn';
 
 export const ShoppingCart = () => {
   const [products, setProducts] = useState([]);
@@ -48,7 +49,6 @@ export const ShoppingCart = () => {
   const opacity = useSharedValue(0.5);
   const scrollY = useSharedValue(0);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -210,62 +210,16 @@ export const ShoppingCart = () => {
           <PayInfo productSummary={productSummary} productCount={products.length} />
         )}
       </View>
-      <View>
-        <Animated.View
-          style={[
-            {
-              width: '100%',
-              flexDirection: 'row',
-              position: 'absolute',
-              bottom: -100,
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              shadowColor: 'gray',
-              shadowRadius: 10,
-              shadowOpacity: 0.6,
-              padding: 15,
-            },
-            modalStyle,
-          ]}
-        >
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: primary_gray,
-              borderRadius: 10,
-              padding: 10,
-              shadowRadius: 10,
-              shadowColor: primary_gray,
-            }}
-          >
-            <FontAwesome name="hand-o-left" size={24} color="black" />
-            <Text style={{ marginLeft: 10 }}>상품 더 보기</Text>
-          </TouchableOpacity>
-          <Pressable
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              padding: 20,
-              paddingHorizontal: 35,
-              backgroundColor: primary_blue,
-              borderRadius: 10,
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 19, textAlign: 'center', marginBottom: 5 }}>
-              결제하기
-            </Text>
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
-              {productSummary && productSummary.finalPay.toLocaleString('ko-kr')}원
-            </Text>
-          </Pressable>
-        </Animated.View>
-      </View>
+      <Animated.View style={[styles.pay_wrapper, modalStyle]}>
+        <TouchableOpacity style={styles.watch_more}>
+          <FontAwesome name="hand-o-left" size={24} color="black" />
+          <Text style={styles.watch_more_txt}>상품 더 보기</Text>
+        </TouchableOpacity>
+        <Pressable style={styles.pay_wrap}>
+          <Text style={styles.pay_btn_txt}>결제하기</Text>
+          <Text style={styles.how_much}>{productSummary?.finalPay.toLocaleString('ko-kr')}원</Text>
+        </Pressable>
+      </Animated.View>
     </Animated.ScrollView>
   );
 };
@@ -278,4 +232,41 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(236, 240, 241,1)',
   },
   items: { padding: 15, backgroundColor: 'white', marginVertical: 9 },
+  pay_wrapper: {
+    width: '100%',
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: -100,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: 'gray',
+    shadowRadius: 10,
+    shadowOpacity: 0.6,
+    padding: 15,
+  },
+  watch_more: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: primary_gray,
+    borderRadius: 10,
+    padding: 10,
+    shadowRadius: 10,
+    shadowColor: primary_gray,
+  },
+  watch_more_txt: { marginLeft: 10 },
+  pay_wrap: {
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 20,
+    paddingHorizontal: 35,
+    backgroundColor: primary_blue,
+    borderRadius: 10,
+  },
+  pay_btn_txt: { color: 'white', fontWeight: 'bold', fontSize: 19, textAlign: 'center', marginBottom: 5 },
+  how_much: { color: 'white', fontWeight: 'bold', fontSize: 14 },
 });

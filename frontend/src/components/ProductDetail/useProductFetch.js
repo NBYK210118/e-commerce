@@ -57,6 +57,8 @@ export const useProductFetch = () => {
 
   useEffect(() => {
     borderWidths[activeMenu].value = withTiming(3, { duration: 500 });
+
+    navigation.setOptions({ headerShown: false });
   }, []);
 
   const handlePress = (index) => {

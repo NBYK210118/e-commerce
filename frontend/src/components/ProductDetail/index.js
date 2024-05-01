@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { ImageViewer } from './ImageViewer';
 import Animated from 'react-native-reanimated';
 import { Pagination } from '../pagination';
@@ -11,6 +11,7 @@ import { Review } from './Reviews';
 import { UsersReviews } from './UsersReviews';
 import { EmptyReviewList } from './EmptyReviewList';
 import { HeartBasket } from './heart_basket';
+import { useEffect } from 'react';
 
 export const ProductDetail = () => {
   const {
@@ -45,6 +46,13 @@ export const ProductDetail = () => {
           onPress={handleHeart}
           onPressBasket={handleAddToBasket}
         />
+        <FlatList
+          horizontal={true}
+          data={currentProduct.detailImgs}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => <Image source={{ uri: item }} style={styles.detail_imgs} resizeMode="contain" />}
+        />
+
         <HeartBasket
           currentProduct={currentProduct}
           heart={heart}
@@ -94,4 +102,5 @@ export const ProductDetail = () => {
 const styles = StyleSheet.create({
   wrapper: { position: 'relative', paddingRight: 10, paddingVertical: 15 },
   image: { width: Dimensions.get('window').width, height: 300 },
+  detail_imgs: { width: 350, height: 340 },
 });

@@ -5,7 +5,7 @@ export const Pagination = ({ contents = [], current }) => {
     return (
       <>
         {contents.length > 0 && (
-          <View style={styles.paginationContainer}>
+          <View key={`view-${current}`} style={styles.paginationContainer}>
             {contents.map((_, idx) => (
               <View key={idx} style={[styles.paginationDot, current === idx ? styles.activeDot : styles.inactiveDot]} />
             ))}

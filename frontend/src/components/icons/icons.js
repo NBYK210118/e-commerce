@@ -41,7 +41,7 @@ export const TabIcon = ({ route, size }) => {
   return <AntDesign name={iconName} size={size} color="white" />;
 };
 
-export const DetailOptions = ({ navigation, homeStyle, backStyle }) => {
+export const DetailOptions = ({ navigation, homeStyle, backStyle, options }) => {
   return {
     headerShown: true,
     headerTitle: 'CAVE',

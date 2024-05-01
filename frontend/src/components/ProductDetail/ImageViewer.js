@@ -11,7 +11,7 @@ export const ImageViewer = ({ item, style, resizeMode, onScroll }) => {
         onScroll={onScroll}
         pagingEnabled
       >
-        <Image source={{ uri: item.images?.[0]?.imgUrl }} style={style} resizeMode={resizeMode} />
+        <Image key={item.id} source={{ uri: item.images?.[0]?.imgUrl }} style={style} resizeMode={resizeMode} />
       </ScrollView>
     );
   }

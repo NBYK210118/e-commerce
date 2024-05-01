@@ -9,19 +9,20 @@ export const TouchMenu = ({ currentProduct, onPress, activeMenu, borderWidths })
         borderBottomWidth: activeMenu === idx && borderWidths[activeMenu].value,
       }));
     };
+
     return (
       <Animated.View style={styles.wrapper}>
-        <Animated.View style={[styles.item, animatedStyle(0)]}>
+        <Animated.View key={0} style={[styles.item, animatedStyle(0)]}>
           <TouchableOpacity onPress={() => onPress(0)}>
             <Text style={styles.item_txt}>제품 상세정보</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Animated.View style={[styles.item, animatedStyle(1)]}>
+        <Animated.View key={1} style={[styles.item, animatedStyle(1)]}>
           <TouchableOpacity onPress={() => onPress(1)}>
             <Text style={styles.item_txt}>후기({currentProduct.reviews.length})</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Animated.View style={[styles.item, animatedStyle(2)]}>
+        <Animated.View key={2} style={[styles.item, animatedStyle(2)]}>
           <TouchableOpacity onPress={() => onPress(2)}>
             <Text style={styles.item_txt}>제품 문의</Text>
           </TouchableOpacity>

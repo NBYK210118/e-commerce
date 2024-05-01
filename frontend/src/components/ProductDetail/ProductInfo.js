@@ -53,15 +53,6 @@ export const ProductInfo = ({ currentProduct, currentStars }) => {
             <Text style={styles.manufacturer_label}>제작/유통사:</Text>
             <Text> {currentProduct.manufacturer}</Text>
           </View>
-
-          <FlatList
-            horizontal={true}
-            data={currentProduct.detailImgs}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <Image key={index} source={{ uri: item }} style={styles.detail_imgs} resizeMode="contain" />
-            )}
-          />
         </View>
       </>
     );
@@ -88,5 +79,4 @@ const styles = StyleSheet.create({
   description_txt: { marginBottom: 20 },
   manufacturer: { flexDirection: 'row', marginVertical: 15 },
   manufacturer_label: { fontWeight: 'bold' },
-  detail_imgs: { width: 350, height: 340 },
 });
