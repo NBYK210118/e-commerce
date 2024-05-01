@@ -35,4 +35,17 @@ export class ShoppingbasketController {
   async removeManyProduct(@GetUser() user: User, @Body() data: CheckStates) {
     return this.basketService.removeManyProduct(user, data);
   }
+
+  @Post('/update')
+  async updateProductQuantity(
+    @GetUser() user: User,
+    @Query('productId') productId: string,
+    @Query('quantity') quantity: string,
+  ) {
+    return this.basketService.updateProductQuantity(
+      user,
+      +productId,
+      +quantity,
+    );
+  }
 }

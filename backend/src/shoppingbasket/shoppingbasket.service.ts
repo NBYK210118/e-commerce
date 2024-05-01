@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ShoppingBasket, User } from '@prisma/client';
+import { BasketSummary, ShoppingBasket, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CheckStates } from './dto/basket.dto';
 
@@ -7,10 +7,8 @@ import { CheckStates } from './dto/basket.dto';
 export class ShoppingbasketService {
   constructor(private prisma: PrismaService) {}
 
-  async getMyBasket(user: User) {
-    const found = await this.prisma.shoppingBasket.findFirst({
-      where: { userId: user.id },
-    });
+  async currentBasketSummary(user: User) {
+    let summary: BasketSummary;
 
     const products = await this.prisma.shoppingBasket.findMany({
       where: { userId: user.id },
@@ -21,29 +19,28 @@ export class ShoppingbasketService {
       where: { userId: user.id },
     });
 
+    const prices = products.map((item) =>
+      item.product.isDiscounting
+        ? item.product.discountPrice * item.quantity
+        : item.product.price * item.quantity,
+    );
+    const finalPay = prices.reduce((acc, val) => acc + val, 0);
+
+    const origin_prices = products.map(
+      (item) => item.product.price * item.quantity,
+    );
+    const totalPrice = origin_prices.reduce((acc, val) => acc + val, 0);
+
+    const discount_products = products.map((item) =>
+      item.product.isDiscounting
+        ? (item.product.price - item.product.discountPrice) * item.quantity
+        : 0,
+    );
+
+    const totalDiscount = discount_products.reduce((acc, val) => acc + val, 0);
+
     if (!found_summary) {
-      const prices = products.map((item) =>
-        item.product.isDiscounting
-          ? item.product.discountPrice
-          : item.product.price,
-      );
-      const finalPay = prices.reduce((acc, val) => acc + val, 0);
-
-      const origin_prices = products.map((item) => item.product.price);
-      const totalPrice = origin_prices.reduce((acc, val) => acc + val, 0);
-
-      const discount_products = products.map((item) =>
-        item.product.isDiscounting
-          ? item.product.price - item.product.discountPrice
-          : 0,
-      );
-
-      const totalDiscount = discount_products.reduce(
-        (acc, val) => acc + val,
-        0,
-      );
-
-      await this.prisma.basketSummary.create({
+      summary = await this.prisma.basketSummary.create({
         data: {
           finalPay,
           totalDiscount,
@@ -51,26 +48,37 @@ export class ShoppingbasketService {
           user: { connect: { id: user.id } },
         },
       });
+    } else {
+      summary = await this.prisma.basketSummary.update({
+        where: { userId: user.id },
+        data: {
+          finalPay,
+          totalDiscount,
+          totalPrice,
+        },
+      });
     }
+    const result_products = await this.prisma.shoppingBasket.findMany({
+      where: { userId: user.id },
+      include: { product: { include: { images: true } } },
+    });
 
-    const summary = await this.prisma.basketSummary.findUnique({
+    return { products: result_products, summary };
+  }
+
+  async getMyBasket(user: User) {
+    const found = await this.prisma.shoppingBasket.findFirst({
       where: { userId: user.id },
     });
 
-    const data = {
-      products,
-      summary,
-    };
-    return data;
+    const { products, summary } = await this.currentBasketSummary(user);
+
+    return { products, summary };
   }
 
   async addProduct(user: User, productId: number) {
     const found = await this.prisma.shoppingBasket.findUnique({
       where: { userId_productId: { userId: user.id, productId } },
-    });
-
-    const found_cartsummary = await this.prisma.basketSummary.findUnique({
-      where: { userId: user.id },
     });
 
     const found_product = await this.prisma.product.findUnique({
@@ -90,41 +98,12 @@ export class ShoppingbasketService {
       });
     }
 
-    if (!found_cartsummary) {
-      await this.prisma.basketSummary.create({
-        data: { user: { connect: { id: user.id } } },
-      });
-    }
-
     await this.prisma.shoppingBasket.update({
       where: { userId_productId: { userId: user.id, productId } },
       data: { quantity: { increment: 1 } },
     });
 
-    const effectivePrice = found_product.isDiscounting
-      ? found_product.discountPrice
-      : found_product.price;
-    const discountAmount = found_product.isDiscounting
-      ? found_product.price - found_product.discountPrice
-      : 0;
-
-    await this.prisma.basketSummary.update({
-      where: { userId: user.id },
-      data: {
-        totalPrice: { increment: found_product.price },
-        totalDiscount: { increment: discountAmount },
-        finalPay: { increment: effectivePrice },
-      },
-    });
-
-    const products = await this.prisma.shoppingBasket.findMany({
-      where: { userId: user.id },
-      include: { product: { include: { images: true } } },
-    });
-
-    const summary = await this.prisma.basketSummary.findUnique({
-      where: { userId: user.id },
-    });
+    const { products, summary } = await this.currentBasketSummary(user);
 
     const data = { products, summary };
 
@@ -136,10 +115,6 @@ export class ShoppingbasketService {
       where: { userId_productId: { userId: user.id, productId } },
     });
 
-    const found_cartsummary = await this.prisma.basketSummary.findUnique({
-      where: { userId: user.id },
-    });
-
     const found_product = await this.prisma.product.findUnique({
       where: { id: productId },
     });
@@ -149,50 +124,10 @@ export class ShoppingbasketService {
     }
 
     if (!found) {
-      return '이미 제거되었거나 장바구니에 없는 상품입니다';
+      throw new Error('이미 제거되었거나 장바구니에 없는 상품입니다');
     }
 
-    if (!found_cartsummary) {
-      await this.prisma.basketSummary.create({
-        data: { user: { connect: { id: user.id } } },
-      });
-    }
-
-    const effectivePrice = found_product.isDiscounting
-      ? found_product.discountPrice
-      : found_product.price;
-    const discountAmount = found_product.isDiscounting
-      ? found_product.price - found_product.discountPrice
-      : 0;
-
-    await this.prisma.basketSummary.update({
-      where: { userId: user.id },
-      data: {
-        totalPrice: { decrement: found_product.price },
-        totalDiscount: { decrement: discountAmount },
-        finalPay: { decrement: effectivePrice },
-      },
-    });
-
-    const updated_basket = await this.prisma.shoppingBasket.update({
-      where: { userId_productId: { userId: user.id, productId } },
-      data: { quantity: { decrement: 1 } },
-    });
-
-    if (updated_basket.quantity < 1) {
-      await this.prisma.shoppingBasket.delete({
-        where: { userId_productId: { userId: user.id, productId } },
-      });
-    }
-
-    const products = await this.prisma.shoppingBasket.findMany({
-      where: { userId: user.id },
-      include: { product: { include: { images: true } } },
-    });
-
-    const summary = await this.prisma.basketSummary.findUnique({
-      where: { userId: user.id },
-    });
+    const { summary, products } = await this.currentBasketSummary(user);
 
     const data = {
       products,
@@ -212,19 +147,23 @@ export class ShoppingbasketService {
       await this.removeProduct(user, Number(key));
     }
 
-    const products = await this.prisma.shoppingBasket.findMany({
-      where: { userId: user.id },
-      include: { product: { include: { images: true } } },
-    });
-
-    const summary = await this.prisma.basketSummary.findUnique({
-      where: { userId: user.id },
-    });
+    const { products, summary } = await this.currentBasketSummary(user);
 
     const result = {
       products,
       summary,
     };
     return result;
+  }
+
+  async updateProductQuantity(user: User, productId: number, quantity: number) {
+    await this.prisma.shoppingBasket.update({
+      where: { userId_productId: { userId: user.id, productId } },
+      data: { quantity: quantity },
+    });
+
+    const { products, summary } = await this.currentBasketSummary(user);
+
+    return { products, summary };
   }
 }

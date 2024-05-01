@@ -3,40 +3,36 @@ import Checkbox from 'expo-checkbox';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { primary_gray } from '../../styles/common/colors';
 
-export const BasketProduct = ({ item, idx, onCheck, status, onClose }) => {
+export const BasketProduct = ({ item, idx, onCheck, status, onClose, handleModal }) => {
   if (item !== undefined) {
+    const origin_price = (item.product.price * item.quantity).toLocaleString('ko-kr');
+    const discountedPrice = (item.product.discountPrice * item.quantity).toLocaleString('ko-kr');
     return (
-      <>
-        <View key={idx} style={styles.wrapper}>
-          <Checkbox
-            value={status[item.product.id]}
-            onValueChange={() => onCheck(item.product.id)}
-            style={styles.checkbox}
-          />
-          <Image source={{ uri: item.product.images[0].imgUrl }} style={styles.product_img} />
-          <View style={styles.info}>
-            <Text style={{ fontSize: 12, marginVertical: 2 }}>{item.product.manufacturer}</Text>
-            <Text style={{ fontWeight: 'bold', marginVertical: 2 }} numberOfLines={1} ellipsizeMode="head">
-              {item.product.name}
-            </Text>
-            <Text style={{ marginVertical: 2 }}>수량 {item.quantity}개</Text>
-            <TouchableOpacity style={styles.touchInventory}>
-              <Text style={styles.touchInventory_txt}>수량</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.side_wrapper}>
-            <TouchableOpacity style={styles.close} onPress={() => onClose(item.product.id)}>
-              <AntDesign name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <Text style={[item.product.isDiscounting && styles.ifdiscount, styles.price]}>
-              {item.product.price.toLocaleString('ko-kr')}원
-            </Text>
-            {item.product.isDiscounting && (
-              <Text style={styles.discount}>{item.product.discountPrice.toLocaleString('ko-kr')}원</Text>
-            )}
-          </View>
+      <View key={idx} style={styles.wrapper}>
+        <Checkbox
+          value={status[item.product.id]}
+          onValueChange={() => onCheck(item.product.id)}
+          style={styles.checkbox}
+        />
+        <Image source={{ uri: item.product.images[0].imgUrl }} style={styles.product_img} />
+        <View style={styles.info}>
+          <Text style={{ fontSize: 12, marginVertical: 2 }}>{item.product.manufacturer}</Text>
+          <Text style={{ fontWeight: 'bold', marginVertical: 2 }} numberOfLines={1} ellipsizeMode="head">
+            {item.product.name}
+          </Text>
+          <Text style={{ marginVertical: 2 }}>수량 {item.quantity}개</Text>
+          <TouchableOpacity style={styles.touchInventory} onPress={() => handleModal(item.product.id)}>
+            <Text style={styles.touchInventory_txt}>수량</Text>
+          </TouchableOpacity>
         </View>
-      </>
+        <View style={styles.side_wrapper}>
+          <TouchableOpacity style={styles.close} onPress={() => onClose(item.product.id)}>
+            <AntDesign name="close" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={[item.product.isDiscounting && styles.ifdiscount, styles.price]}>{origin_price}원</Text>
+          {item.product.isDiscounting && <Text style={styles.discount}>{discountedPrice}원</Text>}
+        </View>
+      </View>
     );
   } else return null;
 };

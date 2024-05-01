@@ -720,10 +720,39 @@ const getUserLikesByCategory = async (token, category) => {
       switch (error.response.status) {
         case 401:
           alert('권한 없음');
+          break;
         case 500:
           alert('서버 에러');
+          break;
         case 400:
           alert('잘못된 요청');
+          break;
+      }
+    }
+  }
+};
+
+const updateProductQuantity = async (token, productId, quantity) => {
+  try {
+    const data = await http.post(
+      `/shoppingbasket/update?productId=${productId}&quantity=${quantity}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    return data;
+  } catch (error) {
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('권한 없음');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청');
+          break;
       }
     }
   }
@@ -759,6 +788,7 @@ const ProductApi = {
   getUserLikes,
   getUserLikesByCategory,
   removeManyProductInBasket,
+  updateProductQuantity,
 };
 
 export default ProductApi;
