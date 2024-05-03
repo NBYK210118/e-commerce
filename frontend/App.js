@@ -1,9 +1,15 @@
-import { NavigationContainer, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback } from 'react';
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
 import { Stack, Tab } from './src/components/common';
 import { ProductDetail } from './src/components/ProductDetail/index';
 import { BackButton, DetailOptions, HomeButton, Material, TabIcon } from './src/components/icons/icons';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -16,7 +22,6 @@ import { store } from './src/app/store';
 import { ProductList } from './src/components/ProductList';
 import { ShoppingCart } from './src/components/ShoppingCart';
 import { useMainState } from './src/hooks/useMainState';
-import { ScrollModalScreen } from './test';
 
 const ProductDetailStack = () => {
   const navigation = useNavigation();
@@ -37,13 +42,26 @@ const ShoppingCartStack = () => {
 };
 
 const AppNavigator = () => {
-  const { token, address, handleLogOut, navigation } = useMainState();
+  const { token, handleLogOut, navigation } = useMainState();
+  const homeStyle = { marginRight: 15 };
+  const backStyle = { marginLeft: 15 };
+
+  const getHeaderVisibility = (route) => {
+    // 스택 내의 현재 활성화된 화면 이름 가져오기
+    const routeName = getFocusedRouteNameFromRoute(route);
+    // console.log('route: ', route);
+    // console.log('routeName: ', routeName);
+    // 'Questions' 화면일 때 헤더 숨기기
+    return !(routeName === 'Questions');
+  };
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ size }) => <TabIcon route={route} size={size} />,
-        tabBarStyle: { display: route.name === 'Product' || route.name === 'Shopping Cart' ? 'none' : 'flex' },
+        tabBarStyle: {
+          display: route.name === 'Product' || route.name === 'Shopping Cart' ? 'none' : 'flex',
+        },
         tabBarBackground: () => (
           <LinearGradient
             colors={['#0ea5e9', '#6366f1']}
@@ -57,27 +75,26 @@ const AppNavigator = () => {
         headerTitle: 'CAVE',
         headerTitleStyle: { fontSize: 20 },
         headerLeft: () =>
-          route.name === 'Product' ? <BackButton navigation={navigation} style={{ marginLeft: 15 }} /> : null,
+          route.name === 'Product' || route.name === 'MyPage' ? (
+            <BackButton navigation={navigation} style={{ marginLeft: 15 }} />
+          ) : null,
         headerRight: () =>
           token ? (
             <Material name="logout" size={24} color="black" onPress={handleLogOut} style={{ marginRight: 11 }} />
           ) : null,
+        headerShown: getHeaderVisibility(route),
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="ProductList" component={ProductList} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Product" component={ProductDetailStack} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="Likes" component={Likes} options={DetailOptions({ navigation })} />
+      <Tab.Screen name="Likes" component={Likes} options={DetailOptions({ navigation, homeStyle, backStyle })} />
       <Tab.Screen
         name="Shopping Cart"
         component={ShoppingCartStack}
-        options={DetailOptions({ navigation, homeStyle: { marginRight: 15 }, backStyle: { marginLeft: 15 } })}
+        options={DetailOptions({ navigation, homeStyle, backStyle })}
       />
-      <Tab.Screen
-        name="MyPage"
-        component={MyPageStackScreen}
-        options={DetailOptions({ navigation, homeStyle: { marginRight: 15 }, backStyle: { marginLeft: 15 } })}
-      />
+      <Tab.Screen name="MyPage">{(props) => <MyPageStackScreen {...props} />}</Tab.Screen>
     </Tab.Navigator>
   );
 };

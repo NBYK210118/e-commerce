@@ -4,7 +4,7 @@ import { getUserLocation, logout, signIn, signUp, updateProfile, verifyToken } f
 export const UserAuth = createSlice({
   name: 'userAuth',
   initialState: {
-    address: '',
+    currentLocation: '',
     loading: false,
     error: '',
     user: null,
@@ -26,7 +26,7 @@ export const UserAuth = createSlice({
         state.loading = true;
       })
       .addCase(getUserLocation.fulfilled, (state, action) => {
-        state.address = `${action.payload.region} ${action.payload.city} ${action.payload.name}`;
+        state.currentLocation = `${action.payload.region} ${action.payload.city} ${action.payload.name}`;
         state.loading = false;
       })
       .addCase(getUserLocation.rejected, (state, action) => {

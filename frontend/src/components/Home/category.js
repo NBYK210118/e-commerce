@@ -58,7 +58,7 @@ export const Categories = () => {
   };
 
   return (
-    <View style={categories_style.container}>
+    <View>
       <ScrollView
         horizontal
         scrollEventThrottle={16}
@@ -106,9 +106,6 @@ export const Categories = () => {
 };
 
 const categories_style = StyleSheet.create({
-  container: {
-    display: 'flex',
-  },
   page: {
     width: width,
     flexDirection: 'row',

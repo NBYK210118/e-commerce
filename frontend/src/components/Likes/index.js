@@ -6,72 +6,12 @@ import { MenuBar } from '../Home/menu_bar';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import ProductApi from '../../services/product_api';
 import { ProductItem } from './ProductItem';
-import { primary_blue } from '../../styles/common/colors';
+import { light_green, primary_blue } from '../../styles/common/colors';
+import { useLikeStates } from '../../hooks/useLikeStates';
 
 export const Likes = () => {
-  const [dataSet, setDataSet] = useState([]);
-  const [activeMenu, setActiveMenu] = useState(0);
-  const [selectedMenu, setSelectedMenu] = useState('');
-  const [likesStatus, setLikesStatus] = useState({});
-  const navigation = useNavigation();
-  const { user, token } = useSelector((state) => state.userAuth);
-  const { categories, loading } = useSelector((state) => state.products);
-  const borderWidths = [...Array(categories.length)].map(() => useSharedValue(0));
-
-  useFocusEffect(
-    useCallback(() => {
-      if (token) {
-        ProductApi.getUserLikes(token).then((response) => {
-          setDataSet(response.data);
-        });
-      }
-      setActiveMenu(null);
-      setSelectedMenu('');
-    }, [navigation])
-  );
-
-  useEffect(() => {
-    if (dataSet.length > 0) {
-      setLikesStatus(
-        dataSet.reduce((acc, val) => {
-          acc[val.id] = val.likedBy.some((like) => like.userId === user.id);
-          return acc;
-        }, {})
-      );
-    }
-  }, [dataSet]);
-
-  useEffect(() => {
-    if (token && selectedMenu !== undefined) {
-      ProductApi.getUserLikesByCategory(token, selectedMenu).then((response) => {
-        setDataSet(response.data);
-      });
-    }
-  }, [selectedMenu]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!token) {
-        navigation.navigate('Login');
-      }
-    }, [token, navigation])
-  );
-
-  const toggleLike = (product) => {
-    const condition = Object.keys(likesStatus).length > 0;
-    const data = {
-      ...likesStatus,
-      [product.id]: !likesStatus[product.id],
-    };
-
-    setLikesStatus(data);
-
-    if (token && condition) {
-      ProductApi.updatelikeProduct(token, data).then((response) => {
-        setDataSet(response.data.products);
-      });
-    }
-  };
+  const { activeMenu, setActiveMenu, borderWidths, categories, dataSet, likesStatus, setSelectedMenu } =
+    useLikeStates();
 
   return (
     <View style={styles.topWrapper}>
@@ -82,6 +22,7 @@ export const Likes = () => {
           setSelected={setSelectedMenu}
           menus={categories}
           menuValues={borderWidths}
+          color={light_green}
         />
       </Animated.View>
       <View style={{ padding: 5, marginLeft: 15, backgroundColor: '#fafafa' }}>
@@ -100,9 +41,8 @@ export const Likes = () => {
 };
 
 const styles = StyleSheet.create({
-  topWrapper: { paddingBottom: 70 },
+  topWrapper: {},
   scrollView: {
-    padding: 10,
     backgroundColor: '#f5f5f5',
   },
 });

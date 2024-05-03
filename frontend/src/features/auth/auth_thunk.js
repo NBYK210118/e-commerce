@@ -58,11 +58,8 @@ export const getUserLocation = createAsyncThunk('shopping/getUserLocation', asyn
   try {
     // 현재 위치정보 접근권한 설정 요청
     const { status } = await Location.requestForegroundPermissionsAsync();
+    console.log('status: ', status);
 
-    if (status !== 'granted') {
-      alert('Permission to access location was denied');
-      return;
-    }
     // 현재 위치 정보
     const location = await Location.getCurrentPositionAsync({});
 
@@ -73,7 +70,7 @@ export const getUserLocation = createAsyncThunk('shopping/getUserLocation', asyn
 
     if (reversGeocode.length > 0) {
       const addr = reversGeocode[0];
-
+      console.log(addr);
       return addr;
     }
   } catch (error) {

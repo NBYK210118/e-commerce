@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { MyPage } from '../MyPage';
 import { MyProducts } from '../MyPage/myProducts';
@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Stack } from '../common';
 import { MyProfile } from '../MyPage/myProfile';
 import { updateProfile } from '../../features/auth/auth_thunk';
+import { Questions } from '../MyPage/Questions/Questions';
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -41,11 +42,16 @@ export const MyPageStackScreen = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="My Page" component={MyPage} options={{ headerShown: false }} />
-      <Stack.Screen name="Profile">
+      <Stack.Screen name="Profile" options={{ headerShown: false }}>
         {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
       </Stack.Screen>
       <Stack.Screen name="My Sellings" component={MyProducts} options={{ headerShown: false }} />
       <Stack.Screen name="Manage" component={AddProduct} />
+      <Stack.Screen
+        name="Questions"
+        component={Questions}
+        options={{ headerSearchBarOptions: { autoFocus: true }, headerTransparent: false, headerTitle: '고객센터' }}
+      />
     </Stack.Navigator>
   );
 };

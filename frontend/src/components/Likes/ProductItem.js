@@ -6,7 +6,9 @@ export const ProductItem = ({ product, toggleLike, likesStatus }) => {
     <View style={styles.itemContainer}>
       <Image source={{ uri: product.images[0].imgUrl }} style={styles.image} />
       <View style={{ flexDirection: 'column', padding: 5 }}>
-        <Text style={styles.itemName}>{product.name}</Text>
+        <Text numberOfLines={1} style={styles.itemName}>
+          {product.name}
+        </Text>
         <Text>{product.manufacturer}</Text>
         <Text numberOfLines={1} ellipsizeMode="head" style={{ overflow: 'hidden' }}>
           {product.description}
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#fff',
-    marginBottom: 10,
+
     padding: 15,
     alignItems: 'center',
   },

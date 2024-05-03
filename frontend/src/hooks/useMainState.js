@@ -4,14 +4,19 @@ import * as MediaLibrary from 'expo-media-library';
 import { Alert } from 'react-native';
 import { useEffect } from 'react';
 import { setAccessToGallery } from '../features/auth/auth_slice';
-import { getUserLocation } from '../features/auth/auth_thunk';
+import { getUserLocation, logout } from '../features/auth/auth_thunk';
 
 export const useMainState = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [status, requestPermission] = MediaLibrary.usePermissions();
-  const token = useSelector((val) => val.userAuth.token);
-  const address = useSelector((val) => val.userAuth.address);
+  const { token, currentLocation } = useSelector((state) => state.userAuth);
+
+  useEffect(() => {
+    if (currentLocation === '' || currentLocation === undefined || currentLocation === null) {
+      dispatch(getUserLocation());
+    }
+  }, []);
 
   const handleLogOut = async () => {
     try {
@@ -27,17 +32,11 @@ export const useMainState = () => {
     dispatch(setAccessToGallery(status));
   }
 
-  useEffect(() => {
-    if (address === '' || address === undefined || address === null) {
-      dispatch(getUserLocation());
-    }
-  }, []);
-
   return {
     dispatch,
     navigation,
     token,
-    address,
+    currentLocation,
     handleLogOut,
   };
 };

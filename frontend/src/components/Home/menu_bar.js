@@ -3,17 +3,20 @@ import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { light_green } from '../../styles/common/colors';
 import { useEffect } from 'react';
 
-export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuValues = [], itemStyle = {} }) => {
+export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuValues = [], itemStyle = {}, color }) => {
   useEffect(() => {
-    if (menus[0].name !== undefined) {
-      setActive(null);
-    }
+    if (menus[0] !== undefined) {
+      menuValues[0].value = withTiming(3, { duration: 500 });
+      setActive(0);
+    } else setActive(null);
   }, []);
 
   const handlePressHeaderMenu = (index, item) => {
     setActive(index);
     if (item.name !== undefined) {
       setSelected(item.name);
+    } else {
+      setSelected(item);
     }
     menuValues.forEach((menu, idx) => {
       menu.value = withTiming(index === idx ? 3 : 0, { duration: 500 });
@@ -21,15 +24,17 @@ export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuVa
   };
 
   const animatedStyle = (idx) => {
-    return useAnimatedStyle(() => ({
-      borderBottomWidth: active === idx ? menuValues[idx].value : 0,
-      borderBottomColor: active === idx ? light_green : 'transparent',
-    }));
+    if (menuValues.length > 0) {
+      return useAnimatedStyle(() => ({
+        borderBottomWidth: active === idx ? menuValues[idx].value : 0,
+        borderBottomColor: active === idx ? color : 'transparent',
+      }));
+    }
   };
 
   const textStyle = (idx) => {
     return {
-      color: active === idx ? light_green : 'gray',
+      color: active === idx ? color : 'gray',
       fontWeight: active === idx ? '600' : '400',
     };
   };
@@ -44,7 +49,12 @@ export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuVa
       {menus.map((item, idx) => (
         <Animated.View key={idx} style={[styles.menu_row, itemStyle, animatedStyle(idx)]}>
           <TouchableOpacity key={idx} onPress={() => handlePressHeaderMenu(idx, item)}>
-            <Text style={textStyle(idx)}>{item.name !== undefined ? item.name : `Menu${idx + 1}`}</Text>
+            {item.name !== undefined && <Text style={textStyle(idx)}>{item.name}</Text>}
+            {item !== undefined && typeof item !== 'number' ? (
+              <Text style={textStyle(idx)}>{item}</Text>
+            ) : (
+              <Text style={textStyle(idx)}>{`Menu${idx + 1}`}</Text>
+            )}
           </TouchableOpacity>
         </Animated.View>
       ))}

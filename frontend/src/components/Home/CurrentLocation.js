@@ -9,7 +9,7 @@ export const CurrentLocation = ({ token, userInfo_loading, onPress, currentLocat
         <>
           <Text style={{ fontWeight: '500' }}>현재 배송지:</Text>
           <Text style={{ fontWeight: '200', color: 'black' }}>
-            {userInfo_loading ? '불러오는 중...' : currentLocation}
+            {currentLocation ? currentLocation : '불러오는 중...'}
           </Text>
         </>
       ) : (

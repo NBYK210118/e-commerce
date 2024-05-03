@@ -42,10 +42,31 @@ export const TabIcon = ({ route, size }) => {
 };
 
 export const DetailOptions = ({ navigation, homeStyle, backStyle, options }) => {
-  return {
+  const option = {
     headerShown: true,
     headerTitle: 'CAVE',
     headerLeft: () => <BackButton navigation={navigation} style={backStyle} />,
     headerRight: () => <HomeButton navigation={navigation} style={homeStyle} />,
   };
+
+  const mergeOptions = (optionsArray) => {
+    if (optionsArray !== undefined && optionsArray.length > 0) {
+      const res = optionsArray.reduce(
+        (acc, in_option) => ({
+          ...acc,
+          ...in_option,
+        }),
+        {}
+      );
+      console.log(res);
+      return res;
+    }
+  };
+
+  if (options !== undefined) {
+    const result = mergeOptions(option, options);
+    return result;
+  }
+
+  return option;
 };

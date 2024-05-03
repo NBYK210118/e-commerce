@@ -8,16 +8,17 @@ import { MenuBar } from './menu_bar';
 import { CurrentLocation } from './CurrentLocation';
 import { useSampleHook } from './useSampleHook';
 import { FlashSaleComponent } from './FlashSale';
+import { light_green } from '../../styles/common/colors';
 
 export const HomeScreen = () => {
   const {
     token,
     active,
     currentLocation,
+    userInfo_loading,
     handleLogin,
     menuBarStyle,
     scrollHandler,
-    userInfo_loading,
     setActive,
     borderWidths,
     setSelected,
@@ -39,6 +40,7 @@ export const HomeScreen = () => {
           setActive={setActive}
           setSelected={setSelected}
           menuStyle={menuBarStyle}
+          color={light_green}
         />
       </Animated.View>
 

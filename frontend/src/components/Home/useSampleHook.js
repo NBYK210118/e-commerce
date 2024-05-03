@@ -13,7 +13,7 @@ export const useSampleHook = () => {
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState('');
   const borderWidths = [...Array(7)].map(() => useSharedValue(0));
-  const currentLocation = useSelector((state) => state.userAuth.address);
+  const currentLocation = useSelector((state) => state.userAuth.currentLocation);
   const userInfo_loading = useSelector((state) => state.userAuth.loading);
   const token = useSelector((val) => val.userAuth.token);
   const navigation = useNavigation();
@@ -43,7 +43,7 @@ export const useSampleHook = () => {
     if (!token) {
       navigation.navigate('Login');
     } else {
-      navigation.navigate('Profile');
+      navigation.navigate('MyPage');
     }
   };
 
