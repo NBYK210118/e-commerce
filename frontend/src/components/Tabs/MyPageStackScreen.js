@@ -1,14 +1,14 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { MyPage } from '../MyPage';
-import { MyProducts } from '../MyPage/myProducts';
-import { AddProduct } from '../MyPage/manage/AddProduct';
-import * as ImagePicker from 'expo-image-picker';
-import { Stack } from '../common';
-import { MyProfile } from '../MyPage/myProfile';
-import { updateProfile } from '../../features/auth/auth_thunk';
-import { Questions } from '../MyPage/Questions/Questions';
-import { DetailOptions } from '../icons/icons';
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { MyPage } from "../MyPage";
+import { MyProducts } from "../MyPage/myProducts";
+import { AddProduct } from "../MyPage/manage/AddProduct";
+import * as ImagePicker from "expo-image-picker";
+import { Stack } from "../common";
+import { MyProfile } from "../MyPage/myProfile";
+import { updateProfile } from "../../features/auth/auth_thunk";
+import { Questions } from "../MyPage/Questions/Questions";
+import { DetailOptions } from "../icons/icons";
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -19,10 +19,10 @@ export const MyPageStackScreen = () => {
     if (token) {
       try {
         dispatch(updateProfile({ token, data, navigation }));
-        navigation.navigate('My Page');
+        navigation.navigate("My Page");
       } catch (error) {
-        console.log('프로필 업데이트 오류');
-        navigation.navigate('My Page');
+        console.log("프로필 업데이트 오류");
+        navigation.navigate("My Page");
       }
     }
   };
@@ -36,25 +36,40 @@ export const MyPageStackScreen = () => {
     if (!result.canceled) {
       setSelectedImg(result.assets[0].uri);
     } else {
-      alert('선택된 사진이 없습니다');
+      alert("선택된 사진이 없습니다");
     }
   };
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="My Page" component={MyPage} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="My Page"
+        component={MyPage}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Profile" options={{ headerShown: false }}>
-        {(props) => <MyProfile {...props} onChange={pickImageAsync} onSubmit={handleProfileChange} />}
+        {(props) => (
+          <MyProfile
+            {...props}
+            onChange={pickImageAsync}
+            onSubmit={handleProfileChange}
+          />
+        )}
       </Stack.Screen>
-      <Stack.Screen name="My Sellings" component={MyProducts} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="My Sellings"
+        component={MyProducts}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Manage" component={AddProduct} />
       <Stack.Screen
         name="Questions"
         component={Questions}
-        options={[
-          DetailOptions({ navigation, backStyle: { marginLeft: 15 } }),
-          { headerSearchBarOptions: true, headerTransparent: false, headerTitle: '고객센터' },
-        ]}
+        options={{
+          headerSearchBarOptions: true,
+          headerTransparent: false,
+          headerTitle: "고객센터",
+        }}
       />
     </Stack.Navigator>
   );

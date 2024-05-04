@@ -61,6 +61,7 @@ export class UserController {
     @Body() data: signUpDto,
     @Res() res: Response,
   ): Promise<Response> {
+    console.log(data);
     const result = await this.userService.signUp(data);
 
     if (result) return res.status(200).json(result);

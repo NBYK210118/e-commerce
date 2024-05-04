@@ -142,6 +142,7 @@ export const signUp = createAsyncThunk('shopping/signUp', async ({ data, navigat
     switch (response.status) {
       case 200:
         alert(`회원가입을 환영합니다!`);
+        navigation.navigate('Home');
         return response.data;
       case 500:
         alert('서버 에러');
