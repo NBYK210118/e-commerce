@@ -8,6 +8,7 @@ import { Stack } from '../common';
 import { MyProfile } from '../MyPage/myProfile';
 import { updateProfile } from '../../features/auth/auth_thunk';
 import { Questions } from '../MyPage/Questions/Questions';
+import { DetailOptions } from '../icons/icons';
 
 export const MyPageStackScreen = () => {
   const token = useSelector((val) => val.userAuth.token);
@@ -50,7 +51,10 @@ export const MyPageStackScreen = () => {
       <Stack.Screen
         name="Questions"
         component={Questions}
-        options={{ headerSearchBarOptions: { autoFocus: true }, headerTransparent: false, headerTitle: '고객센터' }}
+        options={[
+          DetailOptions({ navigation, backStyle: { marginLeft: 15 } }),
+          { headerSearchBarOptions: true, headerTransparent: false, headerTitle: '고객센터' },
+        ]}
       />
     </Stack.Navigator>
   );

@@ -6,31 +6,24 @@ import { primary_gray } from '../../../styles/common/colors';
 import { Contents } from './Contents';
 import { AnimateHoc } from './test';
 
-let datas = ['전체', '배송', '교환/취소(반품)', '서비스', '주문/결제', '상품확인', '회원정보'];
 export const Questions = () => {
+  let datas = ['전체', '배송', '교환/취소(반품)', '서비스', '주문/결제', '상품확인', '회원정보'];
   const [active, setActive] = useState('');
-  const [selected, setSelected] = useState('');
+  const [currentMenu, setCurrentMenu] = useState(datas[0]);
   const borderWidths = [...Array(datas.length)].map(() => useSharedValue(0));
-
-  useEffect(() => {
-    setSelected(datas[0]);
-  }, []);
-
-  useEffect(() => {
-    console.log('selected: ', selected);
-  }, [selected]);
 
   return (
     <View>
       <MenuBar
         setActive={setActive}
-        setSelected={setSelected}
+        setSelected={setCurrentMenu}
         active={active}
         menuValues={borderWidths}
         menus={datas}
         color={'black'}
+        containerStyle={{ padding: 10 }}
       />
-      <Contents selected={selected} />
+      <Contents currentMenu={currentMenu} />
     </View>
   );
 };

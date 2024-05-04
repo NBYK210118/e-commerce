@@ -1,12 +1,22 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { light_green } from '../../styles/common/colors';
 import { useEffect } from 'react';
 
-export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuValues = [], itemStyle = {}, color }) => {
+export const MenuBar = ({
+  active = 0,
+  setActive,
+  setSelected,
+  menus = [],
+  menuValues = [],
+  itemStyle = {},
+  color,
+  containerStyle = {},
+}) => {
   useEffect(() => {
     if (menus[0] !== undefined) {
       menuValues[0].value = withTiming(3, { duration: 500 });
+
       setActive(0);
     } else setActive(null);
   }, []);
@@ -44,7 +54,7 @@ export const MenuBar = ({ active = 0, setActive, setSelected, menus = [], menuVa
       horizontal={true}
       showsHorizontalScrollIndicator={false}
       scrollEventThrottle={16}
-      style={{ borderWidth: 1, borderColor: 'rgba(0,0,0,0.1)' }}
+      style={{ borderWidth: 1, borderColor: 'rgba(0,0,0,0.1)', ...containerStyle }}
     >
       {menus.map((item, idx) => (
         <Animated.View key={idx} style={[styles.menu_row, itemStyle, animatedStyle(idx)]}>
