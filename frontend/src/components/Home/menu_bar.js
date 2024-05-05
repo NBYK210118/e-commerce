@@ -1,11 +1,6 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
-import { light_green } from "../../styles/common/colors";
-import { useEffect } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useEffect } from 'react';
 
 export const MenuBar = ({
   active = 0,
@@ -43,15 +38,15 @@ export const MenuBar = ({
     if (menuValues.length > 0) {
       return useAnimatedStyle(() => ({
         borderBottomWidth: active === idx ? menuValues[idx].value : 0,
-        borderBottomColor: active === idx ? color : "transparent",
+        borderBottomColor: active === idx ? color : 'transparent',
       }));
     }
   };
 
   const textStyle = (idx) => {
     return {
-      color: active === idx ? color : "gray",
-      fontWeight: active === idx ? "600" : "400",
+      color: active === idx ? color : 'gray',
+      fontWeight: active === idx ? '600' : '400',
     };
   };
 
@@ -62,29 +57,17 @@ export const MenuBar = ({
       scrollEventThrottle={16}
       style={{
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.1)",
+        borderColor: 'rgba(0,0,0,0.1)',
         ...containerStyle,
       }}
     >
       {menus.map((item, idx) => (
-        <Animated.View
-          key={idx}
-          style={[styles.menu_row, itemStyle, animatedStyle(idx)]}
-        >
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePressHeaderMenu(idx, item)}
-            style={touchStyle}
-          >
-            {item.name !== undefined && (
+        <Animated.View key={idx} style={[styles.menu_row, itemStyle, animatedStyle(idx)]}>
+          <TouchableOpacity key={idx} onPress={() => handlePressHeaderMenu(idx, item)} style={touchStyle}>
+            {item !== undefined && item.name !== undefined ? (
               <Text style={[textStyle(idx), txtStyle]}>{item.name}</Text>
-            )}
-            {item !== undefined && typeof item !== "number" ? (
-              <Text style={[textStyle(idx), , txtStyle]}>{item}</Text>
             ) : (
-              <Text style={[textStyle(idx), , txtStyle]}>{`Menu${
-                idx + 1
-              }`}</Text>
+              <Text style={[textStyle(idx), , txtStyle]}>{`Menu${idx + 1}`}</Text>
             )}
           </TouchableOpacity>
         </Animated.View>

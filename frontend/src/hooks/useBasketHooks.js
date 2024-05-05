@@ -3,6 +3,8 @@ import ProductApi from '../services/product_api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
+import { BackButton, HomeButton } from '../components/icons/icons';
+import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 export const useBasketHooks = ({ route }) => {
   const navigation = useNavigation();
@@ -13,6 +15,22 @@ export const useBasketHooks = ({ route }) => {
   const [numColumns, setNumColumns] = useState(2);
   const [loading, setLoading] = useState(false);
   const [categoryStatus, setCategoryStatus] = useState({});
+
+  const opacity = useSharedValue(0.5);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
+  useEffect(() => {
+    if (!loading) {
+      opacity.value = withTiming(1, { duration: 650 });
+    } else {
+      opacity.value = withRepeat(withTiming(0.4, { duration: 650 }), -1, true);
+    }
+  }, [loading, opacity]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -100,11 +118,13 @@ export const useBasketHooks = ({ route }) => {
 
   return {
     products,
+    loading,
     categories,
     numColumns,
     categoryStatus,
     handleAddToBasket,
     handleButton,
     handleCategoryChecked,
+    animatedStyle,
   };
 };

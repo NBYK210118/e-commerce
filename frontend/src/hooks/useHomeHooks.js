@@ -9,7 +9,7 @@ import {
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 
-export const useSampleHook = () => {
+export const useHomeHooks = () => {
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState('');
   const borderWidths = [...Array(7)].map(() => useSharedValue(0));

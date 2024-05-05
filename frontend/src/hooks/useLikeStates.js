@@ -5,7 +5,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 
 export const useLikeStates = () => {
-  const [dataSet, setDataSet] = useState([]);
+  const [dataSet, setDataSet] = useState(null || []);
   const [activeMenu, setActiveMenu] = useState(0);
   const [selectedMenu, setSelectedMenu] = useState('');
   const [likesStatus, setLikesStatus] = useState({});
@@ -14,13 +14,16 @@ export const useLikeStates = () => {
   const { categories, loading } = useSelector((state) => state.products);
   const borderWidths = [...Array(categories.length)].map(() => useSharedValue(0));
 
-  useEffect(() => {
-    if (token) {
-      ProductApi.getUserLikes(token).then((response) => {
-        setDataSet(response.data);
-      });
-    }
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        ProductApi.getUserLikes(token).then((response) => {
+          setDataSet(response.data);
+        });
+      } else {
+      }
+    }, [])
+  );
 
   useEffect(() => {
     if (dataSet.length > 0) {
@@ -73,5 +76,6 @@ export const useLikeStates = () => {
     borderWidths,
     dataSet,
     likesStatus,
+    toggleLike,
   };
 };

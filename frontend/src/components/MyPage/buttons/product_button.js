@@ -61,7 +61,7 @@ export const ProductButton = ({ navigation, deleteProducts }) => {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 5,
     right: 0,
     width: 60,
     height: 60,

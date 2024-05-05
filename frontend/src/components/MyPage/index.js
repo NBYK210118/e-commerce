@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet } from 'react-native';
-import { WatchedProducts } from './watchedProducts';
+import { WatchedProducts } from './watched/watchedProducts';
 import { ManageButtons } from './buttons/buttons';
 import { HeadProfile } from './headProfile';
 import { useSelector } from 'react-redux';

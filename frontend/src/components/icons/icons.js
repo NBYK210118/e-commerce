@@ -58,7 +58,6 @@ export const DetailOptions = ({ navigation, homeStyle, backStyle, options }) => 
         }),
         {}
       );
-      console.log(res);
       return res;
     }
   };

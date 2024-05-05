@@ -281,7 +281,7 @@ export const MyProducts = () => {
   };
 
   return (
-    <ReAnimated.View style={{ flexDirection: 'column', justifyContent: 'space-around' }}>
+    <ReAnimated.View style={{ flexDirection: 'column', justifyContent: 'space-around', paddingBottom: 20 }}>
       <SearchBar onPress={searchByKeyword} />
       <HorizontalCategory categories={categories} categoryStatus={categoryStatus} onPress={handleCategoryChecked} />
       {loading ? (

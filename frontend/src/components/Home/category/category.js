@@ -2,10 +2,10 @@ import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOp
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { primary_gray } from '../../styles/common/colors';
+import { primary_gray } from '../../../styles/common/colors';
 import Animated, { withRepeat, withTiming, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { getCategory } from '../../features/products/product_thunk';
-import { Pagination } from '../pagination';
+import { getCategory } from '../../../features/products/product_thunk';
+import { Pagination } from '../../pagination';
 const { width } = Dimensions.get('window');
 
 export const Categories = () => {

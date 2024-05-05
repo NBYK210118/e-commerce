@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
-import { Categories } from './category';
-import { RecommendProducts } from './recommend';
-import { MostViewedProducts } from './mostViewed';
-import { DiscountProducts } from './discount';
+import { Categories } from './category/category';
+import { RecommendProducts } from './recommend/recommend';
+import { MostViewedProducts } from './most_viewed/mostViewed';
+import { DiscountProducts } from './discount/discount';
 import Animated from 'react-native-reanimated';
 import { MenuBar } from './menu_bar';
 import { CurrentLocation } from './CurrentLocation';
-import { useSampleHook } from './useSampleHook';
+import { useHomeHooks } from '../../hooks/useHomeHooks';
 import { FlashSaleComponent } from './FlashSale';
 import { light_green } from '../../styles/common/colors';
 
@@ -22,7 +22,7 @@ export const HomeScreen = () => {
     setActive,
     borderWidths,
     setSelected,
-  } = useSampleHook();
+  } = useHomeHooks();
 
   return (
     <Animated.ScrollView style={styles.wrapper} scrollEventThrottle={16} onScroll={scrollHandler}>

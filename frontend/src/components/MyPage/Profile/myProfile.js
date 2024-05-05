@@ -13,122 +13,41 @@ import RadioButtonGroup, { RadioButtonItem } from 'expo-radio-button';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
-import { primary_gray } from '../../styles/common/colors';
+import { primary_gray } from '../../../styles/common/colors';
+import TextInputs from '../TextInputs';
+import IconButton from '../buttons/IconButton';
 import AddressItem from './AddressItem';
-import TextInputs from './TextInputs';
-import IconButton from './buttons/IconButton';
+import { useProfileHooks } from '../../../hooks/ProfileHooks';
+import { LabelNickName } from './Label_Nickname';
 
 export const MyProfile = ({ onSubmit, onChange }) => {
-  const user = useSelector((val) => val.userAuth.user);
-  const token = useSelector((val) => val.userAuth.token);
-  const origin_address = useSelector((val) => val.userAuth.address);
-  const [selectedImg, setSelectedImg] = useState('');
-  const [company, setCompany] = useState('');
-  const [nickname, setNickName] = useState('');
-  const [registeredAddress, setRegisteredAddress] = useState([]);
-  const [address, setAddress] = useState([]);
-  const [phoneNumber, setPhone] = useState('');
-  const [currentWilling, setCurrentWilling] = useState(false);
-  const [personalOrCompany, setPersonalOrCompany] = useState(true);
-  const [selectedAddress, setSelectedAddress] = useState('');
-  const navigation = useNavigation();
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!token) {
-        alert('로그인이 필요합니다');
-        navigation.navigate('Login');
-      }
-    }, [token, navigation])
-  );
-
-  useEffect(() => {
-    if (token && user) {
-      setSelectedImg(user.profile.imageUrl);
-      setNickName(user.profile.nickname);
-      setCurrentWilling(user.seller);
-      if (user.profile.address.length > 0) {
-        const newAddresses = [...new Set([...user.profile.address, origin_address].filter(Boolean))];
-
-        // 기존 등록된 주소와 중복되지 않는 주소만 추가
-        setRegisteredAddress((prevState) => {
-          const existingAddresses = new Set(prevState);
-          const filteredAddresses = newAddresses.filter((addr) => !existingAddresses.has(addr));
-          return [...prevState, ...filteredAddresses];
-        });
-      }
-
-      if (user.store) {
-        setPersonalOrCompany(false);
-        setCompany(user.store.name);
-      }
-      if (user.profile.phoneNumber) {
-        setPhone(user.profile.phoneNumber);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user && user.profile.currentAddress) {
-      setSelectedAddress(user.profile.currentAddress);
-    }
-  }, [user]);
-
-  const handleSubmit = () => {
-    if (token) {
-      const data = {
-        imgUrl: selectedImg,
-        store: company,
-        nickname,
-        address: registeredAddress,
-        phoneNumber,
-        seller: currentWilling,
-        isPersonal: personalOrCompany,
-        currentAddr: selectedAddress,
-        userCurrentLocation: origin_address,
-      };
-      onSubmit(data);
-    }
-  };
-
-  const addToList = (index) => {
-    setRegisteredAddress((prevState) => {
-      if (prevState.length < 6) {
-        const newAddresses = address.filter((val, idx) => !prevState.includes(val) && val != '' && idx === index);
-        return [...prevState].concat(newAddresses);
-      } else {
-        console.log('등록된 주소가 5개입니다');
-      }
-    });
-    setAddress([]);
-  };
-
-  const removeInList = (index) => {
-    setAddress((prevState) => prevState.filter((val, idx) => idx !== index));
-  };
-
-  const handleSelectAddress = useCallback(
-    (val) => {
-      if (val !== selectedAddress) {
-        setSelectedAddress(val);
-      }
-    },
-    [selectedAddress]
-  );
-
-  const createAddressBlank = useCallback(() => {
-    setAddress([...address, '']);
-  }, [address]);
-
-  const removeRegisteredAddress = (index) => {
-    setRegisteredAddress((prevState) => prevState.filter((val, idx) => idx != selectedAddress));
-  };
-
-  const updateInput = (text, index) => {
-    const newInputs = address.slice();
-    newInputs[index] = text;
-    setAddress(newInputs);
-  };
+  const {
+    addToList,
+    createAddressBlank,
+    handleSelectAddress,
+    handleSubmit,
+    origin_address,
+    removeInList,
+    removeRegisteredAddress,
+    selectedAddress,
+    selectedImg,
+    setAddress,
+    setCompany,
+    setCurrentWilling,
+    setNickName,
+    setPersonalOrCompany,
+    setPhone,
+    setSelectedImg,
+    token,
+    updateInput,
+    user,
+    personalOrCompany,
+    nickname,
+    registeredAddress,
+    address,
+    phoneNumber,
+    currentWilling,
+  } = useProfileHooks();
 
   return (
     <KeyboardAvoidingView
@@ -145,22 +64,7 @@ export const MyProfile = ({ onSubmit, onChange }) => {
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.item_mb}>
-          <Text style={styles.labels}>성</Text>
-          <Text style={styles.email}>{user ? user.firstName : '유저 정보를 불러오지 못함'}</Text>
-        </View>
-        <View style={styles.item_mb}>
-          <Text style={styles.labels}>이름</Text>
-          <Text style={styles.email}>{user ? user.lastName : '유저 정보를 불러오지 못함'}</Text>
-        </View>
-        <View style={styles.item_mb}>
-          <Text style={styles.labels}>ID</Text>
-          <Text style={styles.email}>{user ? user.email : 'UserID'}</Text>
-        </View>
-        <View style={styles.item_mb}>
-          <Text style={styles.labels}>닉네임</Text>
-          <TextInputs value={nickname} onChangeText={setNickName} styles={styles.inputs} />
-        </View>
+        <LabelNickName user={user} nickname={nickname} setnickname={setNickName} />
         <View style={styles.item_mb}>
           <View style={{ flexDirection: 'row', position: 'relative' }}>
             <Text style={styles.labels}>

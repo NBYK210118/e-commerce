@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-export const CurrentLocation = ({ token, userInfo_loading, onPress, currentLocation }) => {
+export const CurrentLocation = ({ token, onPress, currentLocation }) => {
   return (
     <TouchableOpacity style={styles.header} onPress={onPress}>
       <FontAwesome name={token ? 'location-arrow' : 'sign-in'} size={20} color="black" style={{ marginRight: 7 }} />
