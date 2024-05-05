@@ -20,6 +20,9 @@ export const RecommendProducts = () => {
           ) : (
             <Products data={recommended_products} handleMoveToProductDetail={handleMoveToProductDetail} />
           )}
+          {recommended_products === undefined ||
+            recommended_products === null ||
+            (recommended_products.length === 0 && <RecommendLoading animatedStyle={animatedStyle} />)}
         </Animated.ScrollView>
       }
     </View>
