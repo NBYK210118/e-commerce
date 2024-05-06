@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 
-// Sample data with time in seconds (e.g., 2 days = 172800 seconds)
 const initialProducts = [
-  { id: 1, name: 'Product A', originalPrice: 50, discountPrice: 30, timeLeft: 172800 }, // 2 days
-  { id: 2, name: 'Product B', originalPrice: 80, discountPrice: 60, timeLeft: 259200 }, // 3 days
-  { id: 3, name: 'Product C', originalPrice: 20, discountPrice: 15, timeLeft: 432000 }, // 5 days
+  { id: 1, name: 'Product A', originalPrice: 50000, discountPrice: 33000, timeLeft: 172800 },
+  { id: 2, name: 'Product B', originalPrice: 80000, discountPrice: 60000, timeLeft: 259200 },
+  { id: 3, name: 'Product C', originalPrice: 212000, discountPrice: 150000, timeLeft: 432000 },
 ];
 
 const formatTime = (seconds) => {
@@ -34,11 +33,16 @@ export const TimeLimitedSales = () => {
 
   const RenderProduct = ({ product }) => (
     <View style={styles.productContainer}>
-      <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productPrice}>
-        {product.timeLeft > 0 ? `₩${product.discountPrice}` : `₩${product.originalPrice}`}
-      </Text>
-      <Text style={styles.timeLeft}>{product.timeLeft > 0 ? formatTime(product.timeLeft) : 'Discount ended'}</Text>
+      <View style={{ flexDirection: 'column', justifyContent: 'space-around' }}>
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.productPrice}>
+          {product.timeLeft > 0
+            ? `${product.discountPrice.toLocaleString('ko-kr')}원`
+            : `${product.originalPrice.toLocaleString('ko-kr')}원`}
+        </Text>
+        <Text style={styles.timeLeft}>{product.timeLeft > 0 ? formatTime(product.timeLeft) : 'Discount ended'}</Text>
+      </View>
+      <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.img} />
     </View>
   );
 
@@ -56,6 +60,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   productContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     backgroundColor: 'white',
     padding: 20,
     marginVertical: 8,
@@ -77,5 +83,9 @@ const styles = StyleSheet.create({
   timeLeft: {
     fontSize: 14,
     color: '#FF6347',
+  },
+  img: {
+    width: 100,
+    height: 100,
   },
 });

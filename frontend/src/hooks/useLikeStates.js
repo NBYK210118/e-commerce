@@ -5,6 +5,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 
 export const useLikeStates = () => {
+  const [visibleOption, setVisibleOption] = useState(false);
   const [dataSet, setDataSet] = useState(null || []);
   const [activeMenu, setActiveMenu] = useState(0);
   const [selectedMenu, setSelectedMenu] = useState('');
@@ -16,13 +17,13 @@ export const useLikeStates = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (token) {
+      if (token && !visibleOption) {
         ProductApi.getUserLikes(token).then((response) => {
           setDataSet(response.data);
         });
       } else {
       }
-    }, [navigation])
+    }, [navigation, visibleOption])
   );
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export const useLikeStates = () => {
       ProductApi.getUserLikesByCategory(token, selectedMenu).then((response) => {
         setDataSet(response.data);
       });
+      setVisibleOption(true);
     }
   }, [selectedMenu]);
 
@@ -68,6 +70,12 @@ export const useLikeStates = () => {
     }
   };
 
+  const handleShowAll = () => {
+    setVisibleOption(false);
+    setSelectedMenu('');
+    setActiveMenu(null);
+  };
+
   return {
     activeMenu,
     setActiveMenu,
@@ -77,5 +85,8 @@ export const useLikeStates = () => {
     dataSet,
     likesStatus,
     toggleLike,
+    visibleOption,
+    setVisibleOption,
+    handleShowAll,
   };
 };

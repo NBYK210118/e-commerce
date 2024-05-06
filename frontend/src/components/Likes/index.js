@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
+import { View, StyleSheet, Text, FlatList, Pressable } from 'react-native';
 
 import { MenuBar } from '../Home/menu_bar';
 
@@ -8,8 +8,19 @@ import { useLikeStates } from '../../hooks/useLikeStates';
 import LikesItem from './ProductItem';
 
 export const Likes = () => {
-  const { activeMenu, setActiveMenu, borderWidths, categories, dataSet, likesStatus, setSelectedMenu, toggleLike } =
-    useLikeStates();
+  const {
+    activeMenu,
+    setActiveMenu,
+    borderWidths,
+    categories,
+    dataSet,
+    likesStatus,
+    setSelectedMenu,
+    toggleLike,
+    visibleOption,
+    handleShowAll,
+  } = useLikeStates();
+
   return (
     <View style={styles.topWrapper}>
       <MenuBar
@@ -21,11 +32,21 @@ export const Likes = () => {
         color={light_green}
         nothingChecked={true}
       />
-      <View style={{ padding: 5, marginLeft: 15, backgroundColor: '#fafafa' }}>
-        <Text>
-          총 <Text style={{ color: primary_blue, fontWeight: 'bold' }}>{dataSet.length}</Text>개의 상품을 좋아합니다
-        </Text>
+      <View style={styles.header}>
+        <View style={styles.length_wrap}>
+          <Text>
+            총 <Text style={styles.length}>{dataSet.length}</Text>개의 상품을 좋아합니다
+          </Text>
+        </View>
+        {visibleOption && (
+          <View style={styles.showAll}>
+            <Pressable onPress={() => handleShowAll()}>
+              <Text style={styles.button_txt}>전체 보기</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
+
       <FlatList
         data={dataSet}
         keyExtractor={(item) => item.id}
@@ -37,8 +58,17 @@ export const Likes = () => {
 };
 
 const styles = StyleSheet.create({
-  topWrapper: {},
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 4 },
   scrollView: {
     backgroundColor: '#f5f5f5',
   },
+  showAll: {
+    padding: 5,
+    marginRight: 15,
+    borderRadius: 4,
+    backgroundColor: '#3CB371',
+  },
+  length_wrap: { padding: 5, marginLeft: 15 },
+  length: { color: primary_blue, fontWeight: 'bold' },
+  button_txt: { color: 'white' },
 });

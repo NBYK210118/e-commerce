@@ -1,4 +1,4 @@
-import { Animated, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, PanResponder, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import React, { useRef } from 'react';
 import { setOptionsVisible } from '../../../features/auth/auth_slice';
@@ -61,7 +61,7 @@ export const ProductButton = ({ navigation, deleteProducts }) => {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 5,
+    bottom: 15,
     right: 0,
     width: 60,
     height: 60,

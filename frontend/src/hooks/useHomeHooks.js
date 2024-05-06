@@ -26,12 +26,12 @@ export const useHomeHooks = () => {
   });
 
   const menuBarStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(scrollY.value, [30, 31], [0, 10], Extrapolation.CLAMP);
+    const translateY = interpolate(scrollY.value, [30, 500], [0, 5], Extrapolation.CLAMP);
 
     return {
-      transform: [{ translateY }],
+      // transform: [{ translateY }],
       position: scrollY.value > 30 ? 'absolute' : 'relative',
-      top: scrollY.value > 30 ? scrollY.value - 14 : 'auto',
+      top: scrollY.value > 30 ? scrollY.value : 'auto',
       left: 0,
       right: 0,
       zIndex: 1,
