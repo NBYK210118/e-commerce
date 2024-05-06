@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { Pagination } from '../pagination';
 import { FloatingBtns } from './FloatingBtns';
 import { ProductInfo } from './ProductInfo';
-import { useProductFetch } from './useProductFetch';
+import { useProductFetch } from '../../hooks/useProductFetch';
 import { TouchMenu } from './touch_menu';
 import { CreateReview } from './CreateReview';
 import { Review } from './Reviews';

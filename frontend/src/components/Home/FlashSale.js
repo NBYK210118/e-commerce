@@ -1,66 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-// 샘플 데이터
-const initialSalesData = [
-  { id: 1, name: '제품 A', timeLeft: 180 }, // 180초 남음
-  { id: 2, name: '제품 B', timeLeft: 300 }, // 300초 남음
-  { id: 3, name: '제품 C', timeLeft: 120 }, // 120초 남음
+// Sample data with time in seconds (e.g., 2 days = 172800 seconds)
+const initialProducts = [
+  { id: 1, name: 'Product A', originalPrice: 50, discountPrice: 30, timeLeft: 172800 }, // 2 days
+  { id: 2, name: 'Product B', originalPrice: 80, discountPrice: 60, timeLeft: 259200 }, // 3 days
+  { id: 3, name: 'Product C', originalPrice: 20, discountPrice: 15, timeLeft: 432000 }, // 5 days
 ];
 
-export const FlashSaleComponent = () => {
-  const [sales, setSales] = useState(initialSalesData);
+const formatTime = (seconds) => {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+  return `${days}d ${hours}:${minutes}:${remainingSeconds}`;
+};
+
+export const TimeLimitedSales = () => {
+  const [products, setProducts] = useState(initialProducts);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const updatedSales = sales.map((sale) => {
-        const newTimeLeft = Math.max(sale.timeLeft - 1, 0);
-        return { ...sale, timeLeft: newTimeLeft };
-      });
-      setSales(updatedSales.filter((sale) => sale.timeLeft > 0));
+      setProducts((currentProducts) =>
+        currentProducts.map((product) => {
+          const newTimeLeft = Math.max(product.timeLeft - 1, 0);
+          return { ...product, timeLeft: newTimeLeft };
+        })
+      );
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sales]);
+  }, []);
 
-  const RenderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.itemTimeLeft}>{item.timeLeft} seconds left</Text>
+  const RenderProduct = ({ product }) => (
+    <View style={styles.productContainer}>
+      <Text style={styles.productName}>{product.name}</Text>
+      <Text style={styles.productPrice}>
+        {product.timeLeft > 0 ? `₩${product.discountPrice}` : `₩${product.originalPrice}`}
+      </Text>
+      <Text style={styles.timeLeft}>{product.timeLeft > 0 ? formatTime(product.timeLeft) : 'Discount ended'}</Text>
     </View>
   );
 
   return (
-    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-      {initialSalesData.map((item, idx) => (
-        <RenderItem key={idx} item={item} />
+    <ScrollView style={styles.container}>
+      {products.map((product) => (
+        <RenderProduct key={product.id} product={product} />
       ))}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  list: {
-    backgroundColor: '#f5f5f5',
+  container: {
+    padding: 10,
   },
-  itemContainer: {
+  productContainer: {
     backgroundColor: 'white',
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  itemName: {
+  productName: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  itemTimeLeft: {
+  productPrice: {
     fontSize: 16,
-    color: 'red',
+    color: '#007BFF',
+  },
+  timeLeft: {
+    fontSize: 14,
+    color: '#FF6347',
   },
 });

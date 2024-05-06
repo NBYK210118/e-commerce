@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCategory } from '../features/products/product_thunk';
+import { Dimensions } from 'react-native';
 
+const width = Dimensions.get('window').width;
 export const useCategoryHooks = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const category_datas = useSelector((val) => val.products.categories);

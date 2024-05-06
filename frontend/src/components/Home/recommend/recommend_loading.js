@@ -6,7 +6,7 @@ export const RecommendLoading = ({ animatedStyle }) => {
   return (
     <>
       {[...Array(6)].map((_, idx) => (
-        <Animated.View>
+        <Animated.View key={`view-${idx}`}>
           <TouchableOpacity key={idx} style={styles.box}>
             <Animated.Image style={[styles.img, { backgroundColor: primary_gray }, animatedStyle]} />
           </TouchableOpacity>

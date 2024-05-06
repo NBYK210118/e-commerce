@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { BackButton, HomeButton } from '../components/icons/icons';
 import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { setSelectedProduct } from '../features/products/product_slice';
 
 export const useBasketHooks = ({ route }) => {
   const navigation = useNavigation();
@@ -15,7 +16,6 @@ export const useBasketHooks = ({ route }) => {
   const [numColumns, setNumColumns] = useState(2);
   const [loading, setLoading] = useState(false);
   const [categoryStatus, setCategoryStatus] = useState({});
-
   const opacity = useSharedValue(0.5);
 
   const animatedStyle = useAnimatedStyle(() => {

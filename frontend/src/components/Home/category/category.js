@@ -1,49 +1,25 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Pagination } from '../../pagination';
-import { CategoryLoading } from './Category_loading';
-import { useCategoryHooks } from '../../../hooks/useCategoryHooks';
-const { width } = Dimensions.get('window');
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export const Categories = () => {
-  const { animatedStyle, handlePress, handleScroll, pages, loading, category_datas, currentPage } = useCategoryHooks();
-
-  return (
-    <View>
-      <ScrollView
-        horizontal
-        scrollEventThrottle={16}
-        onScroll={handleScroll}
-        showsHorizontalScrollIndicator={false}
-        pagingEnabled
-      >
-        {loading ? (
-          <CategoryLoading animatedStyle={animatedStyle} />
-        ) : (
-          pages.map((page, idx) => (
-            <View key={idx} style={categories_style.page}>
-              {page.map((category, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={categories_style.categoryBox}
-                  onPress={() => handlePress(category.name)}
-                >
-                  <Image source={{ uri: category.imgUrl }} style={categories_style.image} />
-                  <Text style={categories_style.categoryText}>{category.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))
-        )}
-        {category_datas === undefined ||
-          category_datas === null ||
-          (category_datas.length === 0 && <CategoryLoading animatedStyle={animatedStyle} />)}
-      </ScrollView>
-      <Pagination contents={pages} current={currentPage} />
-    </View>
-  );
+export const Items = ({ pages = [], handlePress }) => {
+  if (pages !== undefined && pages !== null && pages.length > 0) {
+    return (
+      <>
+        {pages.map((page, idx) => (
+          <View key={idx} style={styles.page}>
+            {page.map((category, idx) => (
+              <TouchableOpacity key={idx} style={styles.categoryBox} onPress={() => handlePress(category.name)}>
+                <Image source={{ uri: category.imgUrl }} style={styles.image} />
+                <Text style={styles.categoryText}>{category.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
+      </>
+    );
+  }
 };
-
-const categories_style = StyleSheet.create({
+const { width } = Dimensions.get('window');
+const styles = StyleSheet.create({
   page: {
     width: width,
     flexDirection: 'row',
@@ -68,21 +44,5 @@ const categories_style = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
     marginTop: 5,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  paginationDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: 'blue',
-  },
-  inactiveDot: {
-    backgroundColor: 'gray',
   },
 });

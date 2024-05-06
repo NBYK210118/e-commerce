@@ -13,13 +13,16 @@ export const MenuBar = ({
   containerStyle = {},
   touchStyle = {},
   txtStyle = {},
+  nothingChecked = false,
 }) => {
   useEffect(() => {
-    if (menus[0] !== undefined) {
-      menuValues[0].value = withTiming(3, { duration: 500 });
+    if (!nothingChecked) {
+      if (menus[0] !== undefined) {
+        menuValues[0].value = withTiming(3, { duration: 500 });
 
-      setActive(0);
-    } else setActive(null);
+        setActive(0);
+      } else setActive(null);
+    }
   }, []);
 
   const handlePressHeaderMenu = (index, item) => {
@@ -45,8 +48,8 @@ export const MenuBar = ({
 
   const textStyle = (idx) => {
     return {
-      color: active === idx ? color : 'gray',
-      fontWeight: active === idx ? '600' : '400',
+      color: active === idx && !nothingChecked ? color : 'gray',
+      fontWeight: active === idx && !nothingChecked ? '600' : '400',
     };
   };
 

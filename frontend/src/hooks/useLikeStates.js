@@ -22,7 +22,7 @@ export const useLikeStates = () => {
         });
       } else {
       }
-    }, [])
+    }, [navigation])
   );
 
   useEffect(() => {

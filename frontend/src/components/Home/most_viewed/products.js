@@ -5,7 +5,7 @@ export const Products = ({ data, onPress }) => {
   return (
     <>
       {data.map((val, idx) => (
-        <TouchableOpacity key={idx} style={styles.box} onPress={() => handleMoveToProductDetail(val.id)}>
+        <TouchableOpacity key={idx} style={styles.box} onPress={() => onPress(val.id)}>
           <Image source={{ uri: val.images[0]?.imgUrl }} style={styles.img} />
           <View style={{ overflow: 'hidden', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Text numberOfLines={1} ellipsizeMode="tail" style={styles.product_name}>

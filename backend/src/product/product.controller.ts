@@ -84,18 +84,18 @@ export class ProductController {
 
   @Post('/guest/viewed')
   async guestWatchedProduct(
-    @Body('productId', ParseIntPipe) productId: number,
+    @Query('productId', ParseIntPipe) productId: string,
   ): Promise<void> {
-    return this.productService.guestWatchedProduct(productId);
+    return this.productService.guestWatchedProduct(+productId);
   }
 
   @Post('/user/viewed')
   @UseGuards(AuthGuard())
   async userWatchedProduct(
     @GetUser() user: User,
-    @Body('productId', ParseIntPipe) productId: number,
+    @Query('productId', ParseIntPipe) productId: string,
   ): Promise<ViewedProduct[]> {
-    return this.productService.userWatchedProduct(user, productId);
+    return this.productService.userWatchedProduct(user, +productId);
   }
 
   @Get('/all/random-recommend')

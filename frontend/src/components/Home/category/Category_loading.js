@@ -6,7 +6,7 @@ export const CategoryLoading = ({ animatedStyle }) => {
   return (
     <>
       {[...Array(2)].map((_, idx) => (
-        <View key={idx} style={[styles.page]}>
+        <Animated.View key={idx} style={[styles.page]}>
           {[...Array(7)].map((_, idx) => (
             <View key={idx} style={[styles.categoryBox, { paddingVertical: 5 }]}>
               <Animated.Image style={[styles.image, { backgroundColor: primary_gray }, animatedStyle]} />
@@ -15,7 +15,7 @@ export const CategoryLoading = ({ animatedStyle }) => {
               />
             </View>
           ))}
-        </View>
+        </Animated.View>
       ))}
     </>
   );
@@ -23,7 +23,7 @@ export const CategoryLoading = ({ animatedStyle }) => {
 
 const width = Dimensions.get('window').width;
 const styles = StyleSheet.create({
-  age: {
+  page: {
     width: width,
     flexDirection: 'row',
     flexWrap: 'wrap',

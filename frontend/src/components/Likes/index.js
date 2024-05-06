@@ -1,10 +1,8 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, FlatList } from 'react-native';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { View, StyleSheet, Text, FlatList } from 'react-native';
+
 import { MenuBar } from '../Home/menu_bar';
-import Animated, { useSharedValue } from 'react-native-reanimated';
-import ProductApi from '../../services/product_api';
+
 import { light_green, primary_blue } from '../../styles/common/colors';
 import { useLikeStates } from '../../hooks/useLikeStates';
 import LikesItem from './ProductItem';
@@ -21,6 +19,7 @@ export const Likes = () => {
         menus={categories}
         menuValues={borderWidths}
         color={light_green}
+        nothingChecked={true}
       />
       <View style={{ padding: 5, marginLeft: 15, backgroundColor: '#fafafa' }}>
         <Text>

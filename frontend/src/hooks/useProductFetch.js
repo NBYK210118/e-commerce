@@ -2,8 +2,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { findProduct } from '../../features/products/product_thunk';
-import ProductApi from '../../services/product_api';
+import { findProduct } from '../features/products/product_thunk';
+import ProductApi from '../services/product_api';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 
 export const useProductFetch = () => {
@@ -52,6 +52,20 @@ export const useProductFetch = () => {
       }
     }
   }, [selectedProductId, navigation, dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        ProductApi.userViewed(token, selectedProductId).then((response) => {
+          console.log('유저 조회수 증가');
+        });
+      } else {
+        ProductApi.guestViewed(selectedProductId).then((response) => {
+          console.log('게스트에 의해 조회수 증가');
+        });
+      }
+    }, [token, navigation])
+  );
 
   useFocusEffect(fetchDetail);
 

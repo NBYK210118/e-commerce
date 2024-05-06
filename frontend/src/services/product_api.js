@@ -356,42 +356,60 @@ const isUsersProduct = async (token, productId) => {
 };
 
 // 게스트가 상품을 봤을 때 조회수 상승
-const guestViewed = async (formData, navigate) => {
+const guestViewed = async (productId) => {
   try {
-    const data = await http.post('/product/guest/viewed', formData);
+    const data = await http.post(`/product/guest/viewed?productId=${productId}`);
     return data;
   } catch (error) {
-    if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };
 
 // 사용자가 상품을 봤을 때 조회수 상승
-const userViewed = async (token, formData, navigate) => {
+const userViewed = async (token, productId) => {
   try {
-    const data = await http.post(`/product/user/viewed`, formData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    console.log(productId);
+    const data = await http.post(
+      `/product/user/viewed?productId=${productId}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return data;
   } catch (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
-      navigate('/signin');
-    } else if (error.response.status === 400) {
-      alert('잘못된 요청');
-      localStorage.clear();
-      navigate('');
-    } else if (error.response.status === 500) {
-      alert('서버 에러!');
-      localStorage.clear();
-      navigate('');
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          alert('Unauthorized');
+          break;
+        case 500:
+          alert('서버 에러');
+          break;
+        case 400:
+          alert('잘못된 요청!');
+          break;
+        default:
+          console.log('Unknown error', error);
+      }
+    } else {
+      console.error('API call error: ', error);
     }
   }
 };

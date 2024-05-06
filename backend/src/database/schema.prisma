@@ -147,6 +147,13 @@ model Category {
   products Product[]
 }
 
+model Timer{
+  id Int @id @default(autoincrement())
+  startTime DateTime
+  endTime DateTime
+  timerProdutcs TimerProduct[]
+}
+
 model Product {
   id              Int             @id @default(autoincrement())
   name            String
@@ -167,6 +174,7 @@ model Product {
   orders          Order[]
   images          Image[]
   reviews         Review[]
+  timerProducts TimerProduct[]
   inventory       Int
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -181,6 +189,15 @@ model Product {
   sellingListId   Int?
   viewedProduct   ViewedProduct?  @relation(fields: [viewedProductId], references: [id])
   viewedProductId Int?
+}
+
+model TimerProduct {
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  timer Timer @relation(fields: [timerId], references: [id])
+  timerId Int
+
+  @@id([productId, timerId])
 }
 
 model WishList {

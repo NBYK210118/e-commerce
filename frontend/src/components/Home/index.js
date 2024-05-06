@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Categories } from './category/category';
+import { Categories } from './category';
 import { RecommendProducts } from './recommend/recommend';
 import { MostViewedProducts } from './most_viewed/mostViewed';
 import { DiscountProducts } from './discount/discount';
@@ -7,8 +7,8 @@ import Animated from 'react-native-reanimated';
 import { MenuBar } from './menu_bar';
 import { CurrentLocation } from './CurrentLocation';
 import { useHomeHooks } from '../../hooks/useHomeHooks';
-import { FlashSaleComponent } from './FlashSale';
 import { light_green } from '../../styles/common/colors';
+import { TimeLimitedSales } from './FlashSale';
 
 export const HomeScreen = () => {
   const {
@@ -47,7 +47,7 @@ export const HomeScreen = () => {
       {active === 0 && (
         <>
           <Categories />
-          <FlashSaleComponent />
+          <TimeLimitedSales />
           <RecommendProducts />
           <MostViewedProducts />
           <DiscountProducts />
