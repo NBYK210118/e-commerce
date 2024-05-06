@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export const Stepper = ({
   active,
@@ -6,7 +6,6 @@ export const Stepper = ({
   onBack,
   onNext,
   onFinish,
-  stepStyle,
   buttonContainer,
   buttonStyle,
   buttonTextStyle,
@@ -19,8 +18,8 @@ export const Stepper = ({
     <View>
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: content.length > 1 ? "space-around" : "center",
+          flexDirection: 'row',
+          justifyContent: content.length > 1 ? 'space-around' : 'center',
         }}
       >
         {content.map((_, idx) => (
@@ -30,14 +29,10 @@ export const Stepper = ({
               width: 30,
               height: 30,
               borderRadius: 100,
-              backgroundColor: active === idx ? "#4aa8d8" : "#e5f1f5",
+              backgroundColor: active === idx ? '#4aa8d8' : '#e5f1f5',
             }}
           >
-            <Text
-              style={{ textAlign: "center", lineHeight: 30, color: "white" }}
-            >
-              {idx + 1}
-            </Text>
+            <Text style={{ textAlign: 'center', lineHeight: 30, color: 'white' }}>{idx + 1}</Text>
           </View>
         ))}
       </View>

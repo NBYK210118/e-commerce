@@ -16,7 +16,6 @@ import { useState } from 'react';
 export const Login = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const token = useSelector((val) => val.userAuth.token);
   const loading = useSelector((state) => state.userAuth.loading);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -1,7 +1,6 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { gray1, primary_gray } from '../../styles/common/colors';
+import { gray1 } from '../../styles/common/colors';
 
 export const HeadProfile = () => {
   const user = useSelector((val) => val.userAuth.user);

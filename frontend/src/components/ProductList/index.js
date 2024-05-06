@@ -1,17 +1,8 @@
-import { FlatList, ScrollView, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import HorizontalCategory from '../MyPage/HorizontalCategory';
 import { ProductItem } from './ProductItem';
-import { useBasketHooks } from '../../hooks/useBasketHooks';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { primary_gray } from '../../styles/common/colors';
-import { useEffect } from 'react';
 import { ProductListLoading } from './product_list_loading';
+import { useProductListHooks } from '../../hooks/useProductListHooks';
 
 export const ProductList = ({ route }) => {
   const {
@@ -24,7 +15,7 @@ export const ProductList = ({ route }) => {
     handleButton,
     handleCategoryChecked,
     animatedStyle,
-  } = useBasketHooks({
+  } = useProductListHooks({
     route,
   });
 

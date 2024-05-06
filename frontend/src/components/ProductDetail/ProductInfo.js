@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { primary_gray } from '../../styles/common/colors';
 import { AntDesign } from '@expo/vector-icons';
 export const ProductInfo = ({ currentProduct, currentStars }) => {

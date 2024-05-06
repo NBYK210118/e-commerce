@@ -1,15 +1,7 @@
-import {
-  NavigationContainer,
-  getFocusedRouteNameFromRoute,
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Stack, Tab } from './src/components/common';
-import { ProductDetail } from './src/components/ProductDetail/index';
-import { BackButton, DetailOptions, HomeButton, Material, TabIcon } from './src/components/icons/icons';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { BackButton, DetailOptions, Material, TabIcon } from './src/components/icons/icons';
+import { Provider } from 'react-redux';
 import { StatusBar, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -20,26 +12,9 @@ import { SignUp } from './src/components/SignIn-Up/SignUp';
 import { Login } from './src/components/SignIn-Up/Login';
 import { store } from './src/app/store';
 import { ProductList } from './src/components/ProductList';
-import { ShoppingCart } from './src/components/ShoppingCart';
 import { useMainState } from './src/hooks/useMainState';
-
-const ProductDetailStack = () => {
-  const navigation = useNavigation();
-
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="ProductDetail" component={ProductDetail} options={DetailOptions({ navigation })} />
-    </Stack.Navigator>
-  );
-};
-
-const ShoppingCartStack = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="MyShoppingCart" component={ShoppingCart} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-};
+import { ProductDetailStack } from './src/components/Tabs/ProductDetail';
+import { ShoppingCartStack } from './src/components/Tabs/ShoppingCart';
 
 const AppNavigator = () => {
   const { token, handleLogOut, navigation } = useMainState();
@@ -47,11 +22,7 @@ const AppNavigator = () => {
   const backStyle = { marginLeft: 15 };
 
   const getHeaderVisibility = (route) => {
-    // 스택 내의 현재 활성화된 화면 이름 가져오기
     const routeName = getFocusedRouteNameFromRoute(route);
-    // console.log('route: ', route);
-    // console.log('routeName: ', routeName);
-    // 'Questions' 화면일 때 헤더 숨기기
     return !(routeName === 'Questions');
   };
 

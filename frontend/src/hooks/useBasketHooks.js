@@ -1,22 +1,29 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import ProductApi from '../services/product_api';
-import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { Dimensions } from 'react-native';
-import { BackButton, HomeButton } from '../components/icons/icons';
-import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { setSelectedProduct } from '../features/products/product_slice';
+import ProductApi from '../services/product_api';
+import { useSelector } from 'react-redux';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
-export const useBasketHooks = ({ route }) => {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
+export const useBasketHooks = () => {
   const [products, setProducts] = useState([]);
+  const [currentProductId, setCurrentProductId] = useState(0);
+  const [productSummary, setProductSummary] = useState(null);
+  const [quantity, setQuantity] = useState(0);
+  const [selectedProducts, setSelectedProducts] = useState({});
+  const [inventoryStatus, setInventoryStatus] = useState({});
+  const [entireCheck, setEntireCheck] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const { token, user } = useSelector((state) => state.userAuth);
-  const { categories } = useSelector((state) => state.products);
-  const [numColumns, setNumColumns] = useState(2);
-  const [loading, setLoading] = useState(false);
-  const [categoryStatus, setCategoryStatus] = useState({});
+  const navigation = useNavigation();
   const opacity = useSharedValue(0.5);
+  const scrollY = useSharedValue(0);
+  const [loading, setLoading] = useState(false);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -26,105 +33,137 @@ export const useBasketHooks = ({ route }) => {
 
   useEffect(() => {
     if (!loading) {
-      opacity.value = withTiming(1, { duration: 650 });
+      opacity.value = withTiming(0, { duration: 1000 });
     } else {
-      opacity.value = withRepeat(withTiming(0.4, { duration: 650 }), -1, true);
+      opacity.value = withRepeat(withTiming(0.3, { duration: 1000 }), -1, true);
     }
-  }, [loading, opacity]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <HomeButton navigation={navigation} style={{ marginRight: 15 }} />,
-      headerLeft: () => <BackButton navigation={navigation} style={{ marginLeft: 15 }} />,
-    });
-  }, []);
+  }, [loading, opacity, navigation]);
 
   useFocusEffect(
     useCallback(() => {
-      const { categoryName } = route.params;
-      if (categoryName) {
-        ProductApi.getAllCategoryProducts(categoryName).then((response) => {
-          setProducts(response.data);
+      if (!token) {
+        alert('로그인이 필요합니다');
+        navigation.navigate('Login');
+      } else {
+        setLoading(true);
+        ProductApi.getMyBasket(token).then((response) => {
+          setProducts(response.data.products);
+          setProductSummary(response.data.summary);
+          setLoading(false);
         });
-
-        const updateLayout = () => {
-          const width = Dimensions.get('window').width;
-          const itemWidth = 100;
-          const newNumColumns = Math.floor(width / itemWidth);
-          setNumColumns(newNumColumns);
-        };
-
-        Dimensions.addEventListener('change', updateLayout);
-        updateLayout();
       }
-    }, [route])
+    }, [token, navigation])
   );
 
   useEffect(() => {
-    if (categories.length > 0) {
-      setCategoryStatus(
-        categories.reduce((acc, val) => {
-          acc[val.name] = false;
+    if (products.length > 0) {
+      setSelectedProducts(
+        products.reduce((acc, val) => {
+          acc[val.product.id] = true;
+          return acc;
+        }, {})
+      );
+      setInventoryStatus(
+        products.reduce((acc, val) => {
+          acc[val.product.id] = val.quantity;
           return acc;
         }, {})
       );
     }
-  }, [categories]);
+  }, [products]);
 
-  const handleButton = (productId) => {
-    dispatch(setSelectedProduct(productId));
-    navigation.navigate('Product');
-  };
-
-  const handleAddToBasket = (productId) => {
-    setLoading(true);
-    ProductApi.addProductMyBasket(token, productId, navigation).then((response) => {
-      if (response.data) {
-        alert('장바구니에 성공적으로 추가되었습니다');
-      }
+  const toggleCheckBox = (productId) => {
+    const data = {
+      ...selectedProducts,
+      [productId]: !selectedProducts[productId],
+    };
+    setSelectedProducts(() => {
+      const condition = Object.values(data).every((val) => val === true);
+      if (condition) setEntireCheck(true);
+      else setEntireCheck(false);
+      return data;
     });
-    setLoading(false);
   };
 
-  const handleCategoryChecked = (category) => {
-    if (category) {
-      setCategoryStatus((prevState) => {
-        let newState = { ...prevState };
-        newState[category] = !categoryStatus[category];
+  const checkEntire = () => {
+    const keys = Object.keys(selectedProducts);
+    setSelectedProducts((prevState) => {
+      const newState = { ...prevState };
+      for (const key of keys) {
+        newState[key] = !entireCheck;
+      }
+      return newState;
+    });
+    setEntireCheck(!entireCheck);
+  };
 
-        Object.keys(prevState).forEach((key) => {
-          if (key !== category) newState[key] = false;
-        });
-        return newState;
-      });
-      ProductApi.getAllCategoryProducts(category).then((response) => {
-        try {
-          setProducts(response.data);
-        } catch (error) {
-          if (error.response !== undefined) {
-            switch (error.response) {
-              case 400:
-                navigation.reset();
-              case 401:
-                navigation.navigate('Login');
-              case 500:
-                navigation.reset();
-            }
-          }
-        }
-      });
+  const toggleClose = (productId) => {
+    ProductApi.removeProductBasket(token, productId).then((response) => {
+      setProducts(response.data.products);
+      setProductSummary(response.data.summary);
+    });
+  };
+
+  const removeManyProducts = () => {
+    ProductApi.removeManyProductInBasket(token, selectedProducts).then((response) => {
+      setProducts(response.data.products);
+      setProductSummary(response.data.summary);
+    });
+  };
+
+  const handleModal = (productId) => {
+    setQuantity(inventoryStatus[productId]);
+    setCurrentProductId(productId);
+    setModalOpen(!modalOpen);
+  };
+
+  const handleInventories = (sign) => {
+    if (sign === '+') {
+      setQuantity(quantity + 1);
+    } else if (quantity > 0 && sign === '-') {
+      setQuantity(quantity - 1);
     }
   };
 
+  const submitInventoryChanges = () => {
+    ProductApi.updateProductQuantity(token, currentProductId, quantity).then((response) => {
+      setProducts(response.data.products);
+      setProductSummary(response.data.summary);
+    });
+    setModalOpen(false);
+  };
+
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const modalStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: withTiming(scrollY.value > 10 ? -105 : 0, { duration: 800 }) }],
+    };
+  }, [scrollY]);
+
   return {
-    products,
     loading,
-    categories,
-    numColumns,
-    categoryStatus,
-    handleAddToBasket,
-    handleButton,
-    handleCategoryChecked,
+    modalOpen,
+    setModalOpen,
+    quantity,
+    setQuantity,
+    products,
+    entireCheck,
+    selectedProducts,
+    productSummary,
+    modalStyle,
+    handleScroll,
+    submitInventoryChanges,
+    handleInventories,
+    handleModal,
+    removeManyProducts,
+    toggleCheckBox,
+    toggleClose,
+    checkEntire,
     animatedStyle,
   };
 };

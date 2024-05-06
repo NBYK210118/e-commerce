@@ -1,4 +1,4 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { MyPage } from '../MyPage';
 import { MyProducts } from '../MyPage/myProducts';
@@ -7,7 +7,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { Stack } from '../common';
 import { updateProfile } from '../../features/auth/auth_thunk';
 import { Questions } from '../MyPage/Questions/Questions';
-import { DetailOptions } from '../icons/icons';
 import { MyProfile } from '../MyPage/Profile/myProfile';
 
 export const MyPageStackScreen = () => {

@@ -1,10 +1,4 @@
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { primary_gray } from '../../../styles/common/colors';
-import { getWatchedProducts } from '../../../features/products/product_thunk';
-import Animated, { useAnimatedStyle, withRepeat, withTiming, useSharedValue } from 'react-native-reanimated';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SkeletonComp } from './watched_loading';
 import { Products } from './Products';
 import { useWatchedHooks } from '../../../hooks/useWatchedHooks';

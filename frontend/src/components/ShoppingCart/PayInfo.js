@@ -1,7 +1,6 @@
 import { Text, View } from 'react-native';
 
 export const PayInfo = ({ productSummary, productCount }) => {
-  console.log('PayInfo: ', productSummary);
   return (
     <View style={styles.container}>
       <Text style={styles.products}>

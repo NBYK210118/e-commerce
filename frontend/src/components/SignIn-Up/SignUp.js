@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -6,56 +5,34 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { MidStep } from './mid_step';
-import { FinalStep } from './final_step';
-import { FirstStep } from './first_step';
 import { Stepper } from '../MyPage/manage/Stepper';
-import DataService from '../../services/user_api';
-import { useDispatch, useSelector } from 'react-redux';
-import { signUp } from '../../features/auth/auth_thunk';
+import { useSignUpState } from '../../hooks/useSignUpState';
 
 export const SignUp = () => {
-  const dispatch = useDispatch();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { error, loading } = useSelector((state) => state.userAuth);
-  const navigation = useNavigation();
+  const {
+    email,
+    firstName,
+    lastName,
+    password,
+    setEmail,
+    setFirstName,
+    setLastName,
+    setPassword,
+    loading,
+    error,
+    handleBeforeBtn,
+    handleNextBtn,
+    handleSubmitBtn,
+  } = useSignUpState();
   const content = [
     <FirstStep firstName={firstName} setFirstName={setFirstName} lastName={lastName} setLastName={setLastName} />,
     <MidStep email={email} setEmail={setEmail} />,
     <FinalStep password={password} setPassword={setPassword} />,
   ];
-  const [active, setActive] = useState(0);
-
-  const handleNextBtn = () => {
-    if (active === 0) {
-      if (!firstName || !lastName) alert('필수 입력사항 입니다!');
-      else setActive((prevState) => prevState + 1);
-    } else if (active === 1) {
-      if (!email) alert('필수 입력사항 입니다');
-      else setActive((prevState) => prevState + 1);
-    } else {
-      if (!password) alert('필수 입력사항 입니다');
-      else setActive((prevState) => prevState + 1);
-    }
-  };
-
-  const handleBeforeBtn = () => {
-    setActive((prevState) => prevState - 1);
-  };
-
-  const handleSubmitBtn = () => {
-    const data = { firstName, lastName, email, password };
-    dispatch(signUp({ data, navigation }));
-  };
 
   return (
     <KeyboardAvoidingView

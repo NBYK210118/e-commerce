@@ -1,50 +1,13 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { MenuBar } from '../../Home/menu_bar';
-import { useEffect, useState } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { entire_menus, sample_QA } from './data';
 import { primary_gray } from '../../../styles/common/colors';
 import { QuestionList } from './QuestionList';
+import { useQuestionState } from '../../../hooks/useQuestionState';
 
 export const Questions = () => {
-  const [active, setActive] = useState('');
-  const [currentMenu, setCurrentMenu] = useState(entire_menus[0].category);
-  const [currentSubmenu, setCurrentSubMenu] = useState(entire_menus[0].sub_category[0]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const borderBottomWidths = entire_menus.map(() => useSharedValue(0));
-
-  useEffect(() => {
-    borderBottomWidths[0].value = 3;
-  }, []);
-
-  const animatedStyle = (idx) => {
-    return useAnimatedStyle(() => ({
-      borderBottomWidth: borderBottomWidths[idx].value,
-    }));
-  };
-
-  const handlePress = (category, selectedIdx) => {
-    setCurrentMenu(category);
-    borderBottomWidths.forEach((bord, idx) => {
-      bord.value = withSpring(selectedIdx === idx ? 3 : 0, { duration: 500 });
-    });
-  };
-
-  const handleTouchState = (idx) => {
-    if (currentQuestion === idx) {
-      setCurrentQuestion(0);
-      return;
-    }
-    setCurrentQuestion(idx);
-  };
-
-  useEffect(() => {
-    console.log('currentMenu: ', currentMenu);
-  }, [currentMenu]);
-
-  useEffect(() => {
-    console.log('currentSubMenu: ', currentSubmenu);
-  }, [currentSubmenu]);
+  const { animatedStyle, currentQuestion, handlePress, handleTouchState, setCurrentMenu, currentMenu } =
+    useQuestionState();
 
   return (
     <View style={{ paddingBottom: currentMenu !== '전체' ? 100 : 50 }}>

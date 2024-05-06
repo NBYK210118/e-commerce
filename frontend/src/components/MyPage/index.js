@@ -4,7 +4,7 @@ import { ManageButtons } from './buttons/buttons';
 import { HeadProfile } from './headProfile';
 import { useSelector } from 'react-redux';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 export const MyPage = () => {
   const token = useSelector((val) => val.userAuth.token);

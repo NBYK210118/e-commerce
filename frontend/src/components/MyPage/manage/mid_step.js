@@ -10,7 +10,6 @@ export const PriceDiscountStep = ({
   setDiscountRatio,
   isDiscount,
   setIsDiscount,
-  product_id,
 }) => {
   const priceInputRef = useRef();
   const discountPriceRef = useRef();

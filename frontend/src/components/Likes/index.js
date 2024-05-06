@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, Text, FlatList, Pressable } from 'react-native';
-
 import { MenuBar } from '../Home/menu_bar';
-
 import { light_green, primary_blue } from '../../styles/common/colors';
 import { useLikeStates } from '../../hooks/useLikeStates';
-import LikesItem from './ProductItem';
+import { LikesItem } from './ProductItem';
 
 export const Likes = () => {
   const {
