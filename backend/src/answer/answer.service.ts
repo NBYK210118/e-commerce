@@ -1,3 +1,4 @@
+import { publicUserSelect } from '../security/security';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { AnswerDto } from './dto/answer.dto';
@@ -23,7 +24,9 @@ export class AnswerService {
           question: { connect: { id: question_id } },
           user: { connect: { id: user.id } },
         },
-        include: { question: { include: { user: true } } },
+        include: {
+          question: { include: { user: { select: publicUserSelect } } },
+        },
       });
       return answer;
     } else {

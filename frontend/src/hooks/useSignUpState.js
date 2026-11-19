@@ -1,26 +1,27 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { signUp } from "../features/auth/auth_thunk";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export const useSignUpState = () => {
   const dispatch = useDispatch();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { error, loading } = useSelector((state) => state.userAuth);
   const navigation = useNavigation();
   const [active, setActive] = useState(0);
 
   const handleNextBtn = () => {
     if (active === 0) {
-      if (!firstName || !lastName) alert('필수 입력사항 입니다!');
+      if (!firstName || !lastName) alert("필수 입력사항 입니다!");
       else setActive((prevState) => prevState + 1);
     } else if (active === 1) {
-      if (!email) alert('필수 입력사항 입니다');
+      if (!email) alert("필수 입력사항 입니다");
       else setActive((prevState) => prevState + 1);
     } else {
-      if (!password) alert('필수 입력사항 입니다');
+      if (!password) alert("필수 입력사항 입니다");
       else setActive((prevState) => prevState + 1);
     }
   };
@@ -30,11 +31,20 @@ export const useSignUpState = () => {
   };
 
   const handleSubmitBtn = () => {
+    if (
+      password.length < 12 ||
+      unescape(encodeURIComponent(password)).length > 72
+    ) {
+      alert("비밀번호는 12자 이상, UTF-8 기준 72바이트 이하여야 합니다.");
+      return;
+    }
     const data = { firstName, lastName, email, password };
     dispatch(signUp({ data, navigation }));
   };
 
   return {
+    active,
+    navigation,
     firstName,
     lastName,
     email,

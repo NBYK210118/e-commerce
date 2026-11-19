@@ -1,3 +1,4 @@
+import { AdminGuard } from '../security/security';
 import {
   Body,
   Controller,
@@ -18,6 +19,7 @@ export class QuestionController {
   constructor(private question: QuestionService) {}
 
   @Get('')
+  @UseGuards(AdminGuard)
   async getQuestions(): Promise<Question[]> {
     return this.question.getQuestions();
   }

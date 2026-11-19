@@ -1,8 +1,11 @@
+import { Public, AdminGuard } from '../security/security';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
@@ -31,54 +34,38 @@ export class UserController {
   }
 
   @Get('/all')
+  @UseGuards(AdminGuard)
   async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
   @UseGuards(AuthGuard())
   @Get('/verify')
-  async verifyToken(@Req() req: Request, @Res() res: Response) {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
-      const token = authHeader.split(' ')[1];
-      const currentUser = await this.userService.checkingToken(
-        token,
-        'Secret1234',
-      );
-
-      return res.json({ user: currentUser }); // Sending response using res object
-    } catch (error) {
-      console.log('Error', error);
-    }
+  async verifyToken(@GetUser() user: User) {
+    return { user: await this.userService.emailUser(user.email) };
   }
 
   @Post('/signup')
-  async signUp(
-    @Body() data: signUpDto,
-    @Res() res: Response,
-  ): Promise<Response> {
-    console.log(data);
-    const result = await this.userService.signUp(data);
-
-    if (result) return res.status(200).json(result);
-    else return res.status(500);
+  @HttpCode(200)
+  @Public()
+  async signUp(@Body() data: signUpDto) {
+    return this.userService.signUp(data);
   }
 
   @Post('/signin')
+  @Public()
   async signIn(@Body() signInDto: signInDto): Promise<String> {
     return this.userService.signIn(signInDto);
   }
 
   @Delete('/del-user/:id')
-  async deleteUser(@Param('id') id: number): Promise<User> {
+  @UseGuards(AdminGuard)
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.userService.deleteUser(id);
   }
 
   @Delete('/del-all-user')
+  @UseGuards(AdminGuard)
   async deleteAllUsers() {
     return this.userService.deleteAllUsers();
   }
@@ -90,6 +77,7 @@ export class UserController {
   }
 
   @Get('/my-profile/all')
+  @UseGuards(AdminGuard)
   async getAllProfile(): Promise<Profile[]> {
     return this.userService.getAllProfile();
   }
@@ -112,32 +100,37 @@ export class UserController {
 
   @Post('/my-profile/upload')
   @UseGuards(AuthGuard())
-  async uploadImage(
-    @Req() req: Request,
-    @Res() res: Response,
-    @GetUser() user: User,
-  ) {
+  async uploadImage(@Req() req: Request, @GetUser() user: User) {
     const { imageUrl, image_size } = req.body;
     const result = await this.userService.uploadProfileImage(
       user,
       imageUrl,
       Number(image_size),
     );
-    return res.status(200).json({ user: result });
+    return { user: result };
   }
 
   @Delete('/my-profile/:id')
-  async deleteProfile(@Param('id') id: number): Promise<Profile> {
+  @UseGuards(AdminGuard)
+  async deleteProfile(@Param('id', ParseIntPipe) id: number): Promise<Profile> {
     return this.userService.deleteProfile(Number(id));
   }
 
   @UseGuards(AuthGuard())
   @Post('/my-store')
-  async getProductsWhileUpdate(@Body('checklist') checklist: string) {
-    const converted_checklist = checklist
-      .split(',')
-      .map((val) => parseInt(val));
-    return this.userService.getProductsWhileUpdate(converted_checklist);
+  async getProductsWhileUpdate(
+    @GetUser() user: User,
+    @Body('checklist') checklist: string,
+  ) {
+    if (
+      typeof checklist !== 'string' ||
+      !/^[1-9]\d*(,[1-9]\d*)*$/.test(checklist) ||
+      checklist.split(',').length > 100
+    ) {
+      throw new BadRequestException('Invalid product selection');
+    }
+    const converted_checklist = checklist.split(',').map(Number);
+    return this.userService.getProductsWhileUpdate(user, converted_checklist);
   }
 
   @UseGuards(AuthGuard())

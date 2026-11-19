@@ -1,3 +1,4 @@
+import { Public, AdminGuard } from '../security/security';
 import {
   Body,
   Controller,
@@ -23,11 +24,13 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get('/all')
+  @Public()
   async getAllProducts(): Promise<Product[]> {
     return this.productService.getAllProducts();
   }
 
   @Get('')
+  @Public()
   async getProduct(@Query('product_id') product_id: string) {
     if (!product_id) {
       return;
@@ -46,6 +49,7 @@ export class ProductController {
   }
 
   @Get('')
+  @Public()
   async getProductsBySearchKeyword(
     @Query('search_keyword') search_keyword: string,
   ) {
@@ -53,6 +57,7 @@ export class ProductController {
   }
 
   @Get('/all/discounting')
+  @Public()
   async getDiscountingProducts(): Promise<Product[]> {
     return this.productService.getDiscountingProducts();
   }
@@ -83,6 +88,7 @@ export class ProductController {
   }
 
   @Post('/guest/viewed')
+  @Public()
   async guestWatchedProduct(
     @Query('productId', ParseIntPipe) productId: string,
   ): Promise<void> {
@@ -99,6 +105,7 @@ export class ProductController {
   }
 
   @Get('/all/random-recommend')
+  @Public()
   async getRecommend(): Promise<Product[]> {
     return this.productService.getRecommend();
   }
@@ -116,7 +123,7 @@ export class ProductController {
   @Post('/my-store/update-product/:id')
   async updateProduct(
     @GetUser() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateProduct: ProductDetailDto,
   ): Promise<SellingList> {
     console.log('update 요청 들어옴');

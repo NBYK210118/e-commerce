@@ -1,5 +1,8 @@
+import { productIds, requireOwnedProducts } from '../security/security';
 import {
   ConflictException,
+  BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -18,27 +21,6 @@ export class UserService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
-
-  // 토큰 유효성 검증
-  async verifyToken(token: string, secretKey: string) {
-    try {
-      const decodedToken = await this.jwtService.verify(token, {
-        secret: secretKey,
-      });
-      return decodedToken;
-    } catch (error) {
-      throw new Error('Invalid token');
-    }
-  }
-
-  // 토큰 기한이 만료되었는지
-  async isTokenExpired(token: string) {
-    const decodedToken = await this.jwtService.decode(token);
-    const expirationTime = new Date(decodedToken.exp * 1000);
-    const currentTime = new Date();
-
-    return expirationTime < currentTime;
-  }
 
   // 이메일로 유저 정보 가져오기
   async emailUser(email: string): Promise<User> {
@@ -77,41 +59,24 @@ export class UserService {
     return user;
   }
 
-  // 토큰값으로 유저 정보 가져오기
-  async getTokenUser(token: string): Promise<User> {
-    const decodedToken = await this.jwtService.verify(token, {
-      secret: 'Secret1234',
-    });
-    if (!decodedToken) {
-      throw new UnauthorizedException();
-    }
-    const user = await this.emailUser(decodedToken.email);
-
-    return user;
-  }
-
-  // 토큰 최종 유효성 검증
-  async checkingToken(token: string, secretKey: string) {
-    try {
-      // JWT 토큰을 검증하고 디코딩합니다
-      const decodedToken = await this.verifyToken(token, 'Secret1234');
-      // 토큰이 유효한 경우, 만료 여부를 확인합니다
-      const isExpired = await this.isTokenExpired(token);
-      const user = await this.getTokenUser(token);
-      if (!isExpired) {
-        return user;
-      } else {
-        throw new UnauthorizedException('만료됨');
-      }
-    } catch (error) {
-      console.log('Error', error);
-      throw new UnauthorizedException('검증 도중 에러 발생');
-    }
-  }
-
   // 회원가입
   async signUp(data: signUpDto): Promise<User | String> {
-    const { email, password, firstName, lastName } = data;
+    const { email, password, firstName, lastName } = data || {};
+    if (
+      typeof email !== 'string' ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+      email.length > 254 ||
+      typeof password !== 'string' ||
+      password.length < 12 ||
+      Buffer.byteLength(password) > 72 ||
+      [firstName, lastName].some(
+        (value) =>
+          typeof value !== 'string' || !value.trim() || value.length > 100,
+      )
+    )
+      throw new BadRequestException(
+        'Valid email, names and a 12-character password (at most 72 bytes) are required',
+      );
     const hash = await bcrypt.hash(password, 10);
 
     const alreadyExist = await this.prisma.user.findUnique({
@@ -145,19 +110,17 @@ export class UserService {
 
   // 로그인
   async signIn(signInDto: signInDto): Promise<String> {
-    const { email, password } = signInDto;
-    const user = await this.emailUser(email);
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (user && isMatch) {
-      const payload = { email };
-      const access_token = this.jwtService.sign(payload);
-      return access_token;
-    } else {
-      if (user.email !== email || !isMatch) {
-        throw new Error('Login failed');
-      }
-    }
+    const { email, password } = signInDto || {};
+    if (
+      typeof email !== 'string' ||
+      typeof password !== 'string' ||
+      Buffer.byteLength(password) > 72
+    )
+      throw new UnauthorizedException('Invalid credentials');
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || !(await bcrypt.compare(password, user.password)))
+      throw new UnauthorizedException('Invalid credentials');
+    return this.jwtService.sign({ sub: user.id, email: user.email });
   }
 
   // 유저 생성 id 값으로 유저 정보 가져오기
@@ -207,7 +170,6 @@ export class UserService {
       currentAddr,
       userCurrentLocation,
     } = data;
-    console.log(data);
 
     const filteredAddresses = address.filter((addr) => addr !== currentAddr);
     const updatedAddresses = [currentAddr, ...filteredAddresses];
@@ -228,6 +190,10 @@ export class UserService {
         where: { store: { name: store } },
       });
 
+      if (store_found && store_found.id !== user.storeId)
+        throw new ForbiddenException(
+          'Joining another store requires administrator approval',
+        );
       if (!store_found) {
         const created = await this.prisma.store.create({
           data: { name: store },
@@ -284,7 +250,7 @@ export class UserService {
       },
     });
 
-    const result = await this.emailUser(user.email);
+    const result = await this.emailUser(email);
 
     return result;
   }
@@ -320,9 +286,14 @@ export class UserService {
   }
 
   // 업데이트 버튼 클릭 시 체크된 상품 정보들에 대한 레코드 불러오기
-  async getProductsWhileUpdate(checklist: number[]): Promise<Product[]> {
+  async getProductsWhileUpdate(
+    user: User,
+    checklist: number[],
+  ): Promise<Product[]> {
+    if (checklist.length > 100) throw new BadRequestException();
+    await requireOwnedProducts(this.prisma, user.id, checklist);
     const products = await this.prisma.product.findMany({
-      where: { id: { in: checklist } },
+      where: { id: { in: checklist }, SellingList: { userId: user.id } },
       include: { images: true },
     });
 
@@ -331,22 +302,24 @@ export class UserService {
 
   // 선택된 상품 제거하기(판매 취소 버튼)
   async deleteProduct(user: User, data: ProductStatus) {
-    const product_ids = [];
-    console.log('data: ', data);
-    for (const key in data) {
-      if (data[key]) {
-        product_ids.push(Number(key));
-      }
-    }
-    await this.prisma.userProduct.deleteMany({
-      where: { productId: { in: product_ids } },
-    });
-    await this.prisma.productImage.deleteMany({
-      where: { productId: { in: product_ids } },
-    });
-
-    await this.prisma.product.deleteMany({
-      where: { id: { in: product_ids } },
+    const product_ids = productIds(data, true);
+    await this.prisma.$transaction(async (tx) => {
+      await requireOwnedProducts(tx, user.id, product_ids);
+      await tx.userProduct.deleteMany({
+        where: {
+          productId: { in: product_ids },
+          product: { SellingList: { userId: user.id } },
+        },
+      });
+      await tx.productImage.deleteMany({
+        where: {
+          productId: { in: product_ids },
+          product: { SellingList: { userId: user.id } },
+        },
+      });
+      await tx.product.deleteMany({
+        where: { id: { in: product_ids }, SellingList: { userId: user.id } },
+      });
     });
 
     const result = await this.prisma.sellingList.findUnique({

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BasketSummary, ShoppingBasket, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { CheckStates } from './dto/basket.dto';
@@ -157,6 +157,8 @@ export class ShoppingbasketService {
   }
 
   async updateProductQuantity(user: User, productId: number, quantity: number) {
+    if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 999)
+      throw new BadRequestException('Quantity must be between 1 and 999');
     await this.prisma.shoppingBasket.update({
       where: { userId_productId: { userId: user.id, productId } },
       data: { quantity: quantity },

@@ -1,3 +1,4 @@
+import { AdminGuard } from '../security/security';
 import { Body, Controller, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AnswerService } from './answer.service';
 import { AnswerDto } from './dto/answer.dto';
@@ -11,6 +12,7 @@ export class AnswerController {
 
   @UseGuards(AuthGuard())
   @Post('/reply')
+  @UseGuards(AdminGuard)
   async replyToQuestion(
     @Body() data: AnswerDto,
     @GetUser() user: User,
@@ -21,6 +23,7 @@ export class AnswerController {
 
   @UseGuards(AuthGuard())
   @Put('/reply/update')
+  @UseGuards(AdminGuard)
   async replyUpdateQuestion(
     @Body() data: AnswerDto,
     @Query('answer_id') answer_id: string,
