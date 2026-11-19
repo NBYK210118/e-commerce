@@ -1,0 +1,45 @@
+name: Security and build checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+      - run: npm test -- --runInBand
+      - run: npm run test:e2e -- --runInBand
+      - run: npm audit --audit-level=low
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx expo install --check
+      - run: npm run export:check
+        env:
+          CI: '1'
+          EXPO_PUBLIC_API_URL: https://api.example.invalid
+      - run: npm audit --audit-level=low

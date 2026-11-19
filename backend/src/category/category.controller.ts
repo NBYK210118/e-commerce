@@ -1,3 +1,4 @@
+import { Public, AdminGuard } from '../security/security';
 import {
   Body,
   Controller,
@@ -18,6 +19,7 @@ export class CategoryController {
 
   @UseGuards(AuthGuard())
   @Post('/create-cate')
+  @UseGuards(AdminGuard)
   async registerCategory(@GetUser() user: User, @Body() data: Category) {
     return this.categoryService.registerCategory(user, data);
   }
@@ -33,6 +35,7 @@ export class CategoryController {
   }
 
   @Get('/product/all')
+  @Public()
   async getAllSellingProducts(
     @Query('category') category: string,
   ): Promise<Product | Product[]> {
@@ -41,6 +44,7 @@ export class CategoryController {
   }
 
   @Get('')
+  @Public()
   async getAllCategory(): Promise<Category[]> {
     return this.categoryService.getAllCategory();
   }

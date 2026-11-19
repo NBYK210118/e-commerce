@@ -1,3 +1,5 @@
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard, CredentialsInterceptor } from './security/security';
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -19,6 +21,10 @@ import { QuestionModule } from './question/question.module';
 import { AnswerModule } from './answer/answer.module';
 
 @Module({
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_INTERCEPTOR, useClass: CredentialsInterceptor },
+  ],
   imports: [
     UserModule,
     ServeStaticModule.forRoot({

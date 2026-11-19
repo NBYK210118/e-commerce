@@ -1,3 +1,4 @@
+import { publicUserSelect } from '../security/security';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { ReviewDto } from './dto/review.dto';
@@ -11,7 +12,7 @@ export class ReviewService {
   async getAllReviewsByProduct(product_id: number): Promise<Review[]> {
     const result = await this.prisma.review.findMany({
       where: { productId: product_id },
-      include: { user: { include: { profile: true } } },
+      include: { user: { select: publicUserSelect } },
     });
     return result;
   }
@@ -52,7 +53,7 @@ export class ReviewService {
     // 결과 리턴
     const result = await this.prisma.review.findFirst({
       where: { productId: Number(productId), userId: user.id },
-      include: { user: { include: { profile: true } } },
+      include: { user: { select: publicUserSelect } },
     });
 
     return result;
@@ -64,7 +65,7 @@ export class ReviewService {
   ): Promise<Boolean | Review> {
     const found = await this.prisma.review.findFirst({
       where: { userId: user.id, productId },
-      include: { user: { include: { profile: true } } },
+      include: { user: { select: publicUserSelect } },
     });
 
     if (found) return found;

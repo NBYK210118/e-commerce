@@ -1,11 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { json } from 'express';
+import { configureHttp } from './security/http';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.enableCors();
-  app.use(json({ limit: '100mb' }));
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+  configureHttp(app);
   await app.listen(3001);
 }
 bootstrap();

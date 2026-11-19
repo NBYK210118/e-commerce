@@ -1,3 +1,4 @@
+import { Public, AdminGuard } from '../security/security';
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ViewedproductService } from './viewedproduct.service';
@@ -15,6 +16,7 @@ export class ViewedproductController {
   }
 
   @Get('/recent-watched/every-products')
+  @Public()
   async mostViewdProducts(): Promise<Product[]> {
     return this.viewedproductService.mostViewedProducts();
   }

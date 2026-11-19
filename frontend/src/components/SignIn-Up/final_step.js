@@ -6,7 +6,7 @@ export const FinalStep = ({ password, setPassword }) => {
   return (
     <View style={{ marginTop: 20 }}>
       <LabelInput
-        label={"비밀번호"}
+        label={"비밀번호 (12자 이상)"}
         value={password}
         onChangeText={setPassword}
         textStyle={styles.labelInput_txt}

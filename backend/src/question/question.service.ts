@@ -1,3 +1,4 @@
+import { publicUserSelect } from '../security/security';
 import { Injectable } from '@nestjs/common';
 import { Question, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
@@ -10,7 +11,7 @@ export class QuestionService {
 
   async getQuestions(): Promise<Question[]> {
     const result = await this.prisma.question.findMany({
-      include: { user: { include: { profile: true } }, answer: true },
+      include: { user: { select: publicUserSelect }, answer: true },
     });
 
     return result;

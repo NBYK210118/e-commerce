@@ -1,3 +1,4 @@
+import { requireOwnedProducts } from '../security/security';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Product, SellingList, User, ViewedProduct } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
@@ -326,6 +327,7 @@ export class ProductService {
     id: number,
     updateProductDto: ProductDetailDto,
   ): Promise<SellingList> {
+    await requireOwnedProducts(this.prisma, user.id, [Number(id)]);
     const {
       name,
       price,
@@ -351,7 +353,7 @@ export class ProductService {
     });
 
     await this.prisma.product.update({
-      where: { id: Number(id) },
+      where: { id: Number(id), SellingList: { userId: user.id } },
       data: {
         name,
         price: parsedIntPrice,

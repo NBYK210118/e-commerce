@@ -1,3 +1,4 @@
+import { productIds, requireOwnedProducts } from '../security/security';
 import { Injectable } from '@nestjs/common';
 import { Product, SellingList, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
@@ -29,15 +30,16 @@ export class SellinglistService {
     user: User,
     data: ProductStatus,
   ): Promise<SellingList> {
+    await requireOwnedProducts(this.prisma, user.id, productIds(data));
     const updatePromise = Object.entries(data).map(([key, value]) => {
       const productId = Number(key);
       const status = value ? '판매중' : '보류중';
       return this.prisma.product.update({
-        where: { id: productId },
+        where: { id: productId, SellingList: { userId: user.id } },
         data: { status },
       });
     });
-    await Promise.all(updatePromise);
+    await this.prisma.$transaction(updatePromise);
     const sellingList = await this.prisma.sellingList.findUnique({
       where: { userId: user.id },
       include: {

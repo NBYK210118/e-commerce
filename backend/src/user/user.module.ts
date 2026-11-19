@@ -1,3 +1,4 @@
+import { jwtSecret } from '../security/security';
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
@@ -10,11 +11,15 @@ import { PrismaModule } from 'src/database/prisma.module';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: 'Secret1234',
-      signOptions: {
-        expiresIn: 60 * 120,
-      },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: jwtSecret(),
+        verifyOptions: { algorithms: ['HS256'] },
+        signOptions: {
+          expiresIn: 60 * 120,
+          algorithm: 'HS256',
+        },
+      }),
     }),
     PrismaModule,
   ],

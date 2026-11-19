@@ -1,3 +1,4 @@
+import { Public, AdminGuard } from '../security/security';
 import {
   Body,
   Controller,
@@ -19,6 +20,7 @@ export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
   @Get('/all')
+  @Public()
   async getAllReviewsByProduct(@Query('product_id') product_id: string) {
     return this.reviewService.getAllReviewsByProduct(+product_id);
   }
